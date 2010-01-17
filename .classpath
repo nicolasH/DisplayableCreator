@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/forms-1.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jmdns.jar"/>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.6.10.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

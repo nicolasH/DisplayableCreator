@@ -1,0 +1,172 @@
+Manifest-Version: 1.0
+
+Name: META-INF/mailcap.default
+Digest-Algorithms: SHA MD5 
+SHA-Digest: v12EA8RRccouDsMocE4Gzg0x6tE=
+MD5-Digest: awl80AdS/J/jSdigAqQSmg==
+
+Name: META-INF/mimetypes.default
+Digest-Algorithms: SHA MD5 
+SHA-Digest: ugRiVrTIB+fmq8K0x6KQAWcA4Jk=
+MD5-Digest: 8pBdY9dTapAqeQlMSpIRCw==
+
+Name: javax/activation/ActivationDataFlavor.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: KTBsWZWmeDG52bOMIrsWMjfDrRg=
+MD5-Digest: D59jGNrvfBn2MNAENFxL1Q==
+
+Name: javax/activation/CommandInfo.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: nfRVvUtqN9fYxMaCR9nHmrvpgE8=
+MD5-Digest: CFYIWRxg4Jgbyk2Tx3NFaA==
+
+Name: javax/activation/CommandMap.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: RaGPXz4hTh5zemCu3tn/nHGFpNs=
+MD5-Digest: ATRDugtosxz+kqJ/57rFnA==
+
+Name: javax/activation/CommandObject.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: H3Q1PbYHywiyh3yqY2NMBxb/mdM=
+MD5-Digest: OJQl7SHhreejDtLRjRgxBQ==
+
+Name: javax/activation/DataContentHandler.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: lTM5vo32NfspQZIJHR1qC3TtxCo=
+MD5-Digest: fpzh7csTHnhqCPWuqabMOw==
+
+Name: javax/activation/DataContentHandlerFactory.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: r8rO1d/D9kIJu3GiNzYWgykpnIM=
+MD5-Digest: hA9KvoHe3sxjrf2X5oY+tA==
+
+Name: javax/activation/DataHandler.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: zn9unI/1VkqONZB8Qtq3wkvShAo=
+MD5-Digest: usg7rLNsLSDOhAHTZcQG2g==
+
+Name: javax/activation/DataHandler$1.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: fH0Ie0G/0lJmuyw52C9dtCw5ask=
+MD5-Digest: lrI5+nYp9QLghug+aMEabg==
+
+Name: javax/activation/DataHandlerDataSource.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: 3P+lk1qAQzK+yTnCSbRxVjuTRQk=
+MD5-Digest: SpV0t04Tm3BEVsYgA9wngw==
+
+Name: javax/activation/DataSourceDataContentHandler.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: wZ3uIccvbZslJG08VW4IcaFPBXU=
+MD5-Digest: FBt00g5pnSvcq/M8AiMWyw==
+
+Name: javax/activation/ObjectDataContentHandler.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: APjCZoQBRWiyX+9EF2UrzNpwwPM=
+MD5-Digest: bmjYDLZHMA/T/0Gl5cFVuw==
+
+Name: javax/activation/DataSource.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: B5TaFI6M47bUxwhxYQdkgyXBG7E=
+MD5-Digest: XhSIG8FtCvGU5IGx/OPrgw==
+
+Name: javax/activation/FileDataSource.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: qSYDvJEeZH5H1A9ZWd8sngyPoVM=
+MD5-Digest: mg3vSY9CduodkAlOgEKLdw==
+
+Name: javax/activation/FileTypeMap.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: R6+DImP8UAMlTQokTe8WMpBlmQE=
+MD5-Digest: nHsJUhLICXuh2E1rKbgzyg==
+
+Name: javax/activation/MimeType.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: Kflr0f/NLV8CCGPbBwGGszwB3Jc=
+MD5-Digest: LOuEdXnI3bR+6PhrA0cKBg==
+
+Name: javax/activation/MailcapCommandMap.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: XZhBNKDeeNMcR4/VVH0SH9qu9CU=
+MD5-Digest: 6fqRACdk/Q1qmqIu6J94Gw==
+
+Name: javax/activation/MimeTypeParameterList.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: A/qjBr3yk/gmWC8nlcSBi9v/TzU=
+MD5-Digest: lM2nWrsMs/XHuskudyPLCg==
+
+Name: javax/activation/MimeTypeParseException.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: 1kE255N/A353cWmbvklWglhS+rQ=
+MD5-Digest: lgqeixVKdGyv2ospvCfKmg==
+
+Name: javax/activation/MimetypesFileTypeMap.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: LHaMyxaux6QANY9eO4d3e/WSifU=
+MD5-Digest: W8D8EQ3Hk7hPc4zDIZEGfw==
+
+Name: javax/activation/URLDataSource.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: ynTftdgjHWTjsVDp3wATt+1lq4A=
+MD5-Digest: l1Ljw2f3mLMUG19d+3LkoA==
+
+Name: javax/activation/UnsupportedDataTypeException.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: zMEYeBaTREPXRmNr7spu9qLB1dw=
+MD5-Digest: u7a1C3Rn7XLwxZXsaRJMdg==
+
+Name: com/sun/activation/registries/MimeTypeFile.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: Z1yp72yulx5nOO29rjuHove56dU=
+MD5-Digest: I/o7d3qhtgj15fxSqkHEUg==
+
+Name: com/sun/activation/registries/LineTokenizer.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: GFRV0ydBhbLcwAfMB1PqA73NbYo=
+MD5-Digest: GsUpVVrSrvMxpW35SJTzbA==
+
+Name: com/sun/activation/registries/MailcapFile.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: Xn2KUYwqJjFNlZEQgF36F8wAk9c=
+MD5-Digest: +a470Vvmf9mnKI7fYk7O6w==
+
+Name: com/sun/activation/registries/MailcapParseException.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: NypAHAvj6db6pTbS/WH0sa2WnpI=
+MD5-Digest: s8XkQzVIJ3+56mlJRmIxJQ==
+
+Name: com/sun/activation/registries/MailcapEntry.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: Pun9AQNTRnFC+Mh59NHPcbZ5nBU=
+MD5-Digest: O9cA5gkQ/FzirmBt80t3Pg==
+
+Name: com/sun/activation/registries/MimeTypeEntry.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: YLEnalN4p//mBaSbws5Umjr6odY=
+MD5-Digest: J4lNEU9mhOFky4N2uOmbrQ==
+
+Name: com/sun/activation/registries/MailcapTokenizer.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: RS97RDcJvyPcd/FQVB+RliKZjVw=
+MD5-Digest: PpoWtu7w3WKCZ2FqZeq+ww==
+
+Name: com/sun/activation/viewers/ImageViewer.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: 0/Slgm5NTWVHdOz9Dp19QUIrHeM=
+MD5-Digest: 0pqW7CYSRPIWaFEmtF3VRw==
+
+Name: com/sun/activation/viewers/ImageViewerCanvas.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: 8lUH4TcWIVSeI+V2x+dqn3HWCKM=
+MD5-Digest: M+hW//WzWZJoiBxDIXzIgg==
+
+Name: com/sun/activation/viewers/TextEditor.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: 1u4govAyrNlTOJBAg8WEXaKbM60=
+MD5-Digest: Gv8K8J3n/FmlZQJF7hpEhw==
+
+Name: com/sun/activation/viewers/TextViewer.class
+Digest-Algorithms: SHA MD5 
+SHA-Digest: zviFs/zZFKjOToTKhzUex23wjBU=
+MD5-Digest: fqIFNfdmf+3IGU5Vt84aqg==
+
