@@ -8,6 +8,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -60,14 +61,14 @@ public class SQliteTileCreator {
 	public void initSource(String archiveName, String fileSansDot) {
 		mapKey = -1;
 		layerKey = -1;
-		
+
 		if (mapKey == -1) {
 			mapKey = 0;// currently only one map per database
 		}
 		if (layerKey == -1) {
 			layerKey = 0;// currently only one layer per map
 		}
-		
+
 		// load the sqlite-JDBC driver using the current class loader
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -91,7 +92,7 @@ public class SQliteTileCreator {
 			statement.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
 			// currently the layer name should be the same as the map name, as only one layer is supported
 			statement.executeUpdate("CREATE TABLE layers_infos (" + "layerName STRING, mapKey LONG, zindex LONG, zoom  LONG, width LONG,height LONG, tiles_x LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
-			statement.executeUpdate("CREATE TABLE tiles_" + mapKey + "_"+layerKey+ " (x LONG , y LONG, z LONG, data BLOB)");
+			statement.executeUpdate("CREATE TABLE tiles_" + mapKey + "_" + layerKey + " (x LONG , y LONG, z LONG, data BLOB)");
 			// Prepare most frequently used statement;
 			String insertTiles = "insert into tiles_" + mapKey + "_" + layerKey + " values( ?, ?, ?, ?)";
 			insertTile = connection.prepareStatement(insertTiles);
@@ -125,9 +126,10 @@ public class SQliteTileCreator {
 		// + description + "\",\"" + author + "\",\"" + source + "\",\""
 		// + System.currentTimeMillis() + "\"," + zindex + ", ?,?)";
 		//		
-		long mapID=0;
-		//CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
-		
+		long mapID = 0;
+		// CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING,
+		// zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
+
 		String stat = "INSERT INTO infos VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 		String date = new Date(System.currentTimeMillis()).toString();
 		System.out.println("stat = " + stat);
@@ -136,7 +138,7 @@ public class SQliteTileCreator {
 			int i = 1;
 			ps.setString(i++, title);
 			ps.setLong(i++, mapKey);
-//			ps.setString(i++, name);
+			// ps.setString(i++, name);
 			ps.setString(i++, description);
 			ps.setString(i++, author);
 			ps.setString(i++, source);
@@ -171,9 +173,9 @@ public class SQliteTileCreator {
 
 	public void addLevelInfos(String name, long mapID, int zoom, int width, int height, int tiles_x, int tiles_y, int offsetX, int offsetY) {
 
-		String layerName="no name";
+		String layerName = "no name";
 		long zindex = 0;
-		String stat = "INSERT INTO layers_infos VALUES(\""+layerName+"\"," + mapID + ","+zindex+"," + zoom + "," + width + "," + height + "," + tiles_x + "," + tiles_y + "," + offsetX + "," + offsetY + ")";
+		String stat = "INSERT INTO layers_infos VALUES(\"" + layerName + "\"," + mapID + "," + zindex + "," + zoom + "," + width + "," + height + "," + tiles_x + "," + tiles_y + "," + offsetX + "," + offsetY + ")";
 		System.out.println("stat = " + stat);
 		try {
 			Statement statement = connection.createStatement();
@@ -181,6 +183,70 @@ public class SQliteTileCreator {
 		} catch (SQLException e) {
 			System.err.println("Information insertion failed.");
 			e.printStackTrace();
+		}
+	}
+
+	public static void createTiles(String pathToSource, String pathToDestination, int tileSize, String tileType) throws IOException {
+		System.out.println("calculating tiles...");
+		long mapID = 0;
+
+		if (pathToSource == null || pathToDestination == null) { return; }
+		// the pathTo file includes the fileName.
+		File originalFile = new File(pathToSource);
+		String fileSansExt = pathToSource.substring(pathToSource.lastIndexOf(File.separator) + 1, pathToSource.lastIndexOf("."));
+		
+		System.out.println("Opening the image");
+		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
+		System.out.println("Reading the image.");
+		BufferedImage img = ImageIO.read(inStream);
+
+		byte[] miniBytes = getMiniatureBytes(img, 320, 480, tileType);
+		System.out.println("writing the miniature");
+		
+		FileOutputStream miniOut = new FileOutputStream(new File("/Users/niko/mini.png"));
+		miniOut.write(miniBytes);
+		miniOut.close();
+		return;
+	}
+
+	public static byte[] getMiniatureBytes(BufferedImage sourceImage, int miniMaxWidth, int miniMaxHeight, String pictureType) throws IOException {
+		int width = sourceImage.getWidth();
+		int height = sourceImage.getHeight();
+
+		double scaleX = miniMaxWidth / (double) width;
+		double scaleY = miniMaxHeight / (double) height;
+		double scaleFactor = Math.min(scaleX, scaleY);
+
+		System.out.println("scaleX=" + scaleX + " scaleY=" + scaleY + " scale factor = " + scaleFactor);
+		int scaledWidth = (int) (width * scaleFactor);
+		int scaledHeight = (int) (height * scaleFactor);
+
+//		Image xxx = null;// miniature : img.getScaledInstance(scaledWidth,
+//		// scaledHeight, Image.SCALE_SMOOTH);
+//		// ImageIcon ic = new ImageIcon(xxx);
+//		BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
+//		Graphics g = scaled.getGraphics();
+//		g.drawImage(xxx, 0, 0, null);
+//		g.dispose();
+		System.out.println("Scaling the image");
+		Image tmp = sourceImage.getScaledInstance(scaledWidth,scaledHeight, Image.SCALE_SMOOTH);
+		BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
+		Graphics g = scaled.getGraphics();
+		System.out.println("Painting the scaled image");
+		g.drawImage(tmp, 0, 0, null);
+		g.dispose();
+		System.out.println("creating the byte array");
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		ImageIO.write(scaled, pictureType, outStream);
+		return outStream.toByteArray();
+	}
+
+	public static void main(String[] args) throws IOException {
+		try {
+			createTiles("/Users/niko/tileSources/testMeyrin450.png", "testMeyrin450.png", 192, "png");
+			System.exit(0);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -220,7 +286,7 @@ public class SQliteTileCreator {
 		// TODO : replace 500 by some variable/constant.
 		double scaleX = MINIATURE_SIZE / (double) width;
 		double scaleY = MINIATURE_SIZE / (double) height;
-		double scaleFactor = Math.min(scaleX, scaleY);
+		double scaleFactor = Math.max(scaleX, scaleY);
 		System.out.println("scaleX=" + scaleX + " scaleY=" + scaleY + " scale factor = " + scaleFactor);
 
 		scaledWidth = (int) (width * scaleFactor);
@@ -233,6 +299,7 @@ public class SQliteTileCreator {
 		Graphics g = scaled.getGraphics();
 		g.drawImage(xxx, 0, 0, null);
 		g.dispose();
+		ImageIO.write(scaled, tileType, new File("mini.png"));
 		// ////////////////////////////////////////////
 		ByteArrayOutputStream byteStorage = new ByteArrayOutputStream();
 
