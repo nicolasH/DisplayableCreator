@@ -19,6 +19,7 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
+import javax.swing.JProgressBar;
 
 public class SQliteTileCreator {
 	Connection connection;
@@ -186,71 +187,7 @@ public class SQliteTileCreator {
 		}
 	}
 
-	public static void createTiles(String pathToSource, String pathToDestination, int tileSize, String tileType) throws IOException {
-		System.out.println("calculating tiles...");
-		long mapID = 0;
-
-		if (pathToSource == null || pathToDestination == null) { return; }
-		// the pathTo file includes the fileName.
-		File originalFile = new File(pathToSource);
-		String fileSansExt = pathToSource.substring(pathToSource.lastIndexOf(File.separator) + 1, pathToSource.lastIndexOf("."));
-		
-		System.out.println("Opening the image");
-		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
-		System.out.println("Reading the image.");
-		BufferedImage img = ImageIO.read(inStream);
-
-		byte[] miniBytes = getMiniatureBytes(img, 320, 480, tileType);
-		System.out.println("writing the miniature");
-		
-		FileOutputStream miniOut = new FileOutputStream(new File("/Users/niko/mini.png"));
-		miniOut.write(miniBytes);
-		miniOut.close();
-		return;
-	}
-
-	public static byte[] getMiniatureBytes(BufferedImage sourceImage, int miniMaxWidth, int miniMaxHeight, String pictureType) throws IOException {
-		int width = sourceImage.getWidth();
-		int height = sourceImage.getHeight();
-
-		double scaleX = miniMaxWidth / (double) width;
-		double scaleY = miniMaxHeight / (double) height;
-		double scaleFactor = Math.min(scaleX, scaleY);
-
-		System.out.println("scaleX=" + scaleX + " scaleY=" + scaleY + " scale factor = " + scaleFactor);
-		int scaledWidth = (int) (width * scaleFactor);
-		int scaledHeight = (int) (height * scaleFactor);
-
-//		Image xxx = null;// miniature : img.getScaledInstance(scaledWidth,
-//		// scaledHeight, Image.SCALE_SMOOTH);
-//		// ImageIcon ic = new ImageIcon(xxx);
-//		BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
-//		Graphics g = scaled.getGraphics();
-//		g.drawImage(xxx, 0, 0, null);
-//		g.dispose();
-		System.out.println("Scaling the image");
-		Image tmp = sourceImage.getScaledInstance(scaledWidth,scaledHeight, Image.SCALE_SMOOTH);
-		BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
-		Graphics g = scaled.getGraphics();
-		System.out.println("Painting the scaled image");
-		g.drawImage(tmp, 0, 0, null);
-		g.dispose();
-		System.out.println("creating the byte array");
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-		ImageIO.write(scaled, pictureType, outStream);
-		return outStream.toByteArray();
-	}
-
-	public static void main(String[] args) throws IOException {
-		try {
-			createTiles("/Users/niko/tileSources/testMeyrin450.png", "testMeyrin450.png", 192, "png");
-			System.exit(0);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType) throws IOException {
+	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, JProgressBar progressIndicator) throws IOException {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 
@@ -318,6 +255,16 @@ public class SQliteTileCreator {
 		scaledWidth = width;
 		scaledHeight = height;
 
+		int aaMaxZoom = 0;
+		double aaX = scaledWidth;
+		double aaY = scaledHeight;
+		while (Math.min(aaX, aaY) > tileSize) {
+			aaMaxZoom++;
+			aaX = aaX * ZOOM_FACTOR;
+			aaY = aaY * ZOOM_FACTOR;
+		}
+		progressIndicator.setValue(100/(aaMaxZoom+1));
+		progressIndicator.setString("Creating zoom level "+(zoom+1) +" / "+(aaMaxZoom+1));
 		while (Math.min(scaledWidth, scaledHeight) > tileSize) {
 			// localPath = currentDirPath + "/" + LAYER_PREFIX + zoom;
 			// out.createLayer(localPath);
@@ -409,6 +356,8 @@ public class SQliteTileCreator {
 			nbY = (scaledHeight / tileSize) + 1;
 
 			zoom++;
+			progressIndicator.setValue((int)((100 / (aaMaxZoom+1)) * (zoom+1)));
+			progressIndicator.setString("Creating zoom level "+(zoom+1) +" / "+(aaMaxZoom+1));
 
 			xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
 			img = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);

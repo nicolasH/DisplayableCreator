@@ -25,7 +25,7 @@ public class MapCutterApp {
 	}
 
 	private void init() {
-		JFrame f = new JFrame("Map Cutter App");
+		JFrame f = new JFrame("Image Cutter App");
 		tileCreatorPanel = new TileCreatorPanel();
 		mapSharingPanel = new MapSharingPanel();
 	

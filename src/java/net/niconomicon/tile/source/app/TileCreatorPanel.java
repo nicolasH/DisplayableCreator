@@ -14,9 +14,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
@@ -44,6 +45,8 @@ public class TileCreatorPanel extends JPanel {
 	protected JButton browseOutput;
 
 	protected JLabel imageProperty;
+
+	JProgressBar progressIndicator;
 
 	protected String place;
 	protected String name;
@@ -167,6 +170,14 @@ public class TileCreatorPanel extends JPanel {
 		builder.add(where, cc.xy(3, y));
 		builder.add(browseOutput, cc.xy(5, y));
 
+		y++;
+		y++;
+		progressIndicator = new JProgressBar(0,100);
+		builder.addLabel("current action", cc.xy(1, y));
+		builder.add(progressIndicator, cc.xyw(3, y, 3));
+
+		y++;
+		y++;
 		finalizeButton = new JButton("Finalize Tiles DB");
 		finalizeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -174,9 +185,6 @@ public class TileCreatorPanel extends JPanel {
 			}
 		});
 		finalizeButton.setEnabled(false);
-		y++;
-		y++;
-
 		builder.add(finalizeButton, cc.xy(3, y));
 
 		// The builder holds the layout container that we now return.
@@ -209,15 +217,23 @@ public class TileCreatorPanel extends JPanel {
 			// Delete temp file when program exits.
 			temp.deleteOnExit();
 			currentSourcePath = sourcePath;
+
 			Thread t = new Thread() {
 				public void run() {
 					try {
+						// progressIndicator.setIndeterminate(true);
+						progressIndicator.setStringPainted(true);
+						progressIndicator.setString("Opening file ...");
+						progressIndicator.setValue(1);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
-						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE);
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE,progressIndicator);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
 						finalizeButton.setEnabled(true);
+//						progressIndicator.setIndeterminate(false);
+						progressIndicator.setValue(100);
+						progressIndicator.setString("100%");
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
@@ -344,11 +360,11 @@ public class TileCreatorPanel extends JPanel {
 		}
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		TileCreatorPanel f = new TileCreatorPanel();
-	}
+	// /**
+	// * @param args
+	// */
+	// public static void main(String[] args) {
+	// TileCreatorPanel f = new TileCreatorPanel();
+	// }
 
 }
