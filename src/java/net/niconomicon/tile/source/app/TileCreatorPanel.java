@@ -1,9 +1,5 @@
 package net.niconomicon.tile.source.app;
 
-/**
- * 
- */
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,9 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
+import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
 import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -52,7 +48,7 @@ public class TileCreatorPanel extends JPanel {
 	protected String name;
 
 	JFileChooser chooser;
-	FileFilter imageFilter;
+	ImageAndPDFFileFilter imageFilter;
 	FileFilter archiveFilter;
 
 	MapSharingPanel sharingPanel;
@@ -81,7 +77,10 @@ public class TileCreatorPanel extends JPanel {
 		// BoxLayout l = new BoxLayout(option, BoxLayout.Y_AXIS);
 		// option.setLayout(l);
 		JPanel arch = new JPanel();
+
+		imageFilter = new ImageAndPDFFileFilter();
 		chooser = new JFileChooser();
+		chooser.setFileFilter(imageFilter);
 
 		preview = new TilingPreview();
 
@@ -172,7 +171,7 @@ public class TileCreatorPanel extends JPanel {
 
 		y++;
 		y++;
-		progressIndicator = new JProgressBar(0,100);
+		progressIndicator = new JProgressBar(0, 100);
 		builder.addLabel("current action", cc.xy(1, y));
 		builder.add(progressIndicator, cc.xyw(3, y, 3));
 
@@ -227,11 +226,11 @@ public class TileCreatorPanel extends JPanel {
 						progressIndicator.setValue(1);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
-						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE,progressIndicator);
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
 						finalizeButton.setEnabled(true);
-//						progressIndicator.setIndeterminate(false);
+						// progressIndicator.setIndeterminate(false);
 						progressIndicator.setValue(100);
 						progressIndicator.setString("100%");
 					} catch (Exception ex) {
@@ -306,6 +305,7 @@ public class TileCreatorPanel extends JPanel {
 		public void actionPerformed(ActionEvent arg0) {
 			String s = " some file";
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
 			int returnVal = chooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());

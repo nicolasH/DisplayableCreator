@@ -125,8 +125,8 @@ public class MapViewer extends JPanel {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String dir = "/Users/niko/tileSources/";
-		String file = "busRomaCentral.png.mdb";
+		String dir = "/Users/niko/tileSources/mapRepository/";
+		String file = "Beijingsubway2008.pdf.mdb";
 
 		MapViewer mV = new MapViewer();
 		mV.setTileSource(dir + file);

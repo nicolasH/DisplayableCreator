@@ -8,7 +8,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,6 +19,8 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.JProgressBar;
+
+import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
 
 public class SQliteTileCreator {
 	Connection connection;
@@ -200,9 +201,13 @@ public class SQliteTileCreator {
 		// /////////////////////////////////
 		System.out.println("creating the tiles");
 		// //////////////////////////////
-		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
-		BufferedImage img = ImageIO.read(inStream);
-		// //////////////////////////////
+		BufferedImage img = null;
+		if (ImageAndPDFFileFilter.getLowerCaseExt(pathToFile).endsWith("pdf")) {
+			img = PDFToImageRenderer.getImageFromPDFFile(pathToFile, 300);
+		} else {
+			ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
+			img = ImageIO.read(inStream);
+		} // //////////////////////////////
 
 		int width = img.getWidth();
 		int height = img.getHeight();
@@ -263,8 +268,8 @@ public class SQliteTileCreator {
 			aaX = aaX * ZOOM_FACTOR;
 			aaY = aaY * ZOOM_FACTOR;
 		}
-		progressIndicator.setValue(100/(aaMaxZoom+1));
-		progressIndicator.setString("Creating zoom level "+(zoom+1) +" / "+(aaMaxZoom+1));
+		progressIndicator.setValue(100 / (aaMaxZoom + 1));
+		progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
 		while (Math.min(scaledWidth, scaledHeight) > tileSize) {
 			// localPath = currentDirPath + "/" + LAYER_PREFIX + zoom;
 			// out.createLayer(localPath);
@@ -356,8 +361,8 @@ public class SQliteTileCreator {
 			nbY = (scaledHeight / tileSize) + 1;
 
 			zoom++;
-			progressIndicator.setValue((int)((100 / (aaMaxZoom+1)) * (zoom+1)));
-			progressIndicator.setString("Creating zoom level "+(zoom+1) +" / "+(aaMaxZoom+1));
+			progressIndicator.setValue((int) ((100 / (aaMaxZoom + 1)) * (zoom + 1)));
+			progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
 
 			xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
 			img = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
