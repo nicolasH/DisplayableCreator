@@ -280,13 +280,13 @@ public class SQliteTileCreator {
 			// out.createFile(localPath, dimensionFileName, new byte[] {});
 			int fillX = 0;
 			int fillY = 0;
-			fillX = ((nbX * tileSize) - scaledWidth) / 2;
-			fillY = ((nbY * tileSize) - scaledHeight) / 2;
+			fillX = ((nbX * tileSize) - scaledWidth) ;
+			fillY = ((nbY * tileSize) - scaledHeight);
 			System.out.println("fill x =" + fillX + " fill y=" + fillY);
 			for (int y = 0; y < nbY; y++) {
 				for (int x = 0; x < nbX; x++) {
-					int copyX = x * tileSize - fillX;
-					int copyY = y * tileSize - fillY;
+					int copyX = x * tileSize;
+					int copyY = y * tileSize;
 					int copyXX = tileSize;
 					int copyYY = tileSize;
 					int pasteXX = tileSize;
@@ -297,29 +297,29 @@ public class SQliteTileCreator {
 					// first column
 					if (x == 0) {
 						copyX = 0;
-						copyXX = tileSize - fillX;
-						pasteX = fillX;
+						copyXX = tileSize;
+						pasteX = 0;
 						pasteXX = tileSize;
 					}
 					// first line
 					if (y == 0) {
 						copyY = 0;
-						copyYY = tileSize - fillY;
-						pasteY = fillY;
+						copyYY = tileSize;
+						pasteY = 0;
 						pasteYY = tileSize;
 					}
 					// last column
 					if (x == nbX - 1) {
-						copyX = x * tileSize - fillX;
-						copyXX = tileSize - fillX;
+						copyX = x * tileSize;
+						copyXX = tileSize ;
 						pasteX = 0;
 						pasteXX = copyXX;
 					}
 
 					// last line
 					if (y == nbY - 1) {
-						copyY = y * tileSize - fillY;
-						copyYY = tileSize - fillY;
+						copyY = y * tileSize ;
+						copyYY = tileSize;
 						pasteY = 0;
 						pasteYY = copyYY;
 					}
@@ -423,14 +423,14 @@ public class SQliteTileCreator {
 		doneCalculating = true;
 	}
 
-	// public static void main(String[] args) throws Exception {
-	//
-	// String dest = "/Users/niko/tileSources/globcover_MOSAIC_H.db";
-	// String src = "/Users/niko/tileSources/globcover_MOSAIC_H.png";
-	// SQliteTileCreator creator = new SQliteTileCreator();
-	// creator.calculateTiles(dest, src, 192, "png");
-	// creator.finalizeFile();
-	//
-	// }
+	 public static void main(String[] args) throws Exception {
+	
+	 String dest = "test.mdb";
+	 String src = "/Users/niko/tileSources/globcover_MOSAIC_H.png";
+	 SQliteTileCreator creator = new SQliteTileCreator();
+	 creator.calculateTiles(dest, src, 192, "png", new JProgressBar());
+	 creator.finalizeFile();
+	
+	 }
 
 }
