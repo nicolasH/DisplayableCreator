@@ -287,41 +287,41 @@ public class SQliteTileCreator {
 				for (int x = 0; x < nbX; x++) {
 					int copyX = x * tileSize;
 					int copyY = y * tileSize;
-					int copyXX = tileSize;
-					int copyYY = tileSize;
-					int pasteXX = tileSize;
-					int pasteYY = tileSize;
+					int copyWidth = tileSize;
+					int copyHeight = tileSize;
+					int pasteWidth = tileSize;
+					int pasteHeight = tileSize;
 					int pasteX = 0;
 					int pasteY = 0;
 
 					// first column
 					if (x == 0) {
 						copyX = 0;
-						copyXX = tileSize;
+						copyWidth = tileSize;
 						pasteX = 0;
-						pasteXX = tileSize;
+						pasteWidth = tileSize;
 					}
 					// first line
 					if (y == 0) {
 						copyY = 0;
-						copyYY = tileSize;
+						copyHeight = tileSize;
 						pasteY = 0;
-						pasteYY = tileSize;
+						pasteHeight = tileSize;
 					}
 					// last column
 					if (x == nbX - 1) {
 						copyX = x * tileSize;
-						copyXX = tileSize ;
+						copyWidth = tileSize - fillX;
 						pasteX = 0;
-						pasteXX = copyXX;
+						pasteWidth = copyWidth;//copyWidth;
 					}
 
 					// last line
 					if (y == nbY - 1) {
 						copyY = y * tileSize ;
-						copyYY = tileSize;
+						copyHeight = tileSize - fillY;
 						pasteY = 0;
-						pasteYY = copyYY;
+						pasteHeight = copyHeight;
 					}
 					// System.out.println("x ="+x+" y="+y+ " copyX="+
 					// copyX+" copyY="+copyY+" copyWidth="+copyXX+" copyHeight="
@@ -333,7 +333,7 @@ public class SQliteTileCreator {
 					g2.setColor(Color.DARK_GRAY);
 					g2.fillRect(0, 0, tileSize, tileSize);
 
-					g2.drawImage(img, pasteX, pasteY, pasteXX, pasteYY, copyX, copyY, copyX + copyXX, copyY + copyYY, null);
+					g2.drawImage(img, pasteX, pasteY, pasteWidth, pasteHeight, copyX, copyY, copyX + copyWidth, copyY + copyHeight, null);
 					g2.dispose();
 
 					// //////////////////////////////////////

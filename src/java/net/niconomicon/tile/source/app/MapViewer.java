@@ -37,15 +37,16 @@ public class MapViewer extends JPanel {
 	public Map<String, byte[]> cache;
 	int maxX = 0;
 	int maxY = 0;
+	int zoom = 0;
 
 	public MapViewer() {
 		super();
 		try {
 			Class.forName("org.sqlite.JDBC");
-			System.out.println("Loaded the sqliteJDBC Driver class ?");
+//			System.out.println("Loaded the sqliteJDBC Driver class ?");
 			// mapDB = DriverManager.getConnection("jdbc:sqlite:memory");
 			// mapDB.close();
-			this.setDoubleBuffered(false);
+//			this.setDoubleBuffered(false);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -60,11 +61,10 @@ public class MapViewer extends JPanel {
 			mapDB.setReadOnly(true);
 			tilesInRange = mapDB.prepareStatement(getTilesInRange);
 			tilesInRange.clearParameters();
-			String infos0 = "select * from layers_infos where zoom = 0";
+			//String infos0 = "select * from layers_infos where zoom = 0";
 			Statement statement = mapDB.createStatement();
-			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name + " where zoom=0");
-			// layers_infos (layerName STRING, mapKey LONG, zindex LONG, zoom LONG, width LONG,height LONG, tiles_x
-			// LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
+			zoom = 0;
+			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name + " where zoom="+zoom);
 
 			while (rs.next()) {
 				int width = rs.getInt("width");
@@ -77,7 +77,7 @@ public class MapViewer extends JPanel {
 				this.setPreferredSize(new Dimension(width, height));
 			}
 			cache = new HashMap<String, byte[]>();
-			setupCacheForTiles(0);
+			setupCacheForTiles(zoom);
 
 		} catch (Exception ex) {
 			System.err.println("ex for map : " + tileSourcePath);
@@ -107,21 +107,20 @@ public class MapViewer extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		// System.out.println("paintComponent");
-		int zoom = 0;
+		System.out.println("paintComponent");
 		Graphics2D g2 = (Graphics2D) g;
 		Rectangle r = g2.getClipBounds();
 		int tileXa = r.x / tileSize;
 		int tileXb = tileXa + r.width / tileSize + 1;
 		int tileYa = r.y / tileSize;
 		int tileYb = tileYa + r.height / tileSize + 1;
+		System.out.println("Painting between "+tileXa +"," +tileYa+ "and "+tileXb+", " +tileYb);
 		try {
 			int macYb = (maxY - 1 - tileYa);
 			int macYa = (maxY - 1 - tileYb);
-			int z = 0;
 			for (int x = tileXa; x < tileXb; x++) {
 				for (int y = macYa; y < macYb + 1; y++) {
-					byte[] data = cache.get(x + "_" + y + "_" + z);
+					byte[] data = cache.get(x + "_" + y + "_" + zoom);
 					if (null != data) {
 						BufferedImage image = ImageIO.read(new ByteArrayInputStream(data));
 						g2.drawImage(image, x * tileSize, (maxY - 1 - y) * tileSize, null);
@@ -141,7 +140,9 @@ public class MapViewer extends JPanel {
 		// TODO Auto-generated method stub
 		String dir = "";// /Users/niko/tileSources/mapRepository/
 		String file = "test.mdb";
-
+ dir ="/Users/niko/tileSources/";
+ file = "globcover_MOSAIC_H.png.mdb";
+	 
 		MapViewer mV = new MapViewer();
 		mV.setTileSource(dir + file);
 		JScrollPane p = new JScrollPane(mV);
