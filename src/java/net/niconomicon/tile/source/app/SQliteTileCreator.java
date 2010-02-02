@@ -208,7 +208,6 @@ public class SQliteTileCreator {
 			ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
 			img = ImageIO.read(inStream);
 		} // //////////////////////////////
-
 		int width = img.getWidth();
 		int height = img.getHeight();
 
@@ -257,6 +256,7 @@ public class SQliteTileCreator {
 		// //////////////////////////
 		// Creating Tiles.
 		BufferedImage buffer = null;
+		BufferedImage otherBuffer = null;
 		scaledWidth = width;
 		scaledHeight = height;
 
@@ -280,7 +280,7 @@ public class SQliteTileCreator {
 			// out.createFile(localPath, dimensionFileName, new byte[] {});
 			int fillX = 0;
 			int fillY = 0;
-			fillX = ((nbX * tileSize) - scaledWidth) ;
+			fillX = ((nbX * tileSize) - scaledWidth);
 			fillY = ((nbY * tileSize) - scaledHeight);
 			System.out.println("fill x =" + fillX + " fill y=" + fillY);
 			for (int y = 0; y < nbY; y++) {
@@ -302,23 +302,25 @@ public class SQliteTileCreator {
 						pasteWidth = tileSize;
 					}
 					// first line
-					if (y == 0) {
+					/*if (y == 0) {
 						copyY = 0;
-						copyHeight = tileSize;
+						copyHeight = tileSize - fillY;
 						pasteY = 0;
-						pasteHeight = tileSize;
-					}
+						pasteHeight = tileSize - fillY;
+					} else {
+						copyY = copyY - fillY;
+					}*/
 					// last column
 					if (x == nbX - 1) {
 						copyX = x * tileSize;
 						copyWidth = tileSize - fillX;
 						pasteX = 0;
-						pasteWidth = copyWidth;//copyWidth;
+						pasteWidth = copyWidth;// copyWidth;
 					}
 
 					// last line
 					if (y == nbY - 1) {
-						copyY = y * tileSize ;
+						copyY = y * tileSize;
 						copyHeight = tileSize - fillY;
 						pasteY = 0;
 						pasteHeight = copyHeight;
@@ -328,20 +330,32 @@ public class SQliteTileCreator {
 					// +copyYY+ " pasteX=" + pasteX
 					// +" -> pasteY="+pasteY+" pasteWidth="+
 					// pasteXX+" pasteHeight=" +pasteYY );
-					buffer = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_INT_RGB);
+					buffer = new BufferedImage(copyWidth, copyHeight, BufferedImage.TYPE_INT_RGB);
 					Graphics2D g2 = buffer.createGraphics();
 					g2.setColor(Color.DARK_GRAY);
 					g2.fillRect(0, 0, tileSize, tileSize);
 
+					// buffer = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_INT_RGB);
+					// Graphics2D g2 = buffer.createGraphics();
+					// g2.setColor(Color.DARK_GRAY);
+					// g2.fillRect(0, 0, tileSize, tileSize);
+
 					g2.drawImage(img, pasteX, pasteY, pasteWidth, pasteHeight, copyX, copyY, copyX + copyWidth, copyY + copyHeight, null);
 					g2.dispose();
+
+					otherBuffer = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.OPAQUE);
+					Graphics2D g3 = (Graphics2D) otherBuffer.getGraphics();
+					g3.scale(1, -1);
+					g3.drawImage(buffer, 0, -buffer.getHeight(), null);
+					g3.dispose();
 
 					// //////////////////////////////////////
 					// Writing the tiles
 					try {
 						byteStorage.reset();
-						ImageIO.write(buffer, tileType, byteStorage);
-						addTile(x, (nbY - 1) - y, zoom, byteStorage.toByteArray(), fileSansDot);
+						ImageIO.write(otherBuffer, tileType, byteStorage);
+						// addTile(x, (nbY - 1) - y, zoom, byteStorage.toByteArray(), fileSansDot);
+						addTile(x, y, zoom, byteStorage.toByteArray(), fileSansDot);
 						// out.createImageFile(localPath, fileName, buffer,
 						// tileType);// "jpg");
 					} catch (IOException ex) {
@@ -423,14 +437,19 @@ public class SQliteTileCreator {
 		doneCalculating = true;
 	}
 
-	 public static void main(String[] args) throws Exception {
-	
-	 String dest = "test.mdb";
-	 String src = "/Users/niko/tileSources/globcover_MOSAIC_H.png";
-	 SQliteTileCreator creator = new SQliteTileCreator();
-	 creator.calculateTiles(dest, src, 192, "png", new JProgressBar());
-	 creator.finalizeFile();
-	
-	 }
+	public static void main(String[] args) throws Exception {
+//		"Beijing.pdf", 
+		String[] files = new String[] {"Beijingsubway2008.pdf", "CentraalStation09.pdf", "Combinokaartdec06.pdf", "GVBStopGo17mrt08.pdf", "Lijnennetkaartjul09kaartkant.pdf", "Meyrin_A3_Paysage.pdf", "OpmNacht2009-06 Z los.pdf", "Prevessin_A3_Paysage.pdf", "WhyWeHere.pdf", "allochrt.pdf", "manbus.pdf" };
+		String destDir = "/Users/niko/tileSources/";
+		String src = "/Users/niko/tileSources/";
+//		String file = "globcover_MOSAIC_H.png";
+		files = new String[]{"manbus.pdf"};
+		SQliteTileCreator creator = new SQliteTileCreator();
+		for (String file : files) {
+			creator.title = file;
+			creator.calculateTiles(destDir + file + ".mdb", src + file, 192, "png", new JProgressBar());
+			creator.finalizeFile();
+		}
 
+	}
 }

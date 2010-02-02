@@ -37,7 +37,7 @@ public class TileViewer {
 	JSpinner spinXb;
 	JSpinner spinYa;
 	JSpinner spinYb;
-	JComboBox spinZoom;
+	JComboBox comboZoom;
 
 	JPanel topRow;
 	JPanel tileViewer;
@@ -69,29 +69,56 @@ public class TileViewer {
 	}
 
 	public void setupComponents() {
-		spinXa = new JSpinner(new SpinnerNumberModel(0, 0, 0, 1));
+		spinXa = new JSpinner(	new SpinnerNumberModel(0, 0, 0, 1));
 		spinYa = new JSpinner(new SpinnerNumberModel(0, 0, 0, 1));
 		spinXb = new JSpinner(new SpinnerNumberModel(0, 0, 0, 1));
 		spinYb = new JSpinner(new SpinnerNumberModel(0, 0, 0, 1));
-		spinZoom = new JComboBox(new DefaultComboBoxModel());
-		topRow = new JPanel(new GridLayout(1, 0));
-		topRow.add(new JLabel("Zoom : "));
-		topRow.add(spinZoom);
-		topRow.add(new JLabel("Xa"));
-		topRow.add(spinXa);
-		topRow.add(new JLabel("Ya"));
-		topRow.add(spinYa);
-		topRow.add(new JLabel("Xb"));
-		topRow.add(spinXb);
-		topRow.add(new JLabel("Yb"));
-		topRow.add(spinYb);
+		comboZoom = new JComboBox(new DefaultComboBoxModel());
+		comboZoom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					setupSpinners(comboZoom.getSelectedIndex());
+					setupCacheForTiles(comboZoom.getSelectedIndex());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 
+		topRow = new JPanel();
+		JPanel p;
+		p = new JPanel(new GridLayout(1, 2));
+		p.add(new JLabel("Zoom : "));
+		p.add(comboZoom);
+		topRow.add(p);
+		p = new JPanel(new GridLayout(1, 2));
+
+		p.add(new JLabel("    Xa"));
+		p.add(spinXa);
+		topRow.add(p);
+
+		p = new JPanel(new GridLayout(1, 2));
+		p.add(new JLabel("    Ya"));
+		p.add(spinYa);
+		topRow.add(p);
+
+		p = new JPanel(new GridLayout(1, 2));
+		p.add(new JLabel("    Xb"));
+		p.add(spinXb);
+		topRow.add(p);
+
+		p = new JPanel(new GridLayout(1, 2));
+		p.add(new JLabel("    Yb"));
+		p.add(spinYb);
+		topRow.add(p);
+		
 		JButton repaint = new JButton("Repaint");
 		repaint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				repaintTiles();
 			}
 		});
+
 		topRow.add(repaint);
 		tileViewer = new JPanel(new GridLayout(0, 4));
 		tileViewer.add(new JLabel("Please choose the bloody tiles you want to see"));
@@ -103,15 +130,19 @@ public class TileViewer {
 		int yA = ((Integer) spinYa.getValue()).intValue();
 		int yB = ((Integer) spinYb.getValue()).intValue();
 		tileViewer.removeAll();
-		int zoom = spinZoom.getSelectedIndex();
+		int zoom = comboZoom.getSelectedIndex();
 		for (int x = xA; x < xB; x++) {
 			for (int y = yA; y < yB; y++) {
 				ImageIcon ic = cache.get(x + "_" + y + "_" + zoom);
-				JLabel l = new JLabel("x=" + x + "y=" + y, ic, SwingConstants.RIGHT);
-				System.out.println(l.getText());
+				String s = "x=" + x + "y=" + y;
+				JLabel l = new JLabel(ic);// , SwingConstants.RIGHT);
+				System.out.println(s);
+				l.setToolTipText(s);
 				tileViewer.add(l);
 			}
 		}
+		tileViewer.revalidate();
+		tileViewer.repaint();
 	}
 
 	public void setupSpinners(int zoom) {
@@ -153,13 +184,13 @@ public class TileViewer {
 			Statement statement = mapDB.createStatement();
 			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name + " order by zoom");
 
-			DefaultComboBoxModel mod = (DefaultComboBoxModel) spinZoom.getModel();
+			DefaultComboBoxModel mod = (DefaultComboBoxModel) comboZoom.getModel();
 			while (rs.next()) {
 				int z = rs.getInt("zoom");
 				mod.insertElementAt(new Integer(z), z);
 			}
-
-			setupSpinners(0);
+			comboZoom.setSelectedIndex(0);
+			// setupSpinners(0);
 
 			cache = new HashMap<String, ImageIcon>();
 			setupCacheForTiles(0);
@@ -197,7 +228,8 @@ public class TileViewer {
 	public static void main(String[] args) {
 		JPanel ctPane = new JPanel(new BorderLayout());
 		TileViewer viewer = new TileViewer();
-		String file = "test.mdb";
+		String file = "testNoFillSpace.mdb";// 
+		file = "/Users/niko/tileSources/testNoFillSpace.mdb";
 		String dir = "/Users/niko/tileSources/";
 		// file = "globcover_MOSAIC_H.png.mdb";
 		viewer.setTileSource(file);
@@ -205,6 +237,7 @@ public class TileViewer {
 		ctPane.add(viewer.topRow, BorderLayout.NORTH);
 		ctPane.add(viewer.tileViewer, BorderLayout.CENTER);
 		JFrame frame = new JFrame("Tile viewer");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(ctPane);
 		frame.pack();
 		frame.setVisible(true);

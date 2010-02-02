@@ -1,6 +1,9 @@
 package net.niconomicon.tile.source.app;
 
 import java.awt.BorderLayout;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -13,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
@@ -21,6 +25,7 @@ import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.sun.org.apache.xerces.internal.impl.dtd.models.DFAContentModel;
 
 /**
  * @author niko
@@ -47,7 +52,10 @@ public class TileCreatorPanel extends JPanel {
 	protected String place;
 	protected String name;
 
-	JFileChooser chooser;
+	JFileChooser sourceChooser;
+	FileDialog dirChooserOSX;
+	JFileChooser dirChooser;
+
 	ImageAndPDFFileFilter imageFilter;
 	FileFilter archiveFilter;
 
@@ -79,9 +87,26 @@ public class TileCreatorPanel extends JPanel {
 		JPanel arch = new JPanel();
 
 		imageFilter = new ImageAndPDFFileFilter();
-		chooser = new JFileChooser();
-		chooser.setFileFilter(imageFilter);
 
+		sourceChooser = new JFileChooser();
+		sourceChooser.setAcceptAllFileFilterUsed(false);
+		sourceChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		sourceChooser.setFileFilter(imageFilter);
+		sourceChooser.setDialogTitle("Open image/pdf");
+		sourceChooser.setCurrentDirectory(new File("."));
+		System.out.println("Current os name : " + System.getProperty("os.name"));
+		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+			System.setProperty("apple.awt.fileDialogForDirectories", "true");
+			dirChooserOSX = new FileDialog((Frame) null);
+		} else {
+
+			dirChooser = new JFileChooser();
+			dirChooser.setAcceptAllFileFilterUsed(false);
+			dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+			dirChooser.setDialogTitle("Choose directory to save the tile source");
+			dirChooser.setCurrentDirectory(new File("."));
+		}
 		preview = new TilingPreview();
 
 		from = new JTextField("", 20);
@@ -107,8 +132,11 @@ public class TileCreatorPanel extends JPanel {
 		where = new JTextField("", 20);
 
 		browseOutput = new JButton("Browse");
-		browseOutput.addActionListener(new OutputActionListener());
-
+		browseOutput.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				SwingUtilities.invokeLater(new RootDirSetter());		
+			}
+		});
 		// //////////////////
 		// Using the form layout.
 		FormLayout layout = new FormLayout(
@@ -304,23 +332,21 @@ public class TileCreatorPanel extends JPanel {
 
 		public void actionPerformed(ActionEvent arg0) {
 			String s = " some file";
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-			int returnVal = chooser.showOpenDialog(null);
+			int returnVal = sourceChooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
-				s = chooser.getSelectedFile().getName();
+				System.out.println("You chose to open this file: " + sourceChooser.getSelectedFile().getName());
+				s = sourceChooser.getSelectedFile().getName();
 				try {
-					from.setText(chooser.getSelectedFile().getCanonicalPath());
-					String fileName = chooser.getSelectedFile().getName();
+					from.setText(sourceChooser.getSelectedFile().getCanonicalPath());
+					String fileName = sourceChooser.getSelectedFile().getName();
 					String fileSansDot = fileName.substring(0, fileName.lastIndexOf("."));
 					title.setText(fileSansDot);
 					if (null == where.getText() || 0 == where.getText().length()) {
-						where.setText(chooser.getSelectedFile().getParent());
+						where.setText(sourceChooser.getSelectedFile().getParent());
 					}
 					String dot = ".mdb";
 					outputFileName.setText(fileName + dot);
-					preTile(chooser.getSelectedFile().getAbsolutePath());
+					preTile(sourceChooser.getSelectedFile().getAbsolutePath());
 				} catch (Exception e) {
 					from.setText("cannot Open File");
 					e.printStackTrace();
@@ -331,35 +357,52 @@ public class TileCreatorPanel extends JPanel {
 
 	private class OutputActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			String s = " some file";
-			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			int returnVal = chooser.showOpenDialog(null);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				Thread t = new Thread(new Runnable() {
-					public void run() {
-						System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
-						String s = chooser.getSelectedFile().getName();
-						try {
-							String path = chooser.getSelectedFile().getCanonicalPath();
-							if (!chooser.getSelectedFile().isDirectory()) {
-								outputFileName.setText(chooser.getSelectedFile().getName());
-								chooser.getSelectedFile().getName();
-								path = path.replaceAll(s, "");
-							}
-							where.setText(path);
-							setRootDir(chooser.getSelectedFile().getAbsolutePath());
-						} catch (Exception e) {
-							outputFileName.setText("cannot Open File");
-							where.setText("cannot open file");
-							e.printStackTrace();
-						}
-					}
-				});
-				t.start();
-			}
 		}
 	}
 
+	private class RootDirSetter implements Runnable {
+
+		public void run() {
+			// this block until ## is working on mac.
+			if (null != dirChooserOSX) {
+				dirChooserOSX.setModalityType(ModalityType.APPLICATION_MODAL);
+				dirChooserOSX.setVisible(true);
+				String dir = dirChooserOSX.getDirectory();
+				String file = dirChooserOSX.getFile();
+				System.out.println("Returned with directory : " + dir + file);
+				File d = new File(dir);
+				File f = new File(dir + file);
+				String path;
+				if (f.isDirectory()) {
+					path = dir + file;
+				} else {
+					path = dir;
+				}
+				where.setText(path);
+				setRootDir(path);
+				return;
+			}
+			// ##
+			String s = " some file";
+
+			int returnVal = dirChooser.showOpenDialog(null);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				System.out.println("You chose to open this file: " + sourceChooser.getSelectedFile().getName());
+				// String s = dirChooser.getSelectedFile().getName();
+				try {
+					String path = dirChooser.getSelectedFile().getCanonicalPath();
+					where.setText(path);
+					String wh = dirChooser.getSelectedFile().getAbsolutePath();
+					setRootDir(sourceChooser.getSelectedFile().getAbsolutePath());
+				} catch (Exception ex) {
+					outputFileName.setText("cannot Open File");
+					where.setText("cannot open file");
+					ex.printStackTrace();
+				}
+			}
+
+		}
+	}
 	// /**
 	// * @param args
 	// */
