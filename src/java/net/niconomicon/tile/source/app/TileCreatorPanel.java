@@ -11,6 +11,7 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -77,7 +78,6 @@ public class TileCreatorPanel extends JPanel {
 	public TileCreatorPanel() {
 
 		creator = new SQliteTileCreator();
-
 		// setTitle("Tile Creator");
 		JPanel content = new JPanel(new BorderLayout());
 		JPanel option;
@@ -92,12 +92,12 @@ public class TileCreatorPanel extends JPanel {
 		sourceChooser.setAcceptAllFileFilterUsed(false);
 		sourceChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		sourceChooser.setFileFilter(imageFilter);
-		sourceChooser.setDialogTitle("Open image/pdf");
+		sourceChooser.setDialogTitle("Open image or pdf");
 		sourceChooser.setCurrentDirectory(new File("."));
 		System.out.println("Current os name : " + System.getProperty("os.name"));
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
-			dirChooserOSX = new FileDialog((Frame) null);
+			dirChooserOSX = new FileDialog(JFrame.getFrames()[0]);
 		} else {
 
 			dirChooser = new JFileChooser();
@@ -132,9 +132,11 @@ public class TileCreatorPanel extends JPanel {
 		where = new JTextField("", 20);
 
 		browseOutput = new JButton("Browse");
-		browseOutput.addActionListener(new ActionListener(){
+		browseOutput.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(new RootDirSetter());		
+				Thread t = new Thread(new RootDirSetter());
+				t.start();
+				// SwingUtilities.invokeLater(new RootDirSetter());
 			}
 		});
 		// //////////////////
@@ -239,7 +241,7 @@ public class TileCreatorPanel extends JPanel {
 		try {
 			// Create temp file.
 			if (temp == null) {
-				temp = File.createTempFile("tempMap", ".mdb");
+				temp = File.createTempFile("tempMap", Ref.ext_db);
 			}
 			// Delete temp file when program exits.
 			temp.deleteOnExit();
@@ -344,8 +346,7 @@ public class TileCreatorPanel extends JPanel {
 					if (null == where.getText() || 0 == where.getText().length()) {
 						where.setText(sourceChooser.getSelectedFile().getParent());
 					}
-					String dot = ".mdb";
-					outputFileName.setText(fileName + dot);
+					outputFileName.setText(fileSansDot + Ref.ext_db);
 					preTile(sourceChooser.getSelectedFile().getAbsolutePath());
 				} catch (Exception e) {
 					from.setText("cannot Open File");
@@ -356,8 +357,7 @@ public class TileCreatorPanel extends JPanel {
 	}
 
 	private class OutputActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent arg0) {
-		}
+		public void actionPerformed(ActionEvent arg0) {}
 	}
 
 	private class RootDirSetter implements Runnable {
@@ -365,7 +365,7 @@ public class TileCreatorPanel extends JPanel {
 		public void run() {
 			// this block until ## is working on mac.
 			if (null != dirChooserOSX) {
-				dirChooserOSX.setModalityType(ModalityType.APPLICATION_MODAL);
+				dirChooserOSX.setModal(true);// only from java 1.6 : setModalityType(ModalityType.APPLICATION_MODAL);
 				dirChooserOSX.setVisible(true);
 				String dir = dirChooserOSX.getDirectory();
 				String file = dirChooserOSX.getFile();

@@ -35,15 +35,15 @@ import net.niconomicon.tile.source.app.Ref;
 public class MapSharingPanel extends JPanel {
 
 	boolean currentlySharing = false;
-	WebServer sharingServer;
-	MapSharingService sharingAnnouncer;
+	SharingManager sharingManager;
 	CheckBoxMapTable mapList;
 	JTextField portNumber;
 	JLabel sharingStatus;
 	String rootDir = "/Users/niko/Sites/testApp/mapRepository";
 
 	/**
-	 * @param args
+	 * stand alone main
+	 * 
 	 */
 	public static void main(String[] args) {
 		MapSharingPanel service = new MapSharingPanel();
@@ -67,9 +67,7 @@ public class MapSharingPanel extends JPanel {
 	}
 
 	public void init() {
-		sharingServer = new WebServer();
-		sharingAnnouncer = MapSharingService.getInstance();
-
+		sharingManager = new SharingManager();
 		mapList = new CheckBoxMapTable();
 
 		this.setLayout(new BorderLayout());
@@ -119,13 +117,14 @@ public class MapSharingPanel extends JPanel {
 
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return name.endsWith(".mdb");
+				return name.endsWith(Ref.ext_db);
 			}
 		};
 		children = dir.list(filter);
 
-		mapList.setData(getMapList(rootDir, children));
-
+		Map<String, String> mapsMap = getMapList(rootDir, children);
+		mapList.setData(mapsMap);
+		sharingManager.setSharingList(mapList.getSelectedMapFiles());
 	}
 
 	public void startSharing() {
@@ -133,19 +132,14 @@ public class MapSharingPanel extends JPanel {
 		Collection<String> sharedMaps = mapList.getSelectedMapFiles();
 		System.out.println("should start sharing the maps");
 		// generate the xml;
-
-		Map<String, String> urlToFile;
-		urlToFile = Ref.generateXMLFromMapFileNames(sharedMaps);
-		int port = Integer.parseInt(portNumber.getText());
-		sharingAnnouncer.startSharing(port);
-		sharingServer.start(port, urlToFile);
+		sharingManager.setSharingList(sharedMaps);
+		sharingManager.startSharing();
 		System.out.println("shared maps :");
 		// System.out.println(mapFeed);
 	}
 
 	public void stopSharing() {
-		sharingAnnouncer.stopSharing();
-		sharingServer.stop();
+		sharingManager.stopSharing();
 	}
 
 	public Map<String, String> getMapList(String rootDir, String[] maps) {

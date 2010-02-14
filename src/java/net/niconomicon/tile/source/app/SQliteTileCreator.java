@@ -20,6 +20,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.JProgressBar;
 
+import com.sun.org.apache.xalan.internal.xsltc.dom.LoadDocument;
+
 import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
 
 public class SQliteTileCreator {
@@ -49,6 +51,37 @@ public class SQliteTileCreator {
 	int sourceHeigth;
 	byte[] mini;
 	byte[] thumb;
+
+	private static class libLoader implements Runnable {
+		public void run() {
+			try {
+				Class.forName("org.sqlite.JDBC");
+			} catch (ClassNotFoundException ex) {
+				ex.printStackTrace();
+				return;
+			}
+			Connection connection = null;
+			try {
+				File temp = File.createTempFile("tempMap", Ref.ext_db);
+				// create a database connection
+				System.out.println("Opening a connection to the temp db");
+				connection = DriverManager.getConnection("jdbc:sqlite:" + temp.getAbsolutePath());
+				System.out.println("Connected to the temp file");
+				connection.close();
+				temp.delete();
+				System.out.println("Deleted the temp file");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	public static void loadLib() {
+
+		Thread t = new Thread(new libLoader());
+		t.start();
+
+	}
 
 	public boolean doneCalculating = false;
 
@@ -85,7 +118,7 @@ public class SQliteTileCreator {
 			connection = DriverManager.getConnection("jdbc:sqlite:" + archiveName);
 			System.out.println("Archive name : " + archiveName);
 			Statement statement = connection.createStatement();
-			statement.setQueryTimeout(30); // set timeout to 30 sec.
+			statement.setQueryTimeout(3); // set timeout to 30 sec.
 
 			statement.executeUpdate("drop table if exists infos");
 			statement.executeUpdate("drop table if exists level_infos");
@@ -109,6 +142,7 @@ public class SQliteTileCreator {
 
 	public void finalizeFile() {
 		addInfos(name, author, source, title, description, zIndex, sourceWidth, sourceHeigth, mini, thumb);
+		createIndices();
 		try {
 			// connection.commit();
 			connection.close();
@@ -154,6 +188,16 @@ public class SQliteTileCreator {
 		} catch (SQLException e) {
 			System.err.println("Information insertion failed.");
 			e.printStackTrace();
+		}
+	}
+
+	public void createIndices() {
+		try {
+			System.err.println("Quick fix : adding index for tiles_0_0");
+			Statement st = connection.createStatement();
+			st.execute("CREATE INDEX index_tiles_0_0 ON tiles_0_0(z,y,x)");
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -270,7 +314,8 @@ public class SQliteTileCreator {
 		}
 		progressIndicator.setValue(100 / (aaMaxZoom + 1));
 		progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
-		while (Math.min(scaledWidth, scaledHeight) > tileSize) {
+		// while (Math.min(scaledWidth, scaledHeight) > tileSize) {
+		while (scaledWidth > 320 || scaledHeight > 320) {
 			// localPath = currentDirPath + "/" + LAYER_PREFIX + zoom;
 			// out.createLayer(localPath);
 			// ///////////////////////////////////////////////
@@ -438,16 +483,19 @@ public class SQliteTileCreator {
 	}
 
 	public static void main(String[] args) throws Exception {
-//		"Beijing.pdf", 
-		String[] files = new String[] {"Beijingsubway2008.pdf", "CentraalStation09.pdf", "Combinokaartdec06.pdf", "GVBStopGo17mrt08.pdf", "Lijnennetkaartjul09kaartkant.pdf", "Meyrin_A3_Paysage.pdf", "OpmNacht2009-06 Z los.pdf", "Prevessin_A3_Paysage.pdf", "WhyWeHere.pdf", "allochrt.pdf", "manbus.pdf" };
-		String destDir = "/Users/niko/tileSources/";
+		// "Beijing.pdf",
+		String[] files;
+//		files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf", "CentraalStation09.pdf", "GVBStopGo17mrt08.pdf", "Lijnennetkaartjul09kaartkant.pdf", "Meyrin_A3_Paysage.pdf", "OpmNacht2009-06 Z los.pdf", "Prevessin_A3_Paysage.pdf", "WhyWeHere.pdf", "allochrt.pdf", "manbus.pdf" };
+		files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf","Lijnennetkaartjul09kaartkant.pdf", "Meyrin_A3_Paysage.pdf", "Prevessin_A3_Paysage.pdf","allochrt.pdf", "manbus.pdf" };
+		String destDir = "/Users/niko/tileSources/mapRepository/";
 		String src = "/Users/niko/tileSources/";
-//		String file = "globcover_MOSAIC_H.png";
-		files = new String[]{"manbus.pdf"};
+		// String file = ;
+		// files = new String[]{"manbus.pdf"};
 		SQliteTileCreator creator = new SQliteTileCreator();
 		for (String file : files) {
-			creator.title = file;
-			creator.calculateTiles(destDir + file + ".mdb", src + file, 192, "png", new JProgressBar());
+			creator.title = file.substring(0,file.lastIndexOf("."));
+			System.out.println("Processing "+creator.title);
+			creator.calculateTiles(destDir + creator.title + Ref.ext_db, src + file, 192, "png", new JProgressBar());
 			creator.finalizeFile();
 		}
 

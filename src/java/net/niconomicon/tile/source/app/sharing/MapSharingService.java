@@ -20,8 +20,6 @@ public class MapSharingService {
 	JmDNS jmdns;
 
 	static MapSharingService service;
-	// private Thread announcerThread;
-	// private SharingServiceAnnouncer announcer;
 	boolean shouldExit = false;
 	boolean shouldUnregister = false;
 
@@ -35,8 +33,6 @@ public class MapSharingService {
 	}
 
 	private MapSharingService() {
-	// announcer = new SharingServiceAnnouncer();
-	// announcerThread = new Thread(announcer);
 	}
 
 	public void startSharing(int port) {
@@ -70,26 +66,12 @@ public class MapSharingService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		// announcer.stopService();
-		// announcerThread.interrupt();
-		// announcerThread = new Thread(announcer);
-		// announcerThread.start();
 	}
 
 	public void stopSharing() {
 		stopService();
 	}
 
-	/**
-	 * Class to announce the sharing service
-	 * 
-	 * @author niko
-	 * 
-	 */
-	// public class SharingServiceAnnouncer implements Runnable {
-	// public void run() {
-	// }
 	public void stopService() {
 		shouldUnregister = true;
 		if (null != jmdns) {
@@ -108,20 +90,4 @@ public class MapSharingService {
 			}
 		}
 	}
-	// }
-
-	// public static void main(String[] args) {
-	// String file = "/Users/niko/devilstower_pacholka_big.jpg.mdb";
-	// ArrayList l = new ArrayList();
-	// l.add(file);
-	// l.add(file);
-	// l.add(file);
-	// l.add(file);
-	// l.add(file);
-	// l.add(file);
-	// Map<String,String> urlToFile = new HashMap<String, String>();
-	// String s = Ref.generateXML(l,urlToFile);
-	// System.out.println(s);
-	// }
-
 }
