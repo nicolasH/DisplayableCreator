@@ -1,8 +1,15 @@
-package net.niconomicon.tile.source.app.sharing;
+package net.niconomicon.tile.source.app.sharing.server;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -30,11 +37,15 @@ public class WebServer {
 		boolean log = Boolean.valueOf(args[2]).booleanValue();
 	}
 
-	public boolean isStarted(){
+	public boolean isStarted() {
 		return !(null == server);
 	}
+
+
 	public void start(int port, Map<String, String> documentList) {
 		stop();
+		System.out.println("STARTING !!!!!!!");
+		Ref.extractThumbsAndMiniToTmpFile(documentList);
 		server = new ServerRunner(port, documentList, true);
 		serverThread = new Thread(server);
 		serverThread.start();
@@ -48,7 +59,7 @@ public class WebServer {
 				ex.printStackTrace();
 			}
 		}
-		server= null;
+		server = null;
 	}
 
 	private class ServerRunner implements Runnable {

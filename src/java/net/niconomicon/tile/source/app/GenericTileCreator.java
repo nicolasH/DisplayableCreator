@@ -58,10 +58,19 @@ public class GenericTileCreator {
 
 		System.out.println("Scaling the image");
 		Image tmp = sourceImage.getScaledInstance(scaledWidth,scaledHeight, Image.SCALE_SMOOTH);
-		BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
+//		BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
+		BufferedImage scaled = new BufferedImage(miniMaxWidth, miniMaxHeight, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = scaled.getGraphics();
 		System.out.println("Painting the scaled image");
-		g.drawImage(tmp, 0, 0, null);
+		double x = 0;
+		double y = 0;
+		x = miniMaxWidth - tmp.getWidth(null);
+		y = miniMaxHeight - tmp.getHeight(null);
+		
+		x = Math.floor(x/2);
+		y = Math.floor(y/2);
+		
+		g.drawImage(tmp, (int)x, (int)y, null);
 		g.dispose();
 		System.out.println("creating the byte array");
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();

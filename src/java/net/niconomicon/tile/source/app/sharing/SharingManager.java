@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.sharing.server.MapSharingServiceAnnouncer;
+import net.niconomicon.tile.source.app.sharing.server.WebServer;
 
 /**
  * @author niko
@@ -28,37 +30,37 @@ public class SharingManager {
 			}
 		};
 	}
-	int port = 8080;
-	MapSharingService sharingAnnouncer;
+	int port = -1;
+	MapSharingServiceAnnouncer sharingAnnouncer;
 	WebServer sharingServer;
 	Map<String, String> urlToFile;
 
-	public static void main(String[] args) {
-		if (args.length == 0) { // assumed to be started as a server.
-			System.out.println("arguments :");
-			int i = 0;
-			System.out.println(i++ + " : tile set directory");
-			System.out.println(i++ + " : port");
-			return;
-		}
-		String dirPath = args[0];
-		int port = Integer.parseInt(args[1]);
-		SharingManager manager = new SharingManager();
-		
-
-		File dir = new File(dirPath);
-		String[] children = dir.list();
-		children = dir.list(filter);
-
-		manager.setPort(port);
-		Arrays.sort(children);
-		List<String> fileList = new ArrayList(children.length);
-		for (String string : children) {
-			fileList.add(dirPath+string);
-		}
-		manager.setSharingList(fileList);
-		manager.startSharing();
-	}
+//	public static void main(String[] args) {
+//		if (args.length == 0) { // assumed to be started as a server.
+//			System.out.println("arguments :");
+//			int i = 0;
+//			System.out.println(i++ + " : tile set directory");
+//			System.out.println(i++ + " : port");
+//			return;
+//		}
+//		String dirPath = args[0];
+//		int port = Integer.parseInt(args[1]);
+//		SharingManager manager = new SharingManager();
+//		
+//
+//		File dir = new File(dirPath);
+//		String[] children = dir.list();
+//		children = dir.list(filter);
+//
+//		manager.setPort(port);
+//		Arrays.sort(children);
+//		List<String> fileList = new ArrayList(children.length);
+//		for (String string : children) {
+//			fileList.add(dirPath+string);
+//		}
+//		manager.setSharingList(fileList);
+//		manager.startSharing();
+//	}
 
 	public SharingManager() {
 		sharingAnnouncer = sharingAnnouncer.getInstance();
@@ -76,7 +78,7 @@ public class SharingManager {
 	public void setSharingList(Collection<String> sharedMaps) {
 		System.out.println("should re-start sharing the maps if necessary.");
 		urlToFile = Ref.generateXMLFromMapFileNames(sharedMaps);
-		System.out.println("Generated the XML : "+urlToFile);
+//		System.out.println("Generated the XML : "+urlToFile);
 		if (sharingServer.isStarted()) {
 			sharingServer.stop();
 			sharingServer.start(port, urlToFile);
@@ -86,6 +88,7 @@ public class SharingManager {
 	}
 
 	public void startSharing() {
+		System.out.println("supposedly starting to share on port :"+ port);
 		sharingAnnouncer.startSharing(port);
 		sharingServer.start(port, urlToFile);
 	}

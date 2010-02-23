@@ -316,6 +316,10 @@ public class SQliteTileCreator {
 		progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
 		// while (Math.min(scaledWidth, scaledHeight) > tileSize) {
 		while (scaledWidth > 320 || scaledHeight > 320) {
+			if(scaledWidth/2 <320  || scaledHeight/2 <430){
+				mini = GenericTileCreator.getMiniatureBytes(img, 320,430, tileType);
+				thumb = GenericTileCreator.getMiniatureBytes(img, 47, 47, tileType);
+			}
 			// localPath = currentDirPath + "/" + LAYER_PREFIX + zoom;
 			// out.createLayer(localPath);
 			// ///////////////////////////////////////////////
@@ -433,60 +437,15 @@ public class SQliteTileCreator {
 			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
 		}
 
-		// //////////////////////////////////////
-		int dim = Math.max(scaledHeight, scaledWidth);
-		double factor = 500.0 / (double) dim;
-
-		scaledWidth = (int) (scaledWidth * factor);
-		scaledHeight = (int) (scaledHeight * factor);
-		System.out.println("mini size : " + scaledWidth + " by " + scaledHeight);
-
-		xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
-		img = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
-		Graphics g0 = img.createGraphics();
-
-		g0.drawImage(xxx, 0, 0, scaledWidth, scaledHeight, 0, 0, scaledWidth, scaledHeight, null);
-		g0.dispose();
-		try {
-			byteStorage.reset();
-			ImageIO.write(img, tileType, byteStorage);
-			mini = byteStorage.toByteArray();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		// //////////////
-
-		dim = Math.max(scaledHeight, scaledWidth);
-		factor = 48 / (double) dim;
-
-		scaledWidth = (int) (scaledWidth * factor);
-		scaledHeight = (int) (scaledHeight * factor);
-
-		xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
-		System.out.println("thumb size : " + scaledWidth + " by " + scaledHeight);
-		img = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
-		g0 = img.createGraphics();
-		g0.drawImage(xxx, 0, 0, scaledWidth, scaledHeight, 0, 0, scaledWidth, scaledHeight, null);
-		g0.dispose();
-
-		try {
-			byteStorage.reset();
-			ImageIO.write(img, tileType, byteStorage);
-			thumb = byteStorage.toByteArray();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		// //////////////
-
-		System.out.println("archive created");
+		System.out.println("tiles created");
 		doneCalculating = true;
 	}
 
 	public static void main(String[] args) throws Exception {
-		// "Beijing.pdf",
+		// "Beijing.pdf","Lijnennetkaartjul09kaartkant.pdf","allochrt.pdf",
 		String[] files;
 //		files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf", "CentraalStation09.pdf", "GVBStopGo17mrt08.pdf", "Lijnennetkaartjul09kaartkant.pdf", "Meyrin_A3_Paysage.pdf", "OpmNacht2009-06 Z los.pdf", "Prevessin_A3_Paysage.pdf", "WhyWeHere.pdf", "allochrt.pdf", "manbus.pdf" };
-		files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf","Lijnennetkaartjul09kaartkant.pdf", "Meyrin_A3_Paysage.pdf", "Prevessin_A3_Paysage.pdf","allochrt.pdf", "manbus.pdf" };
+		files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf", "Meyrin_A3_Paysage.pdf", "Prevessin_A3_Paysage.pdf", "manbus.pdf" };
 		String destDir = "/Users/niko/tileSources/mapRepository/";
 		String src = "/Users/niko/tileSources/";
 		// String file = ;

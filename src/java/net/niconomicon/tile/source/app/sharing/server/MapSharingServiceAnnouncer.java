@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.niconomicon.tile.source.app.sharing;
+package net.niconomicon.tile.source.app.sharing.server;
 
 import java.io.IOException;
 
@@ -14,25 +14,25 @@ import net.niconomicon.tile.source.app.Ref;
  * @author niko
  * 
  */
-public class MapSharingService {
+public class MapSharingServiceAnnouncer {
 
 	private int servicePort;
 	JmDNS jmdns;
 
-	static MapSharingService service;
+	static MapSharingServiceAnnouncer service;
 	boolean shouldExit = false;
 	boolean shouldUnregister = false;
 
-	public static MapSharingService getInstance() {
+	public static MapSharingServiceAnnouncer getInstance() {
 		synchronized (Ref.sharing_serviceName) {
 			if (service == null) {
-				service = new MapSharingService();
+				service = new MapSharingServiceAnnouncer();
 			}
 		}
 		return service;
 	}
 
-	private MapSharingService() {
+	private MapSharingServiceAnnouncer() {
 	}
 
 	public void startSharing(int port) {

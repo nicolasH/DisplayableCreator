@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.niconomicon.tile.source.app.sharing;
+package net.niconomicon.tile.source.app.sharing.server;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,19 +14,16 @@ import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.SQliteTileCreator;
 
 /**
  * @author niko
@@ -155,11 +152,19 @@ public class WebRequestHandler implements Runnable {
 			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
 			return sendBytes(imaginaryMap.get(request).getBytes());
 		}
-		File f = new File(string);
+		if (request.compareTo("/" + Ref.sharing_htmlRef) == 0) {
+			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
+			return sendBytes(imaginaryMap.get(request).getBytes());
+		}
 		System.out.println("String from the imaginary map : [" + string + "]");
+		File f = new File(string);
+		if(f.exists()){
+			return sendFile(f);
+		}
+		System.err.println("Should not pass by here :-(");
 		if (request.endsWith(Ref.ext_db)) { return sendFile(f); }
 		try {
-			System.out.println("trying to open the map :" + string);
+			System.out.println("trying to open the map :" + string + " to send some mini or thumb.");
 			Connection connection = DriverManager.getConnection("jdbc:sqlite:" + string);
 			connection.setReadOnly(true);
 			Statement statement = connection.createStatement();

@@ -24,7 +24,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import net.niconomicon.tile.source.app.Ref;
 
@@ -37,7 +39,7 @@ public class MapSharingPanel extends JPanel {
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
 	CheckBoxMapTable mapList;
-	JTextField portNumber;
+	JSpinner portNumber;
 	JLabel sharingStatus;
 	String rootDir = "/Users/niko/Sites/testApp/mapRepository";
 
@@ -80,7 +82,7 @@ public class MapSharingPanel extends JPanel {
 		// port number
 		JPanel p = new JPanel(new GridLayout(0, 2));
 		p.add(new JLabel("Map sharing port : "));
-		portNumber = new JTextField("" + Ref.sharing_port, 6);
+		portNumber = new JSpinner(new SpinnerNumberModel(Ref.sharing_port,1025,65536,1));
 		p.add(portNumber);
 		options.add(p);
 		// start sharing
@@ -132,6 +134,7 @@ public class MapSharingPanel extends JPanel {
 		Collection<String> sharedMaps = mapList.getSelectedMapFiles();
 		System.out.println("should start sharing the maps");
 		// generate the xml;
+		sharingManager.setPort(((SpinnerNumberModel)portNumber.getModel()).getNumber().intValue());
 		sharingManager.setSharingList(sharedMaps);
 		sharingManager.startSharing();
 		System.out.println("shared maps :");
