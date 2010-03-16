@@ -1,15 +1,8 @@
 package net.niconomicon.tile.source.app.sharing.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +24,7 @@ public class WebServer {
 		Set<String> set = new HashSet<String>();
 		set.add("/Users/niko/Sites/testApp/mapRepository/tpg.png.mdb");
 
-		fileReferences = Ref.generateXMLFromMapFileNames(set);
+		fileReferences = Ref.generateIndexFromFileNames(set);
 		System.out.println("mapFeed : ");
 		System.out.println(fileReferences.get("/" + Ref.sharing_xmlRef));
 		boolean log = Boolean.valueOf(args[2]).booleanValue();
@@ -40,7 +33,6 @@ public class WebServer {
 	public boolean isStarted() {
 		return !(null == server);
 	}
-
 
 	public void start(int port, Map<String, String> documentList) {
 		stop();

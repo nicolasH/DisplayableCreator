@@ -5,6 +5,7 @@ package net.niconomicon.tile.source.app;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -28,7 +29,7 @@ public final class Ref {
 
 	public static final String ext_db = ".mdb";
 	public static final String ext_thumb = ".thumb";
-	public static final String ext_mini =  ".mini";
+	public static final String ext_mini = ".mini";
 
 	public static final String layers_infos_table_name = "layers_infos";
 
@@ -44,15 +45,55 @@ public final class Ref {
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
 
-	
+	public static final FilenameFilter ext_db_filter = new FilenameFilter() {
+		public boolean accept(File dir, String name) {
+			return name.endsWith(ext_db);
+		}
+	};
+
+	public static String[] getDBFiles(String dirPath) {
+		File dir = new File(dirPath);
+		return dir.list(Ref.ext_db_filter);
+	}
+
+	public static String getDirOrTmpDir(String saveDirectory) {
+		if (saveDirectory != null) {
+			File f = new File(saveDirectory);
+			if (!f.exists()) {
+				System.out.println("file directory [" + saveDirectory + "] does not exists");
+				if (!f.mkdir()) {
+					System.out.println("Could not create directory [" + saveDirectory + "] Gonna return the tmp directory");
+					saveDirectory = null;
+				}
+			}
+			if (!f.isDirectory()) { // finer
+				System.out.println("File is not a directory [" + saveDirectory + "] going to return the temporary directory.");
+				saveDirectory = null;
+			}
+		}
+		if (saveDirectory == null) {
+			try {
+				File f = File.createTempFile("yuk", ".remove");
+				saveDirectory = f.getParent();
+				f.delete();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		if (!saveDirectory.endsWith(File.separator)) {
+			saveDirectory = saveDirectory + File.separator;
+		}
+		return saveDirectory;
+	}
+
 	public static void extractThumbsAndMiniToTmpFile(Map<String, String> maps) {
 		for (String key : maps.keySet()) {
 			String file = maps.get(key);
-			System.out.println("Extracting for Key : ["+key+"]");// + " value : "+ maps.get(key));
+			System.out.println("Extracting for Key : [" + key + "]");// + " value : "+ maps.get(key));
 			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_xmlRef) || key.endsWith(Ref.sharing_htmlRef)) {
 				continue;
 			}
-			System.out.println("Really trying to open (k=["+key + "]) => "+file);
+			System.out.println("Really trying to open (k=[" + key + "]) => " + file);
 			try {
 				String query = "";
 				String field = "";
@@ -81,7 +122,7 @@ public final class Ref {
 					oStream.write(rs.getBytes(field));
 					oStream.close();
 					maps.put(key, temp.getAbsolutePath());
-					System.out.println("Wrote "+key+" into " + temp.getAbsolutePath());
+					System.out.println("Wrote " + key + " into " + temp.getAbsolutePath());
 					break;
 				}
 
@@ -95,7 +136,7 @@ public final class Ref {
 	/**
 	 * Method to generate the map xml list.
 	 */
-	public static Map<String, String> generateXMLFromMapFileNames(Collection<String> maps) {
+	public static Map<String, String> generateIndexFromFileNames(Collection<String> maps) {
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (Exception ex) {
@@ -110,27 +151,40 @@ public final class Ref {
 			try {
 				File f = new File(mapFileName);
 				long size = f.length();
-				System.out.println("trying to open the map :" + mapFileName+ " To generate the XML.");
+				System.out.println("trying to open the map :" + mapFileName + " To generate the XML.");
 				Connection connection = DriverManager.getConnection("jdbc:sqlite:" + mapFileName);
 				connection.setReadOnly(true);
-				xml.append(generateXMLForConnection(connection, size, mapFileName, urlToFile));
-				html.append(generateHTMLForConnection(connection,size,mapFileName));
+				String[] descriptions = generateDescriptionsForConnection(connection, size, mapFileName, urlToFile);
+				xml.append(descriptions[0]);
+				html.append(descriptions[1]);
+				// html.append(generateHTMLForConnection(connection,size,mapFileName));
 				if (connection != null) connection.close();
 			} catch (Exception ex) {
+				System.out.println("failed to get infos for ["+mapFileName+"]");
 				ex.printStackTrace();
 			}
 		}
 		xml.append("</maps>");
 		urlToFile.put("/" + sharing_xmlRef, xml.toString());
-		
+
 		html.append("</body></html>");
 		urlToFile.put("/" + sharing_htmlRef, html.toString());
-//		System.out.println(html.toString());
+		// System.out.println(html.toString());
 		return urlToFile;
 	}
 
-	public static String generateXMLForConnection(Connection mapDB, long weight, String fileName, Map<String, String> urlToFile) {
+	/**
+	 * Generate the XML description for a given map, and add thumbnail and preview images to the list of available URLs
+	 * 
+	 * @param mapDB
+	 * @param weight
+	 * @param fileName
+	 * @param urlToFile
+	 * @return an array of XML and HTML description of the file as String[]{XML,HTML}.
+	 */
+	public static String[] generateDescriptionsForConnection(Connection mapDB, long weight, String fileName, Map<String, String> urlToFile) {
 		String ret = "";
+		String h = "";
 		try {
 			// create a database connection
 
@@ -139,12 +193,12 @@ public final class Ref {
 			ResultSet rs = statement.executeQuery("select * from infos");
 			while (rs.next()) {
 				// read the result set
-				String name = fileName.contains(File.separator)? "/"+fileName.substring(fileName.lastIndexOf(File.separator)+1):fileName;
+				String name = fileName.contains(File.separator) ? "/" + fileName.substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
 				name = name.replace(' ', '_');
 				String mini = name + Ref.ext_mini;
 				String thumb = name + Ref.ext_thumb;
-				//name = name + Ref.ext_db;
-				
+				// name = name + Ref.ext_db;
+
 				urlToFile.put(name, fileName);
 				urlToFile.put(mini, fileName);
 				urlToFile.put(thumb, fileName);
@@ -159,9 +213,25 @@ public final class Ref {
 				s += "<infos weight=\"" + weight;
 				s += "\" width=\"" + rs.getLong(Ref.infos_width);
 				s += "\" height=\"" + rs.getLong(Ref.infos_height) + "\"/>\n";
-				s += "<description>" + rs.getString(Ref.infos_description)+"</description>\n\t";
+				s += "<description>" + rs.getString(Ref.infos_description) + "</description>\n\t";
 				s += "</map>\n";
 				ret += s;
+
+				String li = "\t\t\t<li>";
+				String li_ = "</li>\n";
+				String html = "<div><b>" + rs.getString(Ref.infos_title) + "</b><br/>\n\t";
+				html += "<a href=\""+mini+"\"><img src=\"" + thumb + "\"></a><a href=\"displayator-image:" + name + "\" >Download and view with displayator</a><a href=\"" + name + "\" >Download as file</a> \n\t";
+				html += "<ul>\n";
+				html += li + "Weight : " + ((double) weight) / 1000000 + " MB." + li_;
+				html += li + "Size : " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px." + li_;
+				String dsc = rs.getString(Ref.infos_description);
+				if (null != dsc && dsc.length() > 0) {
+					html += li + "description:" + dsc + li_;
+				}
+				html += "</ul>\n";
+				html += "</div>\n";
+				h += html;
+
 			}
 		} catch (SQLException e) {
 			// if the error message is "out of memory",
@@ -171,10 +241,11 @@ public final class Ref {
 
 		// /////////////////////////////
 
-		return ret;
+		return new String[] { ret, h };
 	}
+
 	public static String generateHTMLForConnection(Connection mapDB, long weight, String fileName) {
-		String ret ="";
+		String ret = "";
 		try {
 			// create a database connection
 
@@ -183,22 +254,22 @@ public final class Ref {
 			ResultSet rs = statement.executeQuery("select * from infos");
 			while (rs.next()) {
 				// read the result set
-				String name = fileName.contains(File.separator)? "/"+fileName.substring(fileName.lastIndexOf(File.separator)+1):fileName;
+				String name = fileName.contains(File.separator) ? "/" + fileName.substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
 				name = name.replace(' ', '_');
 				String mini = name + Ref.ext_mini;
 				String thumb = name + Ref.ext_thumb;
-				//name = name + Ref.ext_db;
-	
-				String s = "<div><b>" + rs.getString(Ref.infos_title) + "</title>\n\t";
-				s += "<a href=\"" + name + "\" >"+name+"</a>\n\t";
-				s += "<a href=\"" + thumb + "\" ><img src=\""+thumb+"\"></a>\n\t";
-				s += "<a href=\"" + mini + "\" ><img src=\""+mini+"\"></a>\n\t";
-				s += "size : " + weight;
-				s += "bytes.  width : " + rs.getLong(Ref.infos_width);
-				s += "pixels height : " + rs.getLong(Ref.infos_height);
-				s += "pixels.<br/> description:" + rs.getString(Ref.infos_description)+"\n\t";
-				s += "</div>\n";
-				ret += s;
+				// name = name + Ref.ext_db;
+
+				String html = "<div><b>" + rs.getString(Ref.infos_title) + "</title>\n\t";
+				html += "<a href=\"" + name + "\" >" + name + "</a>\n\t";
+				html += "<a href=\"" + thumb + "\" ><img src=\"" + thumb + "\"></a>\n\t";
+				html += "<a href=\"" + mini + "\" ><img src=\"" + mini + "\"></a>\n\t";
+				html += "size : " + weight;
+				html += "bytes.  width : " + rs.getLong(Ref.infos_width);
+				html += "pixels height : " + rs.getLong(Ref.infos_height);
+				html += "pixels.<br/> description:" + rs.getString(Ref.infos_description) + "\n\t";
+				html += "</div>\n";
+				ret += html;
 			}
 		} catch (SQLException e) {
 			// if the error message is "out of memory",

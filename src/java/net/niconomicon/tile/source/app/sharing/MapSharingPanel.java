@@ -25,8 +25,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import net.niconomicon.tile.source.app.Ref;
 
@@ -34,7 +35,7 @@ import net.niconomicon.tile.source.app.Ref;
  * @author niko
  * 
  */
-public class MapSharingPanel extends JPanel {
+public class MapSharingPanel extends JPanel implements TableModelListener {
 
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
@@ -68,9 +69,23 @@ public class MapSharingPanel extends JPanel {
 		init();
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.event.TableModelListener#tableChanged(javax.swing.event.TableModelEvent)
+	 */
+	public void tableChanged(TableModelEvent e) {
+		if (sharingManager.isSharing()) {
+			sharingManager.setSharingList(mapList.getSelectedMapFiles());
+			// update the list of shared documents
+		} else {
+			// don't care ;-)
+			return;
+		}
+	}
+
 	public void init() {
 		sharingManager = new SharingManager();
 		mapList = new CheckBoxMapTable();
+		mapList.getModel().addTableModelListener(this);
 
 		this.setLayout(new BorderLayout());
 
@@ -82,7 +97,7 @@ public class MapSharingPanel extends JPanel {
 		// port number
 		JPanel p = new JPanel(new GridLayout(0, 2));
 		p.add(new JLabel("Map sharing port : "));
-		portNumber = new JSpinner(new SpinnerNumberModel(Ref.sharing_port,1025,65536,1));
+		portNumber = new JSpinner(new SpinnerNumberModel(Ref.sharing_port, 1025, 65536, 1));
 		p.add(portNumber);
 		options.add(p);
 		// start sharing
@@ -114,19 +129,12 @@ public class MapSharingPanel extends JPanel {
 		if (rDir != null) {
 			this.rootDir = rDir;
 		}
-		File dir = new File(rootDir);
-		String[] children = dir.list();
-
-		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(Ref.ext_db);
-			}
-		};
-		children = dir.list(filter);
-
+		String[] children = Ref.getDBFiles(rootDir);
 		Map<String, String> mapsMap = getMapList(rootDir, children);
 		mapList.setData(mapsMap);
-		sharingManager.setSharingList(mapList.getSelectedMapFiles());
+		if (sharingManager.isSharing()) {
+			sharingManager.setSharingList(mapList.getSelectedMapFiles());
+		}
 	}
 
 	public void startSharing() {
@@ -134,15 +142,22 @@ public class MapSharingPanel extends JPanel {
 		Collection<String> sharedMaps = mapList.getSelectedMapFiles();
 		System.out.println("should start sharing the maps");
 		// generate the xml;
-		sharingManager.setPort(((SpinnerNumberModel)portNumber.getModel()).getNumber().intValue());
-		sharingManager.setSharingList(sharedMaps);
-		sharingManager.startSharing();
-		System.out.println("shared maps :");
-		// System.out.println(mapFeed);
+		try {
+			sharingManager.setPort(((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue());
+			sharingManager.setSharingList(sharedMaps);
+			sharingManager.startSharing();
+			System.out.println("shared maps :");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public void stopSharing() {
-		sharingManager.stopSharing();
+		try {
+			sharingManager.stopSharing();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public Map<String, String> getMapList(String rootDir, String[] maps) {

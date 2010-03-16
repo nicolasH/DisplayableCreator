@@ -2,8 +2,6 @@ package net.niconomicon.tile.source.app;
 
 import java.awt.BorderLayout;
 import java.awt.FileDialog;
-import java.awt.Frame;
-import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -17,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
@@ -26,7 +23,6 @@ import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import com.sun.org.apache.xerces.internal.impl.dtd.models.DFAContentModel;
 
 /**
  * @author niko
@@ -370,7 +366,9 @@ public class TileCreatorPanel extends JPanel {
 				String dir = dirChooserOSX.getDirectory();
 				String file = dirChooserOSX.getFile();
 				System.out.println("Returned with directory : " + dir + file);
-				File d = new File(dir);
+				if(null==dir || null==file){
+					return;
+				}
 				File f = new File(dir + file);
 				String path;
 				if (f.isDirectory()) {

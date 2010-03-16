@@ -3,7 +3,6 @@
  */
 package net.niconomicon.tile.source.app.sharing;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,8 +12,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,6 +36,7 @@ public class CheckBoxMapTable extends JTable {
 		// this.add(scrollPane,BorderLayout.CENTER);
 	}
 
+	
 	public void setData(Map<String, String> names) {
 		model.setData(names);
 	}

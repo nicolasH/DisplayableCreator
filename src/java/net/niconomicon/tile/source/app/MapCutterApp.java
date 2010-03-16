@@ -4,8 +4,6 @@
 package net.niconomicon.tile.source.app;
 
 import java.awt.BorderLayout;
-import java.sql.Timestamp;
-import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;

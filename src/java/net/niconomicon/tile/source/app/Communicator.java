@@ -3,9 +3,6 @@
  */
 package net.niconomicon.tile.source.app;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.swing.ImageIcon;
 
 /**

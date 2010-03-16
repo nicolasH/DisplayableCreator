@@ -1,7 +1,6 @@
 package net.niconomicon.tile.source.app;
 
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;

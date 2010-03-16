@@ -141,11 +141,6 @@ public class WebRequestHandler implements Runnable {
 
 	public long sendContent(String request) throws IOException {
 		long len = 0;
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 
 		String string = imaginaryMap.get(request);
 		if (request.compareTo("/" + Ref.sharing_xmlRef) == 0) {
@@ -160,8 +155,15 @@ public class WebRequestHandler implements Runnable {
 		File f = new File(string);
 		if(f.exists()){
 			return sendFile(f);
+		}else{
+			sendErrorResponse(404, "The server could not find or get access to "+f.getName());
 		}
 		System.err.println("Should not pass by here :-(");
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		if (request.endsWith(Ref.ext_db)) { return sendFile(f); }
 		try {
 			System.out.println("trying to open the map :" + string + " to send some mini or thumb.");

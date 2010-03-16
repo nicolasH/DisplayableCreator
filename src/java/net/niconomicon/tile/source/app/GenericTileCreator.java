@@ -8,7 +8,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -16,10 +15,34 @@ import javax.imageio.stream.ImageInputStream;
 
 /**
  * @author niko
- *
+ * 
  */
 public class GenericTileCreator {
 
+	public static final int defaultTileSize = 192;
+	public static final String defaultTileType = "png";
+
+	SQliteTileCreator creator;
+
+	public GenericTileCreator() {
+		creator = new SQliteTileCreator();
+	}
+
+	public void createTileSource(String sourcePath, String destFile, String title) throws Exception{
+
+//		int a = destFile.lastIndexOf(File.separator) + 1;
+//		int b = destFile.lastIndexOf(".");
+//		if (-1 == b) {
+//			b = sourcePath.length();
+//		}
+//		String fileNameNoExt = sourcePath.substring(a, b);
+
+		System.out.println("Processing " + creator.title);
+		creator.title = title;
+		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null);// new JProgressBar());
+		creator.finalizeFile();
+
+	}
 
 	public static void createTiles(String pathToSource, String pathToDestination, int tileSize, String tileType) throws IOException {
 		System.out.println("calculating tiles...");
@@ -29,7 +52,7 @@ public class GenericTileCreator {
 		// the pathTo file includes the fileName.
 		File originalFile = new File(pathToSource);
 		String fileSansExt = pathToSource.substring(pathToSource.lastIndexOf(File.separator) + 1, pathToSource.lastIndexOf("."));
-		
+
 		System.out.println("Opening the image");
 		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
 		System.out.println("Reading the image.");
@@ -37,10 +60,10 @@ public class GenericTileCreator {
 
 		byte[] miniBytes = getMiniatureBytes(img, 320, 480, tileType);
 		System.out.println("writing the miniature");
-		
-		FileOutputStream miniOut = new FileOutputStream(new File("mini.png"));
-		miniOut.write(miniBytes);
-		miniOut.close();
+
+		// FileOutputStream miniOut = new FileOutputStream(new File("mini.png"));
+		// miniOut.write(miniBytes);
+		// miniOut.close();
 		return;
 	}
 
@@ -57,8 +80,8 @@ public class GenericTileCreator {
 		int scaledHeight = (int) (height * scaleFactor);
 
 		System.out.println("Scaling the image");
-		Image tmp = sourceImage.getScaledInstance(scaledWidth,scaledHeight, Image.SCALE_SMOOTH);
-//		BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
+		Image tmp = sourceImage.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+		// BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
 		BufferedImage scaled = new BufferedImage(miniMaxWidth, miniMaxHeight, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = scaled.getGraphics();
 		System.out.println("Painting the scaled image");
@@ -66,11 +89,11 @@ public class GenericTileCreator {
 		double y = 0;
 		x = miniMaxWidth - tmp.getWidth(null);
 		y = miniMaxHeight - tmp.getHeight(null);
-		
-		x = Math.floor(x/2);
-		y = Math.floor(y/2);
-		
-		g.drawImage(tmp, (int)x, (int)y, null);
+
+		x = Math.floor(x / 2);
+		y = Math.floor(y / 2);
+
+		g.drawImage(tmp, (int) x, (int) y, null);
 		g.dispose();
 		System.out.println("creating the byte array");
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();

@@ -6,5 +6,13 @@
 	<classpathentry kind="lib" path="lib/jmdns.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.6.10.jar"/>
 	<classpathentry kind="lib" path="lib/PDFRenderer.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/servlet-api-2.5.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-server-7.0.1.v20091125.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-servlet-7.0.1.v20091125.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-util-7.0.1.v20091125.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-http-7.0.1.v20091125.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-continuation-7.0.1.v20091125.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-io-7.0.1.v20091125.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-security-7.0.1.v20091125.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

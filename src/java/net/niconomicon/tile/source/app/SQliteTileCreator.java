@@ -20,8 +20,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.JProgressBar;
 
-import com.sun.org.apache.xalan.internal.xsltc.dom.LoadDocument;
-
 import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
 
 public class SQliteTileCreator {
@@ -312,12 +310,14 @@ public class SQliteTileCreator {
 			aaX = aaX * ZOOM_FACTOR;
 			aaY = aaY * ZOOM_FACTOR;
 		}
-		progressIndicator.setValue(100 / (aaMaxZoom + 1));
-		progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
+		if (null != progressIndicator) {
+			progressIndicator.setValue(100 / (aaMaxZoom + 1));
+			progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
+		}
 		// while (Math.min(scaledWidth, scaledHeight) > tileSize) {
 		while (scaledWidth > 320 || scaledHeight > 320) {
-			if(scaledWidth/2 <320  || scaledHeight/2 <430){
-				mini = GenericTileCreator.getMiniatureBytes(img, 320,430, tileType);
+			if (scaledWidth / 2 < 320 || scaledHeight / 2 < 430) {
+				mini = GenericTileCreator.getMiniatureBytes(img, 320, 430, tileType);
 				thumb = GenericTileCreator.getMiniatureBytes(img, 47, 47, tileType);
 			}
 			// localPath = currentDirPath + "/" + LAYER_PREFIX + zoom;
@@ -424,9 +424,10 @@ public class SQliteTileCreator {
 			nbY = (scaledHeight / tileSize) + 1;
 
 			zoom++;
-			progressIndicator.setValue((int) ((100 / (aaMaxZoom + 1)) * (zoom + 1)));
-			progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
-
+			if (null != progressIndicator) {
+				progressIndicator.setValue((int) ((100 / (aaMaxZoom + 1)) * (zoom + 1)));
+				progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
+			}
 			xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
 			img = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
 			Graphics g0 = img.createGraphics();
@@ -444,7 +445,9 @@ public class SQliteTileCreator {
 	public static void main(String[] args) throws Exception {
 		// "Beijing.pdf","Lijnennetkaartjul09kaartkant.pdf","allochrt.pdf",
 		String[] files;
-//		files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf", "CentraalStation09.pdf", "GVBStopGo17mrt08.pdf", "Lijnennetkaartjul09kaartkant.pdf", "Meyrin_A3_Paysage.pdf", "OpmNacht2009-06 Z los.pdf", "Prevessin_A3_Paysage.pdf", "WhyWeHere.pdf", "allochrt.pdf", "manbus.pdf" };
+		// files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf", "CentraalStation09.pdf",
+		// "GVBStopGo17mrt08.pdf", "Lijnennetkaartjul09kaartkant.pdf", "Meyrin_A3_Paysage.pdf",
+		// "OpmNacht2009-06 Z los.pdf", "Prevessin_A3_Paysage.pdf", "WhyWeHere.pdf", "allochrt.pdf", "manbus.pdf" };
 		files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf", "Meyrin_A3_Paysage.pdf", "Prevessin_A3_Paysage.pdf", "manbus.pdf" };
 		String destDir = "/Users/niko/tileSources/mapRepository/";
 		String src = "/Users/niko/tileSources/";
@@ -452,8 +455,8 @@ public class SQliteTileCreator {
 		// files = new String[]{"manbus.pdf"};
 		SQliteTileCreator creator = new SQliteTileCreator();
 		for (String file : files) {
-			creator.title = file.substring(0,file.lastIndexOf("."));
-			System.out.println("Processing "+creator.title);
+			creator.title = file.substring(0, file.lastIndexOf("."));
+			System.out.println("Processing " + creator.title);
 			creator.calculateTiles(destDir + creator.title + Ref.ext_db, src + file, 192, "png", new JProgressBar());
 			creator.finalizeFile();
 		}
