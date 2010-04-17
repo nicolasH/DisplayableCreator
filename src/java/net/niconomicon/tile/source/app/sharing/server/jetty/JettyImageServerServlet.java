@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,9 +32,10 @@ public class JettyImageServerServlet extends HttpServlet {
 	public JettyImageServerServlet() {
 		knownImages = new HashSet<String>();
 	}
-
+	
 	public void addImages(Collection<String> documents) {
 		knownImages.addAll(documents);
+
 		Map<String, String> refs = Ref.generateIndexFromFileNames(knownImages);
 		// for caching
 		Ref.extractThumbsAndMiniToTmpFile(refs);
@@ -53,10 +55,21 @@ public class JettyImageServerServlet extends HttpServlet {
 		}
 		String string = imaginaryMap.get(request);
 
-		if (request.compareTo("/" + Ref.sharing_xmlRef) == 0 || request.compareTo("/" + Ref.sharing_htmlRef) == 0) {
+		if (request.compareTo("/" + Ref.sharing_xmlRef) == 0){ 
 			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
 			try {
 				sendString(imaginaryMap.get(request), resp);
+			} catch (Exception ex) {
+				resp.sendError(500, "The server encountered an error while trying to send the requested content for request [" + request + "]");
+				return;
+			}
+		}
+		if( request.compareTo("/" + Ref.sharing_htmlRef) == 0) {
+			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
+			try {
+				String resolvedAddress = Ref.app_handle + req.getScheme()+"://"+req.getLocalAddr()+":"+req.getLocalPort();
+				String htmlListing =imaginaryMap.get(request).replaceAll(Ref.app_handle, resolvedAddress);
+				sendString(htmlListing, resp);
 			} catch (Exception ex) {
 				resp.sendError(500, "The server encountered an error while trying to send the requested content for request [" + request + "]");
 				return;

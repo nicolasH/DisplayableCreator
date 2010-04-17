@@ -29,7 +29,7 @@ public class PDFToImageRenderer {
 	public static BufferedImage getImageFromPDF(PDFFile pdf, int pageNum, int rez) {
 
 		int numpages = pdf.getNumPages();
-		System.out.println("Number of pages = " + numpages);
+//		System.out.println("Number of pages = " + numpages);
 		int pagenum = 1;
 		if (pagenum > numpages) pagenum = numpages;
 
@@ -43,10 +43,10 @@ public class PDFToImageRenderer {
 		height /= 72.0;
 		width *= rez;
 		height *= rez;
-		System.out.println("Rendering with resolution  : " + rez + " final size = " + width + " x " + height);
+//		System.out.println("Rendering with resolution  : " + rez + " final size = " + width + " x " + height);
 
 		Image image = page.getImage((int) width, (int) height, r2d, null, true, true);
-		System.out.println("image class : "+ image.getClass());
+//		System.out.println("image class : "+ image.getClass());
 		return (BufferedImage) image;
 	}
 

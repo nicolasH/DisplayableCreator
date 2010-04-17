@@ -1,6 +1,7 @@
 package net.niconomicon.tile.source.app.sharing.server;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
@@ -18,15 +19,17 @@ public class WebServer {
 	private ServerRunner server;
 	private Thread serverThread;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception{
 		int port = Ref.sharing_port;
 		Map<String, String> fileReferences;// = new HashMap<String, String>();
 		Set<String> set = new HashSet<String>();
-		set.add("/Users/niko/Sites/testApp/mapRepository/tpg.png.mdb");
-
+		set.add("/Users/niko/tileSources/fromServer/allochrt.mdb");
+		
+		
 		fileReferences = Ref.generateIndexFromFileNames(set);
 		System.out.println("mapFeed : ");
 		System.out.println(fileReferences.get("/" + Ref.sharing_xmlRef));
+		System.out.println(fileReferences.get("/" + Ref.sharing_htmlRef));
 		boolean log = Boolean.valueOf(args[2]).booleanValue();
 	}
 

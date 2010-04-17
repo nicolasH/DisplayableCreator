@@ -27,10 +27,12 @@ public final class Ref {
 	public static final String sharing_xmlRef = "maps.xml";
 	public static final String sharing_htmlRef = "maps.html";
 
+	public static final String app_handle="displayator-image:";
+
 	public static final String ext_db = ".mdb";
 	public static final String ext_thumb = ".thumb";
 	public static final String ext_mini = ".mini";
-
+	
 	public static final String layers_infos_table_name = "layers_infos";
 
 	public static final String infos_table_name = "infos";
@@ -217,11 +219,23 @@ public final class Ref {
 				s += "</map>\n";
 				ret += s;
 
+				String urlInfos=  "title=" + rs.getString(Ref.infos_title);
+				urlInfos+= "&updated=";
+				urlInfos += "&thumb=" + thumb ;
+				urlInfos += "&preview=" + mini;
+				urlInfos += "&weight=" + weight;
+				urlInfos += "&width=" + rs.getLong(Ref.infos_width);
+				urlInfos += "&height=" + rs.getLong(Ref.infos_height);
+				urlInfos += "&description=" + rs.getString(Ref.infos_description);
+
+				
 				String li = "\t\t\t<li>";
 				String li_ = "</li>\n";
-				String html = "<div><b>" + rs.getString(Ref.infos_title) + "</b><br/>\n\t";
-				html += "<a href=\""+mini+"\"><img src=\"" + thumb + "\"></a><a href=\"displayator-image:" + name + "\" >Download and view with displayator</a><a href=\"" + name + "\" >Download as file</a> \n\t";
-				html += "<ul>\n";
+				String html = "<div><b>" + rs.getString(Ref.infos_title) + "</b><br/>";
+				html += "\n\t\t<a href=\""+mini+"\">\n\t\t\t<img src=\"" + thumb + "\">\n\t\t</a>\n\t\t";
+				html += "Download <a href=\""+app_handle+name+"?"+urlInfos+ "\" >and view with displayator</a>\n\t\t";
+				html += "or <a href=\"" + name + "\" >as file</a>.";
+				html += "\n\t<ul>";
 				html += li + "Weight : " + ((double) weight) / 1000000 + " MB." + li_;
 				html += li + "Size : " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px." + li_;
 				String dsc = rs.getString(Ref.infos_description);

@@ -1,12 +1,13 @@
 /**
  * 
  */
-package net.niconomicon.tile.source.app;
+package net.niconomicon.tile.source.app.viewer;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
@@ -21,6 +22,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import net.niconomicon.tile.source.app.Ref;
 
 /**
  * @author niko
@@ -54,6 +57,7 @@ public class MapViewer extends JPanel {
 
 	}
 
+	
 	public void setTileSource(String tileSourcePath) {
 
 		try {
@@ -64,7 +68,7 @@ public class MapViewer extends JPanel {
 			tilesInRange.clearParameters();
 			// String infos0 = "select * from layers_infos where zoom = 0";
 			Statement statement = mapDB.createStatement();
-			zoom = 1;
+			zoom = 0;
 			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name + " where zoom=" + zoom);
 
 			while (rs.next()) {
@@ -103,12 +107,13 @@ public class MapViewer extends JPanel {
 			byte[] data = rs.getBytes(4);
 			// cache.put(x + "_" + y + "_" + z, data);
 			BufferedImage tile = ImageIO.read(new ByteArrayInputStream(data));
-//			BufferedImage image = new BufferedImage(tile.getWidth(),tile.getHeight(),BufferedImage.OPAQUE);
-//			Graphics2D g2 = (Graphics2D)image.getGraphics();
-//			g2.scale(1, -1);
-//			g2.drawImage(tile, 0,-tile.getHeight(), null);
-//			g2.dispose();
-			cache.put(x + "_" + y + "_" + z, tile);
+			BufferedImage image = new BufferedImage(tile.getWidth(),tile.getHeight(),BufferedImage.OPAQUE);
+			Graphics2D g2 = (Graphics2D)image.getGraphics();
+			g2.scale(1, -1);
+			g2.drawImage(tile, 0,-tile.getHeight(), null);
+			g2.dispose();
+			cache.put(x + "_" + y + "_" + z, image);
+//			cache.put(x + "_" + y + "_" + z, tile);
 
 		}
 
@@ -117,7 +122,7 @@ public class MapViewer extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		System.out.println("paintComponent");
+//		System.out.println("paintComponent");
 		Graphics2D g2 = (Graphics2D) g;
 		Rectangle r = g2.getClipBounds();
 		int tileXa = r.x / tileSize;
@@ -125,10 +130,11 @@ public class MapViewer extends JPanel {
 		int tileYa = r.y / tileSize;
 		int tileYb = tileYa + r.height / tileSize + 1;
 		
-		System.out.println("Painting between " + tileXa + "," + tileYa + "and " + tileXb + ", " + tileYb);
+//		System.out.println("Painting between " + tileXa + "," + tileYa + "and " + tileXb + ", " + tileYb);
 		try {
 			int macYb = (maxY - 1 - tileYa);
 			int macYa = (maxY - 1 - tileYb);
+			
 			macYa = tileYa;
 			macYb = tileYb;
 			for (int x = tileXa; x < tileXb; x++) {
@@ -141,8 +147,11 @@ public class MapViewer extends JPanel {
 						// g2.drawImage(image, x * tileSize, (maxY - 1 - y) * tileSize, null);
 //						g2.scale(1, 1);
 //						g2.drawImage(tile, x * tileSize, (maxY - 1 - y) * tileSize, null);
-						System.out.println("painting " + x + "_" + y  + " at "  + x * tileSize +" "+( maxY - 1 - y) * tileSize);
+//						System.out.println("painting " + x + "_" + y  + " at "  + x * tileSize +" "+( maxY - 1 - y) * tileSize);
 						g2.drawImage(tile, x * tileSize, ( y) * tileSize, null);
+					}
+					else{
+						System.out.println("tile is null for : "+x + "_" + y + "_" + zoom);
 					}
 				}
 			}
@@ -152,6 +161,8 @@ public class MapViewer extends JPanel {
 		g2.dispose();
 	}
 
+	
+
 	/**
 	 * @param args
 	 */
@@ -160,9 +171,16 @@ public class MapViewer extends JPanel {
 		String dir = "";// /Users/niko/tileSources/mapRepository/
 		String file = "test.mdb";
 		dir = "/Users/niko/tileSources/";
-		 file = "globcover_MOSAIC_H.png.mdb";
-		 file="Lijnennetkaartjul09kaartkant.pdf.mdb";
+		 file = "globcover_MOSAIC_H.mdb";
+		 file = "manbus.mdb";
+//		 file="fromServer/almosttrees_mro_big.mdb";
+		 file="bench/almosttrees_mro_big.mdb";
+//		 file="Lijnennetkaartjul09kaartkant.pdf.mdb";
 //		file = "globcover_MOSAIC_H.flipped.png.mdb";
+		 if(args.length == 1){
+			 dir ="";
+			 file= args[0];
+		 }
 		MapViewer mV = new MapViewer();
 		mV.setTileSource(dir + file);
 		JScrollPane p = new JScrollPane(mV);
@@ -173,6 +191,5 @@ public class MapViewer extends JPanel {
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 	}
 }

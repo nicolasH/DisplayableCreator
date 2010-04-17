@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.niconomicon.tile.source.app;
+package net.niconomicon.tile.source.app.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -25,6 +25,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+
+import net.niconomicon.tile.source.app.Ref;
 
 /**
  * @author niko

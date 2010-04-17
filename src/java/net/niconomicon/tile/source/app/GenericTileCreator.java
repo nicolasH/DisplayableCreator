@@ -68,6 +68,7 @@ public class GenericTileCreator {
 	}
 
 	public static byte[] getMiniatureBytes(BufferedImage sourceImage, int miniMaxWidth, int miniMaxHeight, String pictureType) throws IOException {
+		System.out.println("Creating the miniature for size"+miniMaxWidth + "x"+miniMaxHeight);
 		int width = sourceImage.getWidth();
 		int height = sourceImage.getHeight();
 
@@ -75,16 +76,16 @@ public class GenericTileCreator {
 		double scaleY = miniMaxHeight / (double) height;
 		double scaleFactor = Math.min(scaleX, scaleY);
 
-		System.out.println("scaleX=" + scaleX + " scaleY=" + scaleY + " scale factor = " + scaleFactor);
+//		System.out.println("scaleX=" + scaleX + " scaleY=" + scaleY + " scale factor = " + scaleFactor);
 		int scaledWidth = (int) (width * scaleFactor);
 		int scaledHeight = (int) (height * scaleFactor);
 
-		System.out.println("Scaling the image");
+//		System.out.println("Scaling the image");
 		Image tmp = sourceImage.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
 		// BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
 		BufferedImage scaled = new BufferedImage(miniMaxWidth, miniMaxHeight, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = scaled.getGraphics();
-		System.out.println("Painting the scaled image");
+//		System.out.println("Painting the scaled image");
 		double x = 0;
 		double y = 0;
 		x = miniMaxWidth - tmp.getWidth(null);
@@ -95,9 +96,10 @@ public class GenericTileCreator {
 
 		g.drawImage(tmp, (int) x, (int) y, null);
 		g.dispose();
-		System.out.println("creating the byte array");
+//		System.out.println("creating the byte array");
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		ImageIO.write(scaled, pictureType, outStream);
+//		System.out.println("Done creating the miniature");
 		return outStream.toByteArray();
 	}
 

@@ -19,6 +19,7 @@ import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
 import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
+import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -65,7 +66,7 @@ public class TileCreatorPanel extends JPanel {
 	JTextField source;
 
 	JButton finalizeButton;
-	SQliteTileCreator creator;
+	SQliteTileCreatorMultithreaded creator;
 
 	File temp;
 
@@ -73,7 +74,7 @@ public class TileCreatorPanel extends JPanel {
 
 	public TileCreatorPanel() {
 
-		creator = new SQliteTileCreator();
+		creator = new SQliteTileCreatorMultithreaded();
 		// setTitle("Tile Creator");
 		JPanel content = new JPanel(new BorderLayout());
 		JPanel option;
@@ -252,7 +253,7 @@ public class TileCreatorPanel extends JPanel {
 						progressIndicator.setValue(1);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
-						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator);
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator,8);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
 						finalizeButton.setEnabled(true);
@@ -304,6 +305,7 @@ public class TileCreatorPanel extends JPanel {
 							creator.finalizeFile();
 							temp.renameTo(new File(place, name));
 							sharingPanel.setRootDir(place);
+							System.gc();
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
