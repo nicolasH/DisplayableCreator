@@ -27,7 +27,7 @@ public class ImageAndPDFFileFilter extends FileFilter {
 	}
 
 	public String getDescription() {
-		return "pdf, jpg, png gif";
+		return "bmp, gif, jpg, png, pdf";
 	}
 
 	/**

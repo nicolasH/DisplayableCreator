@@ -52,10 +52,11 @@ public class TileSerializeJob implements Runnable {
 //			tilesToWrite.add(jobW);
 			executor.execute(jobW);
 			//			System.out.println("Creating job "+x + ","+y + "," +z);
-			System.out.println(x + "_"+y + "_" +z);
 
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			
+			System.out.println("Error while trying to save "+x + "_"+y + "_" +z);
+			
 		}
 	}
 }

@@ -45,7 +45,7 @@ public class TileWritingJob implements Runnable {
 
 			insertTile.setBytes(4, bytes);
 			insertTile.executeUpdate();
-			System.out.println(x + "_" + y + "_" + z );
+//			System.out.println(x + "_" + y + "_" + z );
 		} catch (SQLException e) {
 			System.err.println("Export failed for "+x + "," + y + "," + z );
 			e.printStackTrace();

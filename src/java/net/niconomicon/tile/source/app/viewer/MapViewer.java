@@ -99,6 +99,7 @@ public class MapViewer extends JPanel {
 		tilesInRange.setInt(5, zoom);
 		// BufferedInputStream
 		ResultSet rs = tilesInRange.executeQuery();
+		System.out.println("Caching ...");
 		while (rs.next()) {
 			int x = rs.getInt(1);
 			int y = rs.getInt(2);
@@ -116,7 +117,7 @@ public class MapViewer extends JPanel {
 //			cache.put(x + "_" + y + "_" + z, tile);
 
 		}
-
+System.out.println("Caching done.");
 	}
 
 	@Override
@@ -126,7 +127,7 @@ public class MapViewer extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		Rectangle r = g2.getClipBounds();
 		int tileXa = r.x / tileSize;
-		int tileXb = tileXa + r.width / tileSize + 1;
+		int tileXb = tileXa + r.width / tileSize + 2;
 		int tileYa = r.y / tileSize;
 		int tileYb = tileYa + r.height / tileSize + 1;
 		
@@ -151,7 +152,7 @@ public class MapViewer extends JPanel {
 						g2.drawImage(tile, x * tileSize, ( y) * tileSize, null);
 					}
 					else{
-						System.out.println("tile is null for : "+x + "_" + y + "_" + zoom);
+//						System.out.println("tile is null for : "+x + "_" + y + "_" + zoom);
 					}
 				}
 			}

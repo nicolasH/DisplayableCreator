@@ -34,6 +34,7 @@ public class JettyImageServerServlet extends HttpServlet {
 	}
 	
 	public void addImages(Collection<String> documents) {
+		knownImages.clear();
 		knownImages.addAll(documents);
 
 		Map<String, String> refs = Ref.generateIndexFromFileNames(knownImages);
