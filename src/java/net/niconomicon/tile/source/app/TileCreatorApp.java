@@ -15,12 +15,12 @@ import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
  * @author niko
  * 
  */
-public class MapCutterApp {
+public class TileCreatorApp {
 
 	TileCreatorPanel tileCreatorPanel;
 	MapSharingPanel mapSharingPanel;
 
-	public MapCutterApp() {
+	public TileCreatorApp() {
 		init();
 	}
 
@@ -39,11 +39,11 @@ public class MapCutterApp {
 		f.pack();
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		SQliteTileCreator.loadLib();
+		SQliteTileCreatorMultithreaded.loadLib();
 	}
 
 	public static void main(String[] args) {
 
-		MapCutterApp app = new MapCutterApp();
+		TileCreatorApp app = new TileCreatorApp();
 	}
 }

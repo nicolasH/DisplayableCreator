@@ -22,10 +22,10 @@ import java.util.Map;
 public final class Ref {
 
 	public static int sharing_port = 8080;
-	public static final String sharing_serviceName = "MapSharingService";
+	public static final String sharing_serviceName = "TiledImageSharingService";
 
-	public static final String sharing_xmlRef = "maps.xml";
-	public static final String sharing_htmlRef = "maps.html";
+	public static final String sharing_xmlRef = "TiledImages.xml";
+	public static final String sharing_htmlRef = "TiledImages.html";
 
 	public static final String app_handle="displayator-image:";
 

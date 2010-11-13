@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
+import net.niconomicon.tile.source.app.filter.ImageFileFilter;
 import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
@@ -55,7 +56,7 @@ public class TileCreatorPanel extends JPanel {
 	FileDialog dirChooserOSX;
 	JFileChooser dirChooser;
 
-	ImageAndPDFFileFilter imageFilter;
+	ImageFileFilter imageFilter;
 	FileFilter archiveFilter;
 
 	MapSharingPanel sharingPanel;
@@ -84,7 +85,7 @@ public class TileCreatorPanel extends JPanel {
 		// option.setLayout(l);
 		JPanel arch = new JPanel();
 
-		imageFilter = new ImageAndPDFFileFilter();
+		imageFilter = new ImageFileFilter();
 
 		sourceChooser = new JFileChooser();
 		sourceChooser.setAcceptAllFileFilterUsed(false);
@@ -103,7 +104,7 @@ public class TileCreatorPanel extends JPanel {
 			dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
 			dirChooser.setDialogTitle("Choose directory to save the tile source");
-			dirChooser.setCurrentDirectory(new File("."));
+			dirChooser.setCurrentDirectory(sourceChooser.getCurrentDirectory());
 		}
 		preview = new TilingPreview();
 

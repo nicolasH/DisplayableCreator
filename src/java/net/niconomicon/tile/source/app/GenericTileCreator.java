@@ -22,10 +22,10 @@ public class GenericTileCreator {
 	public static final int defaultTileSize = 192;
 	public static final String defaultTileType = "png";
 
-	SQliteTileCreator creator;
+	SQliteTileCreatorMultithreaded creator;
 
 	public GenericTileCreator() {
-		creator = new SQliteTileCreator();
+		creator = new SQliteTileCreatorMultithreaded();
 	}
 
 	public void createTileSource(String sourcePath, String destFile, String title) throws Exception{
@@ -39,7 +39,7 @@ public class GenericTileCreator {
 
 		System.out.println("Processing " + creator.title);
 		creator.title = title;
-		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null);// new JProgressBar());
+		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null,4);// new JProgressBar());
 		creator.finalizeFile();
 
 	}

@@ -1,11 +1,9 @@
 package net.niconomicon.tile.source.app;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -22,9 +20,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.JProgressBar;
 
-import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
+import net.niconomicon.jrasterizer.utils.FastClipper;
 import net.niconomicon.tile.source.app.tiling.TileSerializeJob;
-import net.niconomicon.tile.source.app.viewer.MapViewer;
 
 public class SQliteTileCreatorMultithreaded {
 	Connection connection;
@@ -127,7 +124,7 @@ public class SQliteTileCreatorMultithreaded {
 			statement.executeUpdate("drop table if exists tile_infos");
 			statement.executeUpdate("drop table if exists level_infos");
 			statement.executeUpdate("drop table if exists tiles_" + mapKey);
-			// 
+			//
 			statement.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB)");
 			statement.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
 			// currently the layer name should be the same as the map name, as only one layer is supported
@@ -210,7 +207,7 @@ public class SQliteTileCreatorMultithreaded {
 		String layerName = "no name";
 		long zindex = 0;
 		String stat = "INSERT INTO layers_infos VALUES(\"" + layerName + "\"," + mapID + "," + zindex + "," + zoom + "," + width + "," + height + "," + tiles_x + "," + tiles_y + "," + offsetX + "," + offsetY + ")";
-		// System.out.println("stat = " + stat);
+		System.out.println("stat = " + stat);
 		try {
 			Statement statement = connection.createStatement();
 			statement.executeUpdate(stat);
@@ -246,12 +243,9 @@ public class SQliteTileCreatorMultithreaded {
 		long stop, start;
 		start = System.nanoTime();
 
-		if (ImageAndPDFFileFilter.getLowerCaseExt(pathToFile).endsWith("pdf")) {
-			img = PDFToImageRenderer.getImageFromPDFFile(pathToFile, 300);
-		} else {
-			ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
-			img = ImageIO.read(inStream);
-		} // //////////////////////////////
+		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
+		img = ImageIO.read(inStream);
+		// //////////////////////////////
 
 		stop = System.nanoTime();
 		System.out.println("opening_image: " + ((double) (stop - start) / 1000000) + " ms");
@@ -267,18 +261,13 @@ public class SQliteTileCreatorMultithreaded {
 		int nbX = (int) Math.ceil((double) width / tileSize);
 		int nbY = (int) Math.ceil((double) height / tileSize);
 
-		System.out.println("old : nbX=" + oldNbX + " nbY=" + oldNbY + " new : +nbX" + nbX + " nbY=" + nbY);
+		// System.out.println("old : nbX=" + oldNbX + " nbY=" + oldNbY + " new : +nbX" + nbX + " nbY=" + nbY);
 
 		int scaledWidth = width;
 		int scaledHeight = height;
 		int zoom = 0;
 		// //////////////////////
 		Image xxx = null;
-		ByteArrayOutputStream byteStorage = new ByteArrayOutputStream();
-		byteStorage.reset();
-
-		// level 0
-		addLevelInfos(fileSansDot, mapID, zoom, width, height, nbX, nbY, 0, 0);
 		// //////////////////////////
 		// Creating Tiles.
 		BufferedImage buffer = null;
@@ -294,10 +283,7 @@ public class SQliteTileCreatorMultithreaded {
 			aaX = aaX * ZOOM_FACTOR;
 			aaY = aaY * ZOOM_FACTOR;
 		}
-		if (null != progressIndicator) {
-			progressIndicator.setValue(100 / (aaMaxZoom + 1));
-			progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
-		}
+
 		boolean miniatureCreated = false;
 		while (scaledWidth > 320 || scaledHeight > 320) {
 			if (!miniatureCreated && (scaledWidth / 2 < 320 || scaledHeight / 2 < 430)) {
@@ -305,15 +291,19 @@ public class SQliteTileCreatorMultithreaded {
 				mini = GenericTileCreator.getMiniatureBytes(img, 320, 430, tileType);
 				thumb = GenericTileCreator.getMiniatureBytes(img, 47, 47, tileType);
 				stop = System.nanoTime();
-				// System.out.println("creating_minitatures: " + ((double) (stop - start) / 1000000) + " ms");
 				miniatureCreated = true;
 			}
-
+			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
+			if (null != progressIndicator) {
+				progressIndicator.setValue(100 / (aaMaxZoom + 1));
+				progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
+			}
 			int fillX = 0;
 			int fillY = 0;
 			fillX = ((nbX * tileSize) - scaledWidth);
 			fillY = ((nbY * tileSize) - scaledHeight);
-			System.out.println("fill x =" + fillX + " fill y=" + fillY + " nbX=" + nbX + " nbY=" + nbY + " w=" + scaledWidth + " h=" + scaledHeight);
+			// System.out.println("fill x =" + fillX + " fill y=" + fillY + " nbX=" + nbX + " nbY=" + nbY + " w=" +
+			// scaledWidth + " h=" + scaledHeight);
 			// System.out.println("fill x =" + fillX + " fill y=" + fillY);
 			for (int y = 0; y < nbY; y++) {
 				for (int x = 0; x < nbX; x++) {
@@ -333,15 +323,6 @@ public class SQliteTileCreatorMultithreaded {
 						pasteX = 0;
 						pasteWidth = tileSize;
 					}
-					// first line
-					/*if (y == 0) {
-						copyY = 0;
-						copyHeight = tileSize - fillY;
-						pasteY = 0;
-						pasteHeight = tileSize - fillY;
-					} else {
-						copyY = copyY - fillY;
-					}*/
 					// last column
 					if (x == nbX - 1) {
 						copyX = x * tileSize;
@@ -357,31 +338,8 @@ public class SQliteTileCreatorMultithreaded {
 						pasteY = 0;
 						pasteHeight = copyHeight;
 					}
-					// System.out.println("x ="+x+" y="+y+ " copyX="+
-					// copyX+" copyY="+copyY+" copyWidth="+copyXX+" copyHeight="
-					// +copyYY+ " pasteX=" + pasteX
-					// +" -> pasteY="+pasteY+" pasteWidth="+
-					// pasteXX+" pasteHeight=" +pasteYY );
-					start = System.nanoTime();
-					buffer = new BufferedImage(copyWidth, copyHeight, BufferedImage.TYPE_INT_RGB);
-					// Above line Trying to create some tile with 0 height ????????
-					Graphics2D g2 = buffer.createGraphics();
-					g2.setColor(Color.DARK_GRAY);
-					g2.fillRect(0, 0, tileSize, tileSize);
-
-					g2.drawImage(img, pasteX, pasteY, pasteWidth, pasteHeight, copyX, copyY, copyX + copyWidth, copyY + copyHeight, null);
-					g2.dispose();
-					stop = System.nanoTime();
-					// System.out.println("copy_pasting_tile: " + ((double) (stop - start) / 1000000) + " ms");
-
-					start = System.nanoTime();
-					otherBuffer = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.OPAQUE);
-					Graphics2D g3 = (Graphics2D) otherBuffer.getGraphics();
-					g3.scale(1, -1);
-					g3.drawImage(buffer, 0, -buffer.getHeight(), null);
-					g3.dispose();
-					stop = System.nanoTime();
-					// System.out.println("flipping_tile: " + ((double) (stop - start) / 1000000) + " ms");
+					Rectangle clip = new Rectangle(copyX, copyY, copyWidth, copyHeight);
+					otherBuffer = FastClipper.fastClip(img, clip, false);
 
 					// //////////////////////////////////////
 					// Writing the tiles
@@ -404,10 +362,6 @@ public class SQliteTileCreatorMultithreaded {
 			System.out.println("old : nbX=" + oldNbX + " nbY=" + oldNbY + " new : +nbX" + nbX + " nbY=" + nbY);
 
 			zoom++;
-			if (null != progressIndicator) {
-				progressIndicator.setValue((int) ((100 / (aaMaxZoom + 1)) * (zoom + 1)));
-				progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
-			}
 
 			start = System.nanoTime();
 			xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
@@ -420,7 +374,6 @@ public class SQliteTileCreatorMultithreaded {
 			System.out.println("scaled_image_" + zoom + ": " + ((double) (stop - start) / 1000000) + " ms");
 
 			// System.out.println("zoom layer : " + zoom + " image size:" + img.getWidth() + "x" + img.getHeight());
-			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
 		}
 		serialPool.shutdown();
 		serialPool.awaitTermination(15, TimeUnit.MINUTES);
@@ -456,7 +409,7 @@ public class SQliteTileCreatorMultithreaded {
 			st.setString(2, tileType);
 			st.setLong(3, tileWidth);
 			st.setLong(4, tileHeight);
-			//st.setBlob(5, emptyTile);
+			// st.setBlob(5, emptyTile);
 			st.execute();
 		} catch (SQLException e) {
 			System.err.println("Information insertion failed.");
@@ -469,12 +422,9 @@ public class SQliteTileCreatorMultithreaded {
 		// "Beijing.pdf","Lijnennetkaartjul09kaartkant.pdf","allochrt.pdf",
 		String[] files;
 		// files = new String[] { "allochrt.pdf" };
-		files = new String[] { "almosttrees_mro_big.jpg" };
+		files = new String[] { "pdfs/CERN_Prevessin_A3_Paysage.pdf" };
 		// files = new String[] { "globcover_MOSAIC_H.png" };
 
-		// default behavior:
-		// manbus : 2 serializer :
-		// globcover :
 		String destDir = "/Users/niko/tileSources/bench/";
 		String src = "/Users/niko/tileSources/";
 		// String file = ;
@@ -483,11 +433,13 @@ public class SQliteTileCreatorMultithreaded {
 		SQliteTileCreatorMultithreaded creator = new SQliteTileCreatorMultithreaded();
 		long start, stop;
 		int count = 1;
-		int nThreads = 8;
+		int nThreads = 4;
+		int c = 0;
+		Thread.sleep(5000);
 		for (int i = 0; i < count; i++) {
 			System.gc();
 			for (String file : files) {
-				creator.title = file.substring(0, file.lastIndexOf("."));
+				creator.title = file.substring(0, file.lastIndexOf(".")) + "_multi";
 				System.out.println("Processing " + creator.title);
 				String dstFile = destDir + creator.title + Ref.ext_db;
 				File f = new File(dstFile);
@@ -497,11 +449,12 @@ public class SQliteTileCreatorMultithreaded {
 				}
 				start = System.nanoTime();
 				String fullPathdestFile = destDir + creator.title + Ref.ext_db;
+				System.out.println("Started : " + fullPathdestFile);
 				creator.calculateTiles(fullPathdestFile, src + file, 192, "png", new JProgressBar(), nThreads);
 				creator.finalizeFile();
 				stop = System.nanoTime();
-				System.out.println("total_time: " + ((double) (stop - start) / 1000000) + " ms nThreads = " + nThreads + " + 1 mains + 1 writer");
-				MapViewer.main(new String[] { fullPathdestFile });
+				System.out.println("## => total_time: " + ((double) (stop - start) / 1000000) + " ms nThreads = " + nThreads + " + 1 mains + 1 writer");
+				// MapViewer.main(new String[] { fullPathdestFile });
 			}
 		}
 	}
