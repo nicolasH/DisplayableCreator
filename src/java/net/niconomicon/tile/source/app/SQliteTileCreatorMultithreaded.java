@@ -1,28 +1,29 @@
 package net.niconomicon.tile.source.app;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.JProgressBar;
 
-import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
+import net.niconomicon.jrasterizer.utils.FastClipper;
+import net.niconomicon.tile.source.app.tiling.TileSerializeJob;
 
-public class SQliteTileCreator {
+public class SQliteTileCreatorMultithreaded {
 	Connection connection;
 
 	public static final double MINIATURE_SIZE = 500;
@@ -114,14 +115,17 @@ public class SQliteTileCreator {
 		try {
 			// create a database connection
 			connection = DriverManager.getConnection("jdbc:sqlite:" + archiveName);
-			System.out.println("Archive name : " + archiveName);
+			connection.setAutoCommit(false);
+			// System.out.println("Archive name : " + archiveName);
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(3); // set timeout to 30 sec.
 
 			statement.executeUpdate("drop table if exists infos");
+			statement.executeUpdate("drop table if exists tile_infos");
 			statement.executeUpdate("drop table if exists level_infos");
 			statement.executeUpdate("drop table if exists tiles_" + mapKey);
-			// 
+			//
+			statement.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB)");
 			statement.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
 			// currently the layer name should be the same as the map name, as only one layer is supported
 			statement.executeUpdate("CREATE TABLE layers_infos (" + "layerName STRING, mapKey LONG, zindex LONG, zoom  LONG, width LONG,height LONG, tiles_x LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
@@ -140,9 +144,8 @@ public class SQliteTileCreator {
 
 	public void finalizeFile() {
 		addInfos(name, author, source, title, description, zIndex, sourceWidth, sourceHeigth, mini, thumb);
-		createIndices();
 		try {
-			// connection.commit();
+			connection.commit();
 			connection.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -151,22 +154,11 @@ public class SQliteTileCreator {
 	}
 
 	public void addInfos(String name, String author, String source, String title, String description, int zindex, int width, int height, byte[] mini, byte[] thumb) {
-		// TABLE infos (name STRING, title STRING,description STRING, author
-		// STRING, source STRING, date STRING, zindex INTEGER, miniature
-		// BLOB,thumb BLOB)");
-
-		// String stat = "INSERT INTO infos VALUES(\"" + name + "\",\"" + title
-		// + "\",\""
-		// + description + "\",\"" + author + "\",\"" + source + "\",\""
-		// + System.currentTimeMillis() + "\"," + zindex + ", ?,?)";
-		//		
 		long mapID = 0;
-		// CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING,
-		// zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
 
 		String stat = "INSERT INTO infos VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 		String date = new Date(System.currentTimeMillis()).toString();
-		System.out.println("stat = " + stat);
+		// System.out.println("stat = " + stat);
 		try {
 			PreparedStatement ps = connection.prepareStatement(stat);
 			int i = 1;
@@ -189,17 +181,9 @@ public class SQliteTileCreator {
 		}
 	}
 
-	public void createIndices() {
-		try {
-			System.err.println("Quick fix : adding index for tiles_0_0");
-			Statement st = connection.createStatement();
-			st.execute("CREATE INDEX index_tiles_0_0 ON tiles_0_0(z,y,x)");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
 	public void addTile(int x, int y, int z, byte[] data, String fileSansDot) {
+		long stop, start;
+		start = System.nanoTime();
 		// String stat = "insert into ? values(" + x + "," + y + "," + z +
 		// ",?)";
 		try {
@@ -213,10 +197,13 @@ public class SQliteTileCreator {
 			System.err.println("Export failed !");
 			e.printStackTrace();
 		}
+		stop = System.nanoTime();
+		// System.out.println("writing_tile: " + ((double) (stop - start) / 1000000) + " ms");
 	}
 
 	public void addLevelInfos(String name, long mapID, int zoom, int width, int height, int tiles_x, int tiles_y, int offsetX, int offsetY) {
-
+		long stop, start;
+		start = System.nanoTime();
 		String layerName = "no name";
 		long zindex = 0;
 		String stat = "INSERT INTO layers_infos VALUES(\"" + layerName + "\"," + mapID + "," + zindex + "," + zoom + "," + width + "," + height + "," + tiles_x + "," + tiles_y + "," + offsetX + "," + offsetY + ")";
@@ -228,11 +215,16 @@ public class SQliteTileCreator {
 			System.err.println("Information insertion failed.");
 			e.printStackTrace();
 		}
+		stop = System.nanoTime();
+		// System.out.println("writing_level_info: " + ((double) (stop - start) / 1000000) + " ms");
+
 	}
 
-	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, JProgressBar progressIndicator) throws IOException {
+	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, JProgressBar progressIndicator, int nThreads) throws Exception {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
+		ExecutorService serialPool = Executors.newFixedThreadPool(nThreads);
+		ExecutorService plumberPool = Executors.newFixedThreadPool(1);
 
 		if (destinationFile == null || pathToFile == null) { return; }
 		// the pathTo file includes the fileName.
@@ -240,61 +232,42 @@ public class SQliteTileCreator {
 		String fileSansDot = pathToFile.substring(pathToFile.lastIndexOf(File.separator) + 1, pathToFile.lastIndexOf("."));
 		initSource(destinationFile, fileSansDot);
 
+		name = fileSansDot;
+		title = (null == title ? fileSansDot : title);
+		description = (null == description ? "No Description" : description);
+
 		// /////////////////////////////////
 		System.out.println("creating the tiles");
 		// //////////////////////////////
 		BufferedImage img = null;
-		if (ImageAndPDFFileFilter.getLowerCaseExt(pathToFile).endsWith("pdf")) {
-			img = PDFToImageRenderer.getImageFromPDFFile(pathToFile, 300);
-		} else {
-			ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
-			img = ImageIO.read(inStream);
-		} // //////////////////////////////
+		long stop, start;
+		start = System.nanoTime();
+
+		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
+		img = ImageIO.read(inStream);
+		// //////////////////////////////
+
+		stop = System.nanoTime();
+		System.out.println("opening_image: " + ((double) (stop - start) / 1000000) + " ms");
+
 		int width = img.getWidth();
 		int height = img.getHeight();
 
 		sourceWidth = width;
 		sourceHeigth = height;
 
-		int nbX = (width / tileSize) + 1;
-		int nbY = (height / tileSize) + 1;
+		int oldNbX = (width / tileSize) + 1;
+		int oldNbY = (height / tileSize) + 1;
+		int nbX = (int) Math.ceil((double) width / tileSize);
+		int nbY = (int) Math.ceil((double) height / tileSize);
+
+		// System.out.println("old : nbX=" + oldNbX + " nbY=" + oldNbY + " new : +nbX" + nbX + " nbY=" + nbY);
 
 		int scaledWidth = width;
 		int scaledHeight = height;
 		int zoom = 0;
 		// //////////////////////
-		Dimension pictureTiles = new Dimension(nbX, nbY);
-		Dimension pictureSize = new Dimension(width, height);
-		// /////////
-		// TODO : replace 500 by some variable/constant.
-		double scaleX = MINIATURE_SIZE / (double) width;
-		double scaleY = MINIATURE_SIZE / (double) height;
-		double scaleFactor = Math.max(scaleX, scaleY);
-		System.out.println("scaleX=" + scaleX + " scaleY=" + scaleY + " scale factor = " + scaleFactor);
-
-		scaledWidth = (int) (width * scaleFactor);
-		scaledHeight = (int) (height * scaleFactor);
-		// TODO too complex : find some simpler way
-		Image xxx = null;// miniature : img.getScaledInstance(scaledWidth,
-		// scaledHeight, Image.SCALE_SMOOTH);
-		// ImageIcon ic = new ImageIcon(xxx);
-		BufferedImage scaled = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
-		Graphics g = scaled.getGraphics();
-		g.drawImage(xxx, 0, 0, null);
-		g.dispose();
-		ImageIO.write(scaled, tileType, new File("mini.png"));
-		// ////////////////////////////////////////////
-		ByteArrayOutputStream byteStorage = new ByteArrayOutputStream();
-
-		// Connection con = initSource(destinationFile, fileSansDot);
-		byteStorage.reset();
-		// ImageIO.write(scaled, tileType, byteStorage);
-
-		name = fileSansDot;
-		title = (null == title ? fileSansDot : title);
-		description = (null == description ? "No Description" : description);
-
-		addLevelInfos(fileSansDot, mapID, 0, width, height, nbX, nbY, 0, 0);
+		Image xxx = null;
 		// //////////////////////////
 		// Creating Tiles.
 		BufferedImage buffer = null;
@@ -310,28 +283,28 @@ public class SQliteTileCreator {
 			aaX = aaX * ZOOM_FACTOR;
 			aaY = aaY * ZOOM_FACTOR;
 		}
-		if (null != progressIndicator) {
-			progressIndicator.setValue(100 / (aaMaxZoom + 1));
-			progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
-		}
-		// while (Math.min(scaledWidth, scaledHeight) > tileSize) {
+
+		boolean miniatureCreated = false;
 		while (scaledWidth > 320 || scaledHeight > 320) {
-			if (scaledWidth / 2 < 320 || scaledHeight / 2 < 430) {
+			if (!miniatureCreated && (scaledWidth / 2 < 320 || scaledHeight / 2 < 430)) {
+				start = System.nanoTime();
 				mini = GenericTileCreator.getMiniatureBytes(img, 320, 430, tileType);
 				thumb = GenericTileCreator.getMiniatureBytes(img, 47, 47, tileType);
+				stop = System.nanoTime();
+				miniatureCreated = true;
 			}
-			// localPath = currentDirPath + "/" + LAYER_PREFIX + zoom;
-			// out.createLayer(localPath);
-			// ///////////////////////////////////////////////
-			// Writing the layer dimensions
-			// dimensionFileName = scaledWidth + DIMENSION_SEPARATOR +
-			// scaledHeight + LAYER_DIMENSION_SUFFIX;
-			// out.createFile(localPath, dimensionFileName, new byte[] {});
+			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
+			if (null != progressIndicator) {
+				progressIndicator.setValue(100 / (aaMaxZoom + 1));
+				progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
+			}
 			int fillX = 0;
 			int fillY = 0;
 			fillX = ((nbX * tileSize) - scaledWidth);
 			fillY = ((nbY * tileSize) - scaledHeight);
-			System.out.println("fill x =" + fillX + " fill y=" + fillY);
+			// System.out.println("fill x =" + fillX + " fill y=" + fillY + " nbX=" + nbX + " nbY=" + nbY + " w=" +
+			// scaledWidth + " h=" + scaledHeight);
+			// System.out.println("fill x =" + fillX + " fill y=" + fillY);
 			for (int y = 0; y < nbY; y++) {
 				for (int x = 0; x < nbX; x++) {
 					int copyX = x * tileSize;
@@ -350,15 +323,6 @@ public class SQliteTileCreator {
 						pasteX = 0;
 						pasteWidth = tileSize;
 					}
-					// first line
-					/*if (y == 0) {
-						copyY = 0;
-						copyHeight = tileSize - fillY;
-						pasteY = 0;
-						pasteHeight = tileSize - fillY;
-					} else {
-						copyY = copyY - fillY;
-					}*/
 					// last column
 					if (x == nbX - 1) {
 						copyX = x * tileSize;
@@ -374,92 +338,124 @@ public class SQliteTileCreator {
 						pasteY = 0;
 						pasteHeight = copyHeight;
 					}
-					// System.out.println("x ="+x+" y="+y+ " copyX="+
-					// copyX+" copyY="+copyY+" copyWidth="+copyXX+" copyHeight="
-					// +copyYY+ " pasteX=" + pasteX
-					// +" -> pasteY="+pasteY+" pasteWidth="+
-					// pasteXX+" pasteHeight=" +pasteYY );
-					buffer = new BufferedImage(copyWidth, copyHeight, BufferedImage.TYPE_INT_RGB);
-					Graphics2D g2 = buffer.createGraphics();
-					g2.setColor(Color.DARK_GRAY);
-					g2.fillRect(0, 0, tileSize, tileSize);
-
-					// buffer = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_INT_RGB);
-					// Graphics2D g2 = buffer.createGraphics();
-					// g2.setColor(Color.DARK_GRAY);
-					// g2.fillRect(0, 0, tileSize, tileSize);
-
-					g2.drawImage(img, pasteX, pasteY, pasteWidth, pasteHeight, copyX, copyY, copyX + copyWidth, copyY + copyHeight, null);
-					g2.dispose();
-
-					otherBuffer = new BufferedImage(buffer.getWidth(), buffer.getHeight(), BufferedImage.OPAQUE);
-					Graphics2D g3 = (Graphics2D) otherBuffer.getGraphics();
-					g3.scale(1, -1);
-					g3.drawImage(buffer, 0, -buffer.getHeight(), null);
-					g3.dispose();
+					Rectangle clip = new Rectangle(copyX, copyY, copyWidth, copyHeight);
+					otherBuffer = FastClipper.fastClip(img, clip, false);
 
 					// //////////////////////////////////////
 					// Writing the tiles
-					try {
-						byteStorage.reset();
-						ImageIO.write(otherBuffer, tileType, byteStorage);
-						// addTile(x, (nbY - 1) - y, zoom, byteStorage.toByteArray(), fileSansDot);
-						addTile(x, y, zoom, byteStorage.toByteArray(), fileSansDot);
-						// out.createImageFile(localPath, fileName, buffer,
-						// tileType);// "jpg");
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
+					// System.out.println(x+"_"+y+"_"+zoom);
+					serialPool.execute(new TileSerializeJob(x, y, zoom, otherBuffer, plumberPool, connection, insertTile));
+
 					// //////////////////////////////////////
 					// TODO NOTE : to save memory, re read everything
 					// cleanly afterwards ?
-					// ServerSideTile t = new ServerSideTile(x, y, 0, out);
-					// tiles.put(getKey(x, y, 0), t);
+
 				}
 			}
-			scaledWidth = (int) (scaledWidth * ZOOM_FACTOR);
-			scaledHeight = (int) (scaledHeight * ZOOM_FACTOR);
-			System.out.println("scaled width " + scaledWidth + " height " + scaledHeight);
-			nbX = (scaledWidth / tileSize) + 1;
-			nbY = (scaledHeight / tileSize) + 1;
+			scaledWidth = (int) Math.ceil(scaledWidth * ZOOM_FACTOR);
+			scaledHeight = (int) Math.ceil(scaledHeight * ZOOM_FACTOR);
+			// System.out.println("scaled width " + scaledWidth + " height " + scaledHeight);
+			oldNbX = (scaledWidth / tileSize) + 1;
+			oldNbY = (scaledHeight / tileSize) + 1;
+			nbX = (int) Math.ceil((double) scaledWidth / tileSize);
+			nbY = (int) Math.ceil((double) scaledHeight / tileSize);
+			System.out.println("old : nbX=" + oldNbX + " nbY=" + oldNbY + " new : +nbX" + nbX + " nbY=" + nbY);
 
 			zoom++;
-			if (null != progressIndicator) {
-				progressIndicator.setValue((int) ((100 / (aaMaxZoom + 1)) * (zoom + 1)));
-				progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
-			}
+
+			start = System.nanoTime();
 			xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
 			img = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
 			Graphics g0 = img.createGraphics();
 
 			g0.drawImage(xxx, 0, 0, scaledWidth, scaledHeight, 0, 0, scaledWidth, scaledHeight, null);
 			g0.dispose();
-			System.out.println("zoom layer : " + zoom + " image size:" + img.getWidth() + "x" + img.getHeight());
-			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
+			stop = System.nanoTime();
+			System.out.println("scaled_image_" + zoom + ": " + ((double) (stop - start) / 1000000) + " ms");
+
+			// System.out.println("zoom layer : " + zoom + " image size:" + img.getWidth() + "x" + img.getHeight());
+		}
+		serialPool.shutdown();
+		serialPool.awaitTermination(15, TimeUnit.MINUTES);
+		start = System.nanoTime();
+
+		plumberPool.shutdown();
+		plumberPool.awaitTermination(15, TimeUnit.MINUTES);
+		System.out.println(" ... setting tile info");
+		setTileInfo(mapKey, tileType, tileSize, tileSize, null);
+		System.out.println(" ... creating index");
+		createIndexOnTileTable(connection, mapKey, layerKey);
+		System.out.println("tiles created");
+		stop = System.nanoTime();
+		// System.out.println("scaled_image_" + zoom + ": " + ((double) (stop - start) / 1000000) + " ms");
+		System.out.println("tiles created : Delta serializing / writing : " + ((double) (stop - start) / 1000000) + " ms");
+		doneCalculating = true;
+	}
+
+	public static void createIndexOnTileTable(Connection conn, long mapID, long layerID) {
+		try {
+			Statement st = conn.createStatement();
+			st.execute("CREATE INDEX index_tiles_" + mapID + "_" + layerID + " ON tiles_" + mapID + "_" + layerID + "(z,y,x)");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void setTileInfo(long mapID, String tileType, long tileWidth, long tileHeight, InputStream emptyTile) {
+		try {
+			PreparedStatement st = connection.prepareStatement("insert into tile_info values (?, ?, ?, ?, ?)");
+			// (mapKey, tileExt, tileWidth , tileHeight, emptyTile ):
+			st.setLong(1, mapID);
+			st.setString(2, tileType);
+			st.setLong(3, tileWidth);
+			st.setLong(4, tileHeight);
+			// st.setBlob(5, emptyTile);
+			st.execute();
+		} catch (SQLException e) {
+			System.err.println("Information insertion failed.");
+			e.printStackTrace();
 		}
 
-		System.out.println("tiles created");
-		doneCalculating = true;
 	}
 
 	public static void main(String[] args) throws Exception {
 		// "Beijing.pdf","Lijnennetkaartjul09kaartkant.pdf","allochrt.pdf",
 		String[] files;
-		// files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf", "CentraalStation09.pdf",
-		// "GVBStopGo17mrt08.pdf", "Lijnennetkaartjul09kaartkant.pdf", "Meyrin_A3_Paysage.pdf",
-		// "OpmNacht2009-06 Z los.pdf", "Prevessin_A3_Paysage.pdf", "WhyWeHere.pdf", "allochrt.pdf", "manbus.pdf" };
-		files = new String[] { "globcover_MOSAIC_H.png", "Beijingsubway2008.pdf", "Meyrin_A3_Paysage.pdf", "Prevessin_A3_Paysage.pdf", "manbus.pdf" };
-		String destDir = "/Users/niko/tileSources/mapRepository/";
+		// files = new String[] { "allochrt.pdf" };
+		files = new String[] { "pdfs/CERN_Prevessin_A3_Paysage.pdf" };
+		// files = new String[] { "globcover_MOSAIC_H.png" };
+
+		String destDir = "/Users/niko/tileSources/bench/";
 		String src = "/Users/niko/tileSources/";
 		// String file = ;
 		// files = new String[]{"manbus.pdf"};
-		SQliteTileCreator creator = new SQliteTileCreator();
-		for (String file : files) {
-			creator.title = file.substring(0, file.lastIndexOf("."));
-			System.out.println("Processing " + creator.title);
-			creator.calculateTiles(destDir + creator.title + Ref.ext_db, src + file, 192, "png", new JProgressBar());
-			creator.finalizeFile();
+		SQliteTileCreatorMultithreaded.loadLib();
+		SQliteTileCreatorMultithreaded creator = new SQliteTileCreatorMultithreaded();
+		long start, stop;
+		int count = 1;
+		int nThreads = 4;
+		int c = 0;
+		Thread.sleep(5000);
+		for (int i = 0; i < count; i++) {
+			System.gc();
+			for (String file : files) {
+				creator.title = file.substring(0, file.lastIndexOf(".")) + "_multi";
+				System.out.println("Processing " + creator.title);
+				String dstFile = destDir + creator.title + Ref.ext_db;
+				File f = new File(dstFile);
+				if (f.exists()) {
+					System.out.println("removing this file : " + dstFile);
+					f.delete();
+				}
+				start = System.nanoTime();
+				String fullPathdestFile = destDir + creator.title + Ref.ext_db;
+				System.out.println("Started : " + fullPathdestFile);
+				creator.calculateTiles(fullPathdestFile, src + file, 192, "png", new JProgressBar(), nThreads);
+				creator.finalizeFile();
+				stop = System.nanoTime();
+				System.out.println("## => total_time: " + ((double) (stop - start) / 1000000) + " ms nThreads = " + nThreads + " + 1 mains + 1 writer");
+				// MapViewer.main(new String[] { fullPathdestFile });
+			}
 		}
-
 	}
 }

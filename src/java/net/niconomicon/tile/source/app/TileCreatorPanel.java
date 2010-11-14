@@ -18,7 +18,9 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
+import net.niconomicon.tile.source.app.filter.ImageFileFilter;
 import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
+import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -33,6 +35,7 @@ public class TileCreatorPanel extends JPanel {
 	public static final int TILE_SIZE = 192;
 	public static final String TILE_TYPE = "png";
 
+	public static final String USER_HOME = "user.home";
 	protected JComboBox tileSize;
 
 	protected JTextField where;
@@ -53,7 +56,7 @@ public class TileCreatorPanel extends JPanel {
 	FileDialog dirChooserOSX;
 	JFileChooser dirChooser;
 
-	ImageAndPDFFileFilter imageFilter;
+	ImageFileFilter imageFilter;
 	FileFilter archiveFilter;
 
 	MapSharingPanel sharingPanel;
@@ -65,7 +68,7 @@ public class TileCreatorPanel extends JPanel {
 	JTextField source;
 
 	JButton finalizeButton;
-	SQliteTileCreator creator;
+	SQliteTileCreatorMultithreaded creator;
 
 	File temp;
 
@@ -73,7 +76,7 @@ public class TileCreatorPanel extends JPanel {
 
 	public TileCreatorPanel() {
 
-		creator = new SQliteTileCreator();
+		creator = new SQliteTileCreatorMultithreaded();
 		// setTitle("Tile Creator");
 		JPanel content = new JPanel(new BorderLayout());
 		JPanel option;
@@ -82,14 +85,14 @@ public class TileCreatorPanel extends JPanel {
 		// option.setLayout(l);
 		JPanel arch = new JPanel();
 
-		imageFilter = new ImageAndPDFFileFilter();
+		imageFilter = new ImageFileFilter();
 
 		sourceChooser = new JFileChooser();
 		sourceChooser.setAcceptAllFileFilterUsed(false);
 		sourceChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		sourceChooser.setFileFilter(imageFilter);
 		sourceChooser.setDialogTitle("Open image or pdf");
-		sourceChooser.setCurrentDirectory(new File("."));
+		sourceChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME)));
 		System.out.println("Current os name : " + System.getProperty("os.name"));
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
@@ -101,7 +104,7 @@ public class TileCreatorPanel extends JPanel {
 			dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
 			dirChooser.setDialogTitle("Choose directory to save the tile source");
-			dirChooser.setCurrentDirectory(new File("."));
+			dirChooser.setCurrentDirectory(sourceChooser.getCurrentDirectory());
 		}
 		preview = new TilingPreview();
 
@@ -252,7 +255,7 @@ public class TileCreatorPanel extends JPanel {
 						progressIndicator.setValue(1);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
-						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator);
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator, 8);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
 						finalizeButton.setEnabled(true);
@@ -304,6 +307,7 @@ public class TileCreatorPanel extends JPanel {
 							creator.finalizeFile();
 							temp.renameTo(new File(place, name));
 							sharingPanel.setRootDir(place);
+							System.gc();
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -366,9 +370,7 @@ public class TileCreatorPanel extends JPanel {
 				String dir = dirChooserOSX.getDirectory();
 				String file = dirChooserOSX.getFile();
 				System.out.println("Returned with directory : " + dir + file);
-				if(null==dir || null==file){
-					return;
-				}
+				if (null == dir || null == file) { return; }
 				File f = new File(dir + file);
 				String path;
 				if (f.isDirectory()) {

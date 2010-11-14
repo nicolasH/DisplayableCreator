@@ -30,10 +30,9 @@ public class MapSharingServiceAnnouncer {
 			}
 		}
 		return service;
-	}
+	} 
 
-	private MapSharingServiceAnnouncer() {
-	}
+	private MapSharingServiceAnnouncer() {}
 
 	public void startSharing(int port) {
 		shouldUnregister = false;
@@ -43,12 +42,16 @@ public class MapSharingServiceAnnouncer {
 			if (jmdns != null) {
 				jmdns.unregisterAllServices();
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
 			System.out.println("Opening JmDNS");
 			jmdns = JmDNS.create();
 			System.out.println("Opened JmDNS. Registering the service...");
 
 			try {
-				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 0, 0, "path=" + Ref.sharing_xmlRef);
+				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 0, 0,  "type=xml;path="+Ref.sharing_xmlRef );
 				jmdns.registerService(info);
 				System.out.println("\nRegistered Service as " + info);
 				if (shouldUnregister) {

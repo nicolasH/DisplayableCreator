@@ -5,6 +5,8 @@ package net.niconomicon.tile.source.app;
 
 import javax.swing.ImageIcon;
 
+import net.niconomicon.tile.source.app.viewer.TilingPreview;
+
 /**
  * @author niko
  * 

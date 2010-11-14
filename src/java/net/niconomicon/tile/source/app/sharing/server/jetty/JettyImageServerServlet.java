@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,7 +34,9 @@ public class JettyImageServerServlet extends HttpServlet {
 	}
 
 	public void addImages(Collection<String> documents) {
+		knownImages.clear();
 		knownImages.addAll(documents);
+
 		Map<String, String> refs = Ref.generateIndexFromFileNames(knownImages);
 		// for caching
 		Ref.extractThumbsAndMiniToTmpFile(refs);
@@ -47,16 +50,32 @@ public class JettyImageServerServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String request = req.getRequestURI();
 		System.out.println("URI : " + request);
+		if (request.compareTo("/") == 0) {
+			request = "/" + Ref.sharing_xmlRef;
+		}
 		if (null == imaginaryMap || !imaginaryMap.containsKey(request) || imaginaryMap.get(request) == null) {
 			resp.sendError(404, "The server could not find or get access to [" + request + "]");
 			return;
 		}
 		String string = imaginaryMap.get(request);
 
-		if (request.compareTo("/" + Ref.sharing_xmlRef) == 0 || request.compareTo("/" + Ref.sharing_htmlRef) == 0) {
+		if (request.compareTo("/" + Ref.sharing_xmlRef) == 0) {
 			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
 			try {
 				sendString(imaginaryMap.get(request), resp);
+				return;
+			} catch (Exception ex) {
+				resp.sendError(500, "The server encountered an error while trying to send the requested content for request [" + request + "]");
+				return;
+			}
+		}
+		if (request.compareTo("/" + Ref.sharing_htmlRef) == 0) {
+			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
+			try {
+				String resolvedAddress = Ref.app_handle + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
+				String htmlListing = imaginaryMap.get(request).replaceAll(Ref.app_handle, resolvedAddress);
+				sendString(htmlListing, resp);
+				return;
 			} catch (Exception ex) {
 				resp.sendError(500, "The server encountered an error while trying to send the requested content for request [" + request + "]");
 				return;

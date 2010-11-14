@@ -146,7 +146,6 @@ public class MapSharingPanel extends JPanel implements TableModelListener {
 			sharingManager.setPort(((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue());
 			sharingManager.setSharingList(sharedMaps);
 			sharingManager.startSharing();
-			System.out.println("shared maps :");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

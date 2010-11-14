@@ -14,9 +14,9 @@ import javax.swing.filechooser.FileFilter;
  * @author niko
  * 
  */
-public class ImageAndPDFFileFilter extends FileFilter {
+public class ImageFileFilter extends FileFilter {
 
-	public final Set<String> extensions = new HashSet<String>(Arrays.asList("png", "gif", "pdf", "jpeg", "jpg", "bmp"));
+	public final Set<String> extensions = new HashSet<String>(Arrays.asList("png", "gif", "jpeg", "jpg", "bmp"));
 
 	public boolean accept(File f) {
 		if (f.isDirectory()) { return true; }
@@ -27,7 +27,7 @@ public class ImageAndPDFFileFilter extends FileFilter {
 	}
 
 	public String getDescription() {
-		return "bmp, gif, jpg, png, pdf";
+		return "Supported images : bmp, gif, jpg, png";
 	}
 
 	/**
