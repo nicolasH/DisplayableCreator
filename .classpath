@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/forms-1.1.0.jar"/>
-	<classpathentry kind="lib" path="lib/jmdns.jar"/>
-	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.6.10.jar"/>
-	<classpathentry kind="lib" path="lib/PDFRenderer.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/servlet-api-2.5.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-server-7.0.1.v20091125.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-servlet-7.0.1.v20091125.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-util-7.0.1.v20091125.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-http-7.0.1.v20091125.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-continuation-7.0.1.v20091125.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-io-7.0.1.v20091125.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-distribution-7.0.1.v20091125/lib/jetty-security-7.0.1.v20091125.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry including="**/*.java" kind="src" path="src/java"/>
+	<classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1/activation-1.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.4.1/mail-1.4.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/asm/asm/3.1/asm-3.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/asm/asm-commons/3.1/asm-commons-3.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/asm/asm-tree/3.1/asm-tree-3.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/jgoodies/forms/1.2.1/forms-1.2.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/geronimo/specs/geronimo-annotation_1.0_spec/1.1.1/geronimo-annotation_1.0_spec-1.1.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/geronimo/specs/geronimo-jaspic_1.0_spec/1.0/geronimo-jaspic_1.0_spec-1.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/geronimo/specs/geronimo-jta_1.1_spec/1.1.1/geronimo-jta_1.1_spec-1.1.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/eclipse/jetty/aggregate/jetty-all/8.0.0.M1/jetty-all-8.0.0.M1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/jmdns/jmdns/3.2.1/jmdns-3.2.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/net/java/dev/pdf-renderer/1.6.2/pdf-renderer-1.6.2.jar" sourcepath="M2_REPO/net/java/dev/pdf-renderer/1.6.2/pdf-renderer-1.6.2-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/mortbay/jetty/servlet-api/3.0.20100224/servlet-api-3.0.20100224.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/xerial/sqlite-jdbc/3.7.2/sqlite-jdbc-3.7.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/pdf-jrasterizer"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
