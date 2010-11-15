@@ -26,7 +26,7 @@ import net.niconomicon.tile.source.app.tiling.TileSerializeJob;
 public class SQliteTileCreatorMultithreaded {
 	Connection connection;
 
-	public static final double MINIATURE_SIZE = 500;
+	public static final double MINIATURE_SIZE = 960;
 
 	public static double ZOOM_FACTOR = 0.5;
 	// public static int TILE_SIZE = 256;
@@ -53,9 +53,11 @@ public class SQliteTileCreatorMultithreaded {
 
 	private static class libLoader implements Runnable {
 		public void run() {
+			System.out.println("Trying to load the sqlite JDBC driver ...");
 			try {
 				Class.forName("org.sqlite.JDBC");
 			} catch (ClassNotFoundException ex) {
+				System.out.println("Loading the sqlite JDBC driver failed.");
 				ex.printStackTrace();
 				return;
 			}
@@ -69,6 +71,7 @@ public class SQliteTileCreatorMultithreaded {
 				connection.close();
 				temp.delete();
 				System.out.println("Deleted the temp file");
+				System.out.println("SQLite JDBC driver loaded.");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -339,7 +342,7 @@ public class SQliteTileCreatorMultithreaded {
 						pasteHeight = copyHeight;
 					}
 					Rectangle clip = new Rectangle(copyX, copyY, copyWidth, copyHeight);
-					otherBuffer = FastClipper.fastClip(img, clip, false);
+					otherBuffer = FastClipper.fastClip(img, clip, true);
 
 					// //////////////////////////////////////
 					// Writing the tiles
