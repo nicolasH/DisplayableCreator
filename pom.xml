@@ -7,9 +7,9 @@
 	<url>http://www.niconomicon.net/tests/maven/net/niconomicon/TileCreatorApp</url>
 	<dependencies>
 		<dependency>
-			<groupId>net.java.dev</groupId>
-			<artifactId>pdf-renderer</artifactId>
-			<version>1.6.2</version>
+			<groupId>net.niconomicon</groupId>
+			<artifactId>pdf-jrasterizer</artifactId>
+			<version>0.0.5</version>
 		</dependency>
 		<!-- <dependency> <groupId>org.mortbay.jetty</groupId> <artifactId>jetty</artifactId> 
 			<version>6.1.25</version> </dependency> -->
@@ -33,13 +33,10 @@
 			<artifactId>jmdns</artifactId>
 			<version>3.2.1</version>
 		</dependency>
+
 	</dependencies>
-	<distributionManagement>
-		<repository>
-			<id>niconomicon.repo</id>
-			<url>scp://ssh.phx.nearlyfreespeech.net/home/public/tests/maven</url>
-		</repository>
-	</distributionManagement>
+	<!--distributionManagement> <repository> <id>niconomicon.repo</id> <url>scp://ssh.phx.nearlyfreespeech.net/home/public/tests/maven</url> 
+		</repository> </distributionManagement -->
 	<build>
 		<sourceDirectory>src/java/</sourceDirectory>
 		<extensions>
@@ -62,6 +59,27 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.2</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>ImageToTiles</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo.webstart</groupId>
@@ -91,15 +109,15 @@
 						<!--validity>fillme</validity -->
 						<!-- only required for generating the keystore -->
 
-						<dnameCn>niconomicon.net</dnameCn>
+						<dnameCn>displayator.com</dnameCn>
 						<dnameOu>engineering</dnameOu>
-						<dnameO>niconomicon.net</dnameO>
+						<dnameO>ndisplayator.com</dnameO>
 						<dnameL>Geneva</dnameL>
 						<dnameSt>Geneva</dnameSt>
 						<dnameC>Switzerland</dnameC>
-						
+
 						<!-- verify that the signing operation succeeded -->
-						<verify>true</verify> 
+						<verify>true</verify>
 						<!-- KEYSTORE MANAGEMENT -->
 						<!-- -->
 						<keystoreConfig>
@@ -108,15 +126,15 @@
 						</keystoreConfig>
 					</sign>
 					<!-- BUILDING PROCESS -->
-					
+
 					<pack200>true</pack200>
 					<gzip>true</gzip>
-					
-					 <!-- default force when pack200 false, true when pack200 selected ?? -->
+
+					<!-- default force when pack200 false, true when pack200 selected ?? -->
 					<!-- causes a version attribute to be output in each jar resource element, 
 						optional, default is false -->
 					<outputJarVersions>false</outputJarVersions>
-					
+
 					<!--install>false</install --> <!-- not yet supported -->
 					<verbose>false</verbose>
 					<!-- deploy command : -->
