@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import net.niconomicon.jrasterizer.utils.FastClipper;
 import net.niconomicon.tile.source.app.Ref;
 
 /**
@@ -45,6 +46,7 @@ public class MapViewer extends JPanel {
 
 	public MapViewer() {
 		super();
+		cache = new HashMap<String, BufferedImage>();
 		try {
 			Class.forName("org.sqlite.JDBC");
 			// System.out.println("Loaded the sqliteJDBC Driver class ?");
@@ -57,9 +59,10 @@ public class MapViewer extends JPanel {
 
 	}
 
-	
 	public void setTileSource(String tileSourcePath) {
-
+		if (cache != null) {
+			cache.clear();
+		}
 		try {
 			System.out.println("trying to open the map : " + tileSourcePath);
 			mapDB = DriverManager.getConnection("jdbc:sqlite:" + tileSourcePath);
@@ -82,9 +85,8 @@ public class MapViewer extends JPanel {
 				this.setPreferredSize(new Dimension(width, height));
 			}
 			// cache = new HashMap<String, byte[]>();
-			cache = new HashMap<String, BufferedImage>();
 			setupCacheForTiles(zoom);
-
+			revalidate();
 		} catch (Exception ex) {
 			System.err.println("ex for map : " + tileSourcePath);
 			ex.printStackTrace();
@@ -108,34 +110,34 @@ public class MapViewer extends JPanel {
 			byte[] data = rs.getBytes(4);
 			// cache.put(x + "_" + y + "_" + z, data);
 			BufferedImage tile = ImageIO.read(new ByteArrayInputStream(data));
-			BufferedImage image = new BufferedImage(tile.getWidth(),tile.getHeight(),BufferedImage.OPAQUE);
-			Graphics2D g2 = (Graphics2D)image.getGraphics();
-			g2.scale(1, -1);
-			g2.drawImage(tile, 0,-tile.getHeight(), null);
-			g2.dispose();
+			BufferedImage image = FastClipper.fastClip(tile, new Rectangle(0, 0, tile.getWidth(), tile.getHeight()), true);
+			// Graphics2D g2 = (Graphics2D) image.getGraphics();
+			// g2.scale(1, -1);
+			// g2.drawImage(tile, 0, -tile.getHeight(), null);
+			// g2.dispose();
 			cache.put(x + "_" + y + "_" + z, image);
-//			cache.put(x + "_" + y + "_" + z, tile);
+			// cache.put(x + "_" + y + "_" + z, tile);
 
 		}
-System.out.println("Caching done.");
+		System.out.println("Caching done.");
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-//		System.out.println("paintComponent");
+		// System.out.println("paintComponent");
 		Graphics2D g2 = (Graphics2D) g;
 		Rectangle r = g2.getClipBounds();
 		int tileXa = r.x / tileSize;
 		int tileXb = tileXa + r.width / tileSize + 2;
 		int tileYa = r.y / tileSize;
 		int tileYb = tileYa + r.height / tileSize + 1;
-		
-//		System.out.println("Painting between " + tileXa + "," + tileYa + "and " + tileXb + ", " + tileYb);
+
+		// System.out.println("Painting between " + tileXa + "," + tileYa + "and " + tileXb + ", " + tileYb);
 		try {
 			int macYb = (maxY - 1 - tileYa);
 			int macYa = (maxY - 1 - tileYb);
-			
+
 			macYa = tileYa;
 			macYb = tileYb;
 			for (int x = tileXa; x < tileXb; x++) {
@@ -146,13 +148,13 @@ System.out.println("Caching done.");
 					if (null != tile) {
 						// BufferedImage image = ImageIO.read(new ByteArrayInputStream(data));
 						// g2.drawImage(image, x * tileSize, (maxY - 1 - y) * tileSize, null);
-//						g2.scale(1, 1);
-//						g2.drawImage(tile, x * tileSize, (maxY - 1 - y) * tileSize, null);
-//						System.out.println("painting " + x + "_" + y  + " at "  + x * tileSize +" "+( maxY - 1 - y) * tileSize);
-						g2.drawImage(tile, x * tileSize, ( y) * tileSize, null);
-					}
-					else{
-//						System.out.println("tile is null for : "+x + "_" + y + "_" + zoom);
+						// g2.scale(1, 1);
+						// g2.drawImage(tile, x * tileSize, (maxY - 1 - y) * tileSize, null);
+						// System.out.println("painting " + x + "_" + y + " at " + x * tileSize +" "+( maxY - 1 - y) *
+						// tileSize);
+						g2.drawImage(tile, x * tileSize, (y) * tileSize, null);
+					} else {
+						// System.out.println("tile is null for : "+x + "_" + y + "_" + zoom);
 					}
 				}
 			}
@@ -162,8 +164,6 @@ System.out.println("Caching done.");
 		g2.dispose();
 	}
 
-	
-
 	/**
 	 * @param args
 	 */
@@ -171,17 +171,12 @@ System.out.println("Caching done.");
 		// TODO Auto-generated method stub
 		String dir = "";// /Users/niko/tileSources/mapRepository/
 		String file = "test.mdb";
-		dir = "/Users/niko/tileSources/";
-		 file = "globcover_MOSAIC_H.mdb";
-		 file = "manbus.mdb";
-//		 file="fromServer/almosttrees_mro_big.mdb";
-		 file="bench/almosttrees_mro_big.mdb";
-//		 file="Lijnennetkaartjul09kaartkant.pdf.mdb";
-//		file = "globcover_MOSAIC_H.flipped.png.mdb";
-		 if(args.length == 1){
-			 dir ="";
-			 file= args[0];
-		 }
+		dir = "/Users/niko/tileSources/serving/";
+		file = "busRomaCenter.mdb";
+		if (args.length == 1) {
+			dir = "";
+			file = args[0];
+		}
 		MapViewer mV = new MapViewer();
 		mV.setTileSource(dir + file);
 		JScrollPane p = new JScrollPane(mV);

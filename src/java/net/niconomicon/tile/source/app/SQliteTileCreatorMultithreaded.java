@@ -345,14 +345,8 @@ public class SQliteTileCreatorMultithreaded {
 					otherBuffer = FastClipper.fastClip(img, clip, true);
 
 					// //////////////////////////////////////
-					// Writing the tiles
-					// System.out.println(x+"_"+y+"_"+zoom);
+					// Saving the tile
 					serialPool.execute(new TileSerializeJob(x, y, zoom, otherBuffer, plumberPool, connection, insertTile));
-
-					// //////////////////////////////////////
-					// TODO NOTE : to save memory, re read everything
-					// cleanly afterwards ?
-
 				}
 			}
 			scaledWidth = (int) Math.ceil(scaledWidth * ZOOM_FACTOR);

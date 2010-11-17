@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -25,17 +24,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 
 /**
  * @author niko
  * 
  */
-public class MapSharingPanel extends JPanel implements TableModelListener {
+public class MapSharingPanel extends JPanel implements TableModelListener, ListSelectionListener {
 
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
@@ -43,6 +46,8 @@ public class MapSharingPanel extends JPanel implements TableModelListener {
 	JSpinner portNumber;
 	JLabel sharingStatus;
 	String rootDir = "/Users/niko/Sites/testApp/mapRepository";
+
+	ImageTileSetViewer viewer;
 
 	/**
 	 * stand alone main
@@ -82,11 +87,28 @@ public class MapSharingPanel extends JPanel implements TableModelListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+	 */
+	public void valueChanged(ListSelectionEvent arg0) {
+		// TODO Auto-generated method stub
+		if (!arg0.getValueIsAdjusting()) {
+			String tileSourceLocation = mapList.getFileLocation(arg0.getFirstIndex());
+			System.out.println("Setting the tile source location to " + tileSourceLocation);	
+			viewer.setTileSet(tileSourceLocation);
+		}
+	}
+
+	public void setViewer(ImageTileSetViewer viewer) {
+		this.viewer = viewer;
+	}
+
 	public void init() {
 		sharingManager = new SharingManager();
 		mapList = new CheckBoxMapTable();
 		mapList.getModel().addTableModelListener(this);
-
+		mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		mapList.getSelectionModel().addListSelectionListener(this);
 		this.setLayout(new BorderLayout());
 
 		// shared files

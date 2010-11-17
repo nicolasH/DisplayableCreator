@@ -26,7 +26,7 @@ public class CheckBoxMapTable extends JTable {
 
 	public CheckBoxMapTable() {
 		super();
-		
+
 		model = new CustomTableModel();
 		this.setModel(model);
 		this.getColumnModel().getColumn(0).setPreferredWidth(30);
@@ -36,9 +36,12 @@ public class CheckBoxMapTable extends JTable {
 		// this.add(scrollPane,BorderLayout.CENTER);
 	}
 
-	
 	public void setData(Map<String, String> names) {
 		model.setData(names);
+	}
+
+	public String getFileLocation(int index) {
+		return (String) ((Vector) model.getDataVector().elementAt(index)).elementAt(2);
 	}
 
 	private class CustomTableModel extends DefaultTableModel {
