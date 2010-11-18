@@ -38,7 +38,7 @@ import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
  * @author niko
  * 
  */
-public class MapSharingPanel extends JPanel implements TableModelListener, ListSelectionListener {
+public class MapSharingPanel extends JPanel implements TableModelListener {
 
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
@@ -87,28 +87,19 @@ public class MapSharingPanel extends JPanel implements TableModelListener, ListS
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-	 */
-	public void valueChanged(ListSelectionEvent arg0) {
-		// TODO Auto-generated method stub
-		if (!arg0.getValueIsAdjusting()) {
-			String tileSourceLocation = mapList.getFileLocation(arg0.getFirstIndex());
-			System.out.println("Setting the tile source location to " + tileSourceLocation);	
-			viewer.setTileSet(tileSourceLocation);
-		}
-	}
-
 	public void setViewer(ImageTileSetViewer viewer) {
 		this.viewer = viewer;
 	}
 
+//	{			String tileSourceLocation = mapList.getFileLocation(arg0.getFirstIndex());
+//	System.out.println("Setting the tile source location to " + tileSourceLocation);	
+//	viewer.setTileSet(tileSourceLocation);}
 	public void init() {
 		sharingManager = new SharingManager();
 		mapList = new CheckBoxMapTable();
 		mapList.getModel().addTableModelListener(this);
 		mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		mapList.getSelectionModel().addListSelectionListener(this);
+//		mapList.getSelectionModel().addListSelectionListener(this);
 		this.setLayout(new BorderLayout());
 
 		// shared files

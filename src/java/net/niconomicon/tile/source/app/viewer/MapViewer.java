@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
@@ -17,6 +16,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -25,6 +27,7 @@ import javax.swing.JScrollPane;
 
 import net.niconomicon.jrasterizer.utils.FastClipper;
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.TileCreatorApp;
 
 /**
  * @author niko
@@ -44,6 +47,8 @@ public class MapViewer extends JPanel {
 	int maxY = 0;
 	int zoom = 0;
 
+	ExecutorService exe;
+
 	public MapViewer() {
 		super();
 		cache = new HashMap<String, BufferedImage>();
@@ -56,7 +61,7 @@ public class MapViewer extends JPanel {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-
+		exe = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount);
 	}
 
 	public void setTileSource(String tileSourcePath) {
@@ -108,17 +113,10 @@ public class MapViewer extends JPanel {
 			int z = rs.getInt(3);
 			// System.out.println("found a tile for " + x + " " + y + " " + z);
 			byte[] data = rs.getBytes(4);
-			// cache.put(x + "_" + y + "_" + z, data);
-			BufferedImage tile = ImageIO.read(new ByteArrayInputStream(data));
-			BufferedImage image = FastClipper.fastClip(tile, new Rectangle(0, 0, tile.getWidth(), tile.getHeight()), true);
-			// Graphics2D g2 = (Graphics2D) image.getGraphics();
-			// g2.scale(1, -1);
-			// g2.drawImage(tile, 0, -tile.getHeight(), null);
-			// g2.dispose();
-			cache.put(x + "_" + y + "_" + z, image);
-			// cache.put(x + "_" + y + "_" + z, tile);
-
+			String key = x + "_" + y + "_" + z;
+			exe.execute(new FlipAndAddAction(data, key));
 		}
+		exe.awaitTermination(2, TimeUnit.MINUTES);
 		System.out.println("Caching done.");
 	}
 
@@ -187,5 +185,30 @@ public class MapViewer extends JPanel {
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	private class FlipAndAddAction implements Runnable {
+		byte[] tile;
+		String key;
+
+		public FlipAndAddAction(byte[] tile, String key) {
+			this.tile = tile;
+			this.key = key;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Runnable#run()
+		 */
+		public void run() {
+			try {
+				BufferedImage t = ImageIO.read(new ByteArrayInputStream(tile));
+				t = FastClipper.fastClip(t, new Rectangle(0, 0, t.getWidth(), t.getHeight()), true);
+				synchronized (cache) {
+					cache.put(key, t);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 }
