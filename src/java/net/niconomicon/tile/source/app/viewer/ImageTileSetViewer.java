@@ -15,15 +15,15 @@ import javax.swing.SwingUtilities;
  */
 public class ImageTileSetViewer extends JScrollPane {
 
-	MapViewer tileViewer;
+	ImageTileSetPanel tileViewer;
 	String tileSetLocation;
 	JFrame viewerFrame;
 
 	public static ImageTileSetViewer createInstance() {
-		return new ImageTileSetViewer(new MapViewer());
+		return new ImageTileSetViewer(new ImageTileSetPanel());
 	}
 
-	private ImageTileSetViewer(MapViewer tileViewer) {
+	private ImageTileSetViewer(ImageTileSetPanel tileViewer) {
 		super(tileViewer);
 		this.tileViewer = tileViewer;
 		init();

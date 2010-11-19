@@ -33,7 +33,7 @@ import net.niconomicon.tile.source.app.TileCreatorApp;
  * @author niko
  * 
  */
-public class MapViewer extends JPanel {
+public class ImageTileSetPanel extends JPanel {
 	Connection mapDB;
 	public static final int tileSize = 192;
 
@@ -49,7 +49,7 @@ public class MapViewer extends JPanel {
 
 	ExecutorService exe;
 
-	public MapViewer() {
+	public ImageTileSetPanel() {
 		super();
 		cache = new HashMap<String, BufferedImage>();
 		try {
@@ -175,7 +175,7 @@ public class MapViewer extends JPanel {
 			dir = "";
 			file = args[0];
 		}
-		MapViewer mV = new MapViewer();
+		ImageTileSetPanel mV = new ImageTileSetPanel();
 		mV.setTileSource(dir + file);
 		JScrollPane p = new JScrollPane(mV);
 		JFrame frame = new JFrame("Map Viewer");
