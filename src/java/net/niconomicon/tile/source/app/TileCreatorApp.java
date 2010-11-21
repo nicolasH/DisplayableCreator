@@ -21,7 +21,7 @@ public class TileCreatorApp {
 
 	TileCreatorPanel tileCreatorPanel;
 	MapSharingPanel mapSharingPanel;
-	ImageTileSetViewer tileSetViewerPanel;
+	ImageTileSetViewer tileSetViewer;
 
 	public static int ThreadCount = 4;
 	public TileCreatorApp() {
@@ -30,9 +30,9 @@ public class TileCreatorApp {
 
 	private void init() {
 		JFrame f = new JFrame("Image Cutter App");
+		tileSetViewer = ImageTileSetViewer.createInstance();
 		tileCreatorPanel = new TileCreatorPanel();
-		mapSharingPanel = new MapSharingPanel();
-		tileSetViewerPanel = ImageTileSetViewer.createInstance();
+		mapSharingPanel = new MapSharingPanel(tileSetViewer);
 
 		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder("Create Tile Set"));
 		mapSharingPanel.setBorder(BorderFactory.createTitledBorder("Share Tile Sets"));
@@ -40,7 +40,6 @@ public class TileCreatorApp {
 		p.add(tileCreatorPanel, BorderLayout.NORTH);
 		p.add(mapSharingPanel, BorderLayout.CENTER);
 		tileCreatorPanel.setSharingService(mapSharingPanel);
-		mapSharingPanel.setViewer(tileSetViewerPanel);
 		f.setContentPane(p);
 		f.pack();
 		f.setVisible(true);

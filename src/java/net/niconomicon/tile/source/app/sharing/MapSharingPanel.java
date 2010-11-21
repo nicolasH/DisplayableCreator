@@ -54,7 +54,7 @@ public class MapSharingPanel extends JPanel implements TableModelListener {
 	 * 
 	 */
 	public static void main(String[] args) {
-		MapSharingPanel service = new MapSharingPanel();
+		MapSharingPanel service = new MapSharingPanel(null);
 		JFrame frame = new JFrame("Map Sharing Service");
 		frame.setContentPane(service);
 		frame.pack();
@@ -70,7 +70,8 @@ public class MapSharingPanel extends JPanel implements TableModelListener {
 		frame.setVisible(true);
 	}
 
-	public MapSharingPanel() {
+	public MapSharingPanel(ImageTileSetViewer viewer) {
+		this.viewer = viewer;
 		init();
 	}
 
@@ -87,19 +88,15 @@ public class MapSharingPanel extends JPanel implements TableModelListener {
 		}
 	}
 
-	public void setViewer(ImageTileSetViewer viewer) {
-		this.viewer = viewer;
-	}
-
-//	{			String tileSourceLocation = mapList.getFileLocation(arg0.getFirstIndex());
-//	System.out.println("Setting the tile source location to " + tileSourceLocation);	
-//	viewer.setTileSet(tileSourceLocation);}
+	// { String tileSourceLocation = mapList.getFileLocation(arg0.getFirstIndex());
+	// System.out.println("Setting the tile source location to " + tileSourceLocation);
+	// viewer.setTileSet(tileSourceLocation);}
 	public void init() {
 		sharingManager = new SharingManager();
-		mapList = new CheckBoxMapTable();
+		mapList = new CheckBoxMapTable(viewer);
 		mapList.getModel().addTableModelListener(this);
 		mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//		mapList.getSelectionModel().addListSelectionListener(this);
+		// mapList.getSelectionModel().addListSelectionListener(this);
 		this.setLayout(new BorderLayout());
 
 		// shared files

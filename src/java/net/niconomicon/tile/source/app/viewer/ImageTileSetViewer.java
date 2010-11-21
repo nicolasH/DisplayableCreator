@@ -42,7 +42,11 @@ public class ImageTileSetViewer extends JScrollPane {
 	}
 
 	public void setTileSet(String tileSetLocation) {
+		System.out.println("setting tile set");
 		this.tileSetLocation = tileSetLocation;
+		viewerFrame.pack();
+		viewerFrame.setVisible(true);
+
 		Thread t = new Thread(new TileSourceSetter(tileSetLocation));
 		t.start();
 	}

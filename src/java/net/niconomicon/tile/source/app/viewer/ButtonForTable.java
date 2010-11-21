@@ -19,35 +19,33 @@ import javax.swing.table.TableCellRenderer;
  */
 public class ButtonForTable extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, ActionListener {
 
-	long lastRow = 0;
+	String lastValue = null;
 	JButton ren;
+	ImageTileSetViewer viewer;
 
-	public ButtonForTable() {
+	public ButtonForTable(ImageTileSetViewer viewer) {
 		ren = new JButton("view");
+		this.viewer = viewer;
 	}
 
 	public Object getCellEditorValue() {
-		return "view";
+		return lastValue;
 	}
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		System.out.println("Asking for the cell renderer at (" + row + " " + column + ") value : " + value);
 
-		JButton b = ren;// new JButton("view");
-		// if (null != value) {
-		// b.setText(value.toString());
-		// } else {
+		JButton b = ren;
 		b.setText("view");
-		// }
 		return b;
 	}
 
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 		System.out.println("Asking for the cell editor at (" + row + " " + column + ") : value " + value);
-		lastRow = row;
+		lastValue = value.toString();
 		JButton b = new JButton("view");
 		b.addActionListener(this);
-		b.setText(value.toString());
+		// b.setText(value.toString());
 		return b;
 	}
 
@@ -55,7 +53,10 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("Action performed. Presumably at row " + lastRow);
-//		setTileSet()
+		if (null != viewer) {
+			viewer.setTileSet(lastValue);
+		}
+		System.out.println("Action performed. Presumably at row " + lastValue);
+		// setTileSet()
 	}
 }
