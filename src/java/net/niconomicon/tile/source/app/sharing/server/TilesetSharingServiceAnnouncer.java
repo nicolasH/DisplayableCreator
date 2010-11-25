@@ -14,25 +14,25 @@ import net.niconomicon.tile.source.app.Ref;
  * @author niko
  * 
  */
-public class MapSharingServiceAnnouncer {
+public class TilesetSharingServiceAnnouncer {
 
 	private int servicePort;
 	JmDNS jmdns;
 
-	static MapSharingServiceAnnouncer service;
+	static TilesetSharingServiceAnnouncer service;
 	boolean shouldExit = false;
 	boolean shouldUnregister = false;
 
-	public static MapSharingServiceAnnouncer getInstance() {
+	public static TilesetSharingServiceAnnouncer getInstance() {
 		synchronized (Ref.sharing_serviceName) {
 			if (service == null) {
-				service = new MapSharingServiceAnnouncer();
+				service = new TilesetSharingServiceAnnouncer();
 			}
 		}
 		return service;
 	} 
 
-	private MapSharingServiceAnnouncer() {}
+	private TilesetSharingServiceAnnouncer() {}
 
 	public void startSharing(int port) {
 		shouldUnregister = false;

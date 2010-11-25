@@ -10,7 +10,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
+import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 
 /**
@@ -20,7 +20,7 @@ import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 public class TileCreatorApp {
 
 	TileCreatorPanel tileCreatorPanel;
-	MapSharingPanel mapSharingPanel;
+	TilesetSharingPanel mapSharingPanel;
 	ImageTileSetViewer tileSetViewer;
 
 	public static int ThreadCount = 4;
@@ -32,7 +32,7 @@ public class TileCreatorApp {
 		JFrame f = new JFrame("Image Cutter App");
 		tileSetViewer = ImageTileSetViewer.createInstance();
 		tileCreatorPanel = new TileCreatorPanel();
-		mapSharingPanel = new MapSharingPanel(tileSetViewer);
+		mapSharingPanel = new TilesetSharingPanel(tileSetViewer);
 
 		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder("Create Tile Set"));
 		mapSharingPanel.setBorder(BorderFactory.createTitledBorder("Share Tile Sets"));

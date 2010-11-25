@@ -5,7 +5,7 @@ package net.niconomicon.tile.source.app.sharing;
 
 import java.util.Collection;
 
-import net.niconomicon.tile.source.app.sharing.server.MapSharingServiceAnnouncer;
+import net.niconomicon.tile.source.app.sharing.server.TilesetSharingServiceAnnouncer;
 import net.niconomicon.tile.source.app.sharing.server.jetty.JettyImageServerServlet;
 
 import org.eclipse.jetty.server.Server;
@@ -62,7 +62,7 @@ public class SharingManager {
 		*/
 
 	int port = -1;
-	MapSharingServiceAnnouncer sharingAnnouncer;
+	TilesetSharingServiceAnnouncer sharingAnnouncer;
 	JettyImageServerServlet service;
 	Server server;
 	ServletContextHandler context;

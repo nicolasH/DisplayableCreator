@@ -33,15 +33,12 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	}
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		System.out.println("Asking for the cell renderer at (" + row + " " + column + ") value : " + value);
-
 		JButton b = ren;
 		b.setText("view");
 		return b;
 	}
 
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-		System.out.println("Asking for the cell editor at (" + row + " " + column + ") : value " + value);
 		lastValue = value.toString();
 		JButton b = new JButton("view");
 		b.addActionListener(this);

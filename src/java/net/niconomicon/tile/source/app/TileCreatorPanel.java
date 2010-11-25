@@ -19,7 +19,7 @@ import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
-import net.niconomicon.tile.source.app.sharing.MapSharingPanel;
+import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -59,7 +59,7 @@ public class TileCreatorPanel extends JPanel {
 	ImageFileFilter imageFilter;
 	FileFilter archiveFilter;
 
-	MapSharingPanel sharingPanel;
+	TilesetSharingPanel sharingPanel;
 	TilingPreview preview;
 
 	JTextArea description;
@@ -320,7 +320,7 @@ public class TileCreatorPanel extends JPanel {
 		}
 	}
 
-	public void setSharingService(MapSharingPanel sharingPanel) {
+	public void setSharingService(TilesetSharingPanel sharingPanel) {
 		this.sharingPanel = sharingPanel;
 	}
 

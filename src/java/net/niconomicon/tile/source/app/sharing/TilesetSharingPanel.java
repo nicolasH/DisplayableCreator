@@ -38,7 +38,7 @@ import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
  * @author niko
  * 
  */
-public class MapSharingPanel extends JPanel implements TableModelListener {
+public class TilesetSharingPanel extends JPanel implements TableModelListener {
 
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
@@ -54,8 +54,8 @@ public class MapSharingPanel extends JPanel implements TableModelListener {
 	 * 
 	 */
 	public static void main(String[] args) {
-		MapSharingPanel service = new MapSharingPanel(null);
-		JFrame frame = new JFrame("Map Sharing Service");
+		TilesetSharingPanel service = new TilesetSharingPanel(null);
+		JFrame frame = new JFrame("Tileset Sharing Service");
 		frame.setContentPane(service);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -63,14 +63,14 @@ public class MapSharingPanel extends JPanel implements TableModelListener {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				// TODO Auto-generated method stub
-				((MapSharingPanel) ((JFrame) e.getSource()).getContentPane()).stopSharing();
+				((TilesetSharingPanel) ((JFrame) e.getSource()).getContentPane()).stopSharing();
 				super.windowClosing(e);
 			}
 		});
 		frame.setVisible(true);
 	}
 
-	public MapSharingPanel(ImageTileSetViewer viewer) {
+	public TilesetSharingPanel(ImageTileSetViewer viewer) {
 		this.viewer = viewer;
 		init();
 	}
