@@ -22,12 +22,12 @@ import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
  * @author niko
  * 
  */
-public class CheckBoxMapTable extends JTable {
+public class CheckBoxTileSetTable extends JTable {
 
 	CustomTableModel model;
 	boolean sharingDefaut = true;
 
-	public CheckBoxMapTable(ImageTileSetViewer viewer) {
+	public CheckBoxTileSetTable(ImageTileSetViewer viewer) {
 		super();
 
 		model = new CustomTableModel();
@@ -116,7 +116,7 @@ public class CheckBoxMapTable extends JTable {
 		mapLost.put("frane.mdb", "Map of france");
 		mapLost.put("faso.mdb", "Map of burkina Faso");
 		mapLost.put("uk.mdb", "Map of United kingdom of england and northern ireland");
-		CheckBoxMapTable list = new CheckBoxMapTable(null);
+		CheckBoxTileSetTable list = new CheckBoxTileSetTable(null);
 		f.setContentPane(list);
 		f.pack();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

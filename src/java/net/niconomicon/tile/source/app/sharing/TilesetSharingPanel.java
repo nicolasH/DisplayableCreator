@@ -42,7 +42,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
-	CheckBoxMapTable mapList;
+	CheckBoxTileSetTable mapList;
 	JSpinner portNumber;
 	JLabel sharingStatus;
 	String rootDir = "/Users/niko/Sites/testApp/mapRepository";
@@ -93,7 +93,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	// viewer.setTileSet(tileSourceLocation);}
 	public void init() {
 		sharingManager = new SharingManager();
-		mapList = new CheckBoxMapTable(viewer);
+		mapList = new CheckBoxTileSetTable(viewer);
 		mapList.getModel().addTableModelListener(this);
 		mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		// mapList.getSelectionModel().addListSelectionListener(this);

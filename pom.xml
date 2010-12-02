@@ -6,11 +6,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<url>http://www.niconomicon.net/tests/maven/net/niconomicon/TileCreatorApp</url>
 	<dependencies>
-		<dependency>
-			<groupId>net.niconomicon</groupId>
-			<artifactId>pdf-jrasterizer</artifactId>
-			<version>0.0.5</version>
-		</dependency>
 		<!-- <dependency> <groupId>org.mortbay.jetty</groupId> <artifactId>jetty</artifactId> 
 			<version>6.1.25</version> </dependency> -->
 		<dependency>

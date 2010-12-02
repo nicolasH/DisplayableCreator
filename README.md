@@ -6,7 +6,7 @@ It then allows one to share the created db over the network.
 
 It uses jmdns for announcing the service on the lan and Jetty for the file serving.
 
-###Usage :
+### Usage :
 
 # Phase 1 : Tile set creation.
 

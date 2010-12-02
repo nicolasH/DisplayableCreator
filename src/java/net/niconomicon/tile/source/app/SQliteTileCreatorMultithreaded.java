@@ -20,7 +20,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.JProgressBar;
 
-import net.niconomicon.jrasterizer.utils.FastClipper;
+import net.niconomicon.tile.source.app.tiling.FastClipper;
 import net.niconomicon.tile.source.app.tiling.TileSerializeJob;
 
 public class SQliteTileCreatorMultithreaded {

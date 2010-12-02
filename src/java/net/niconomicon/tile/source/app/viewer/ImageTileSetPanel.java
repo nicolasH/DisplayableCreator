@@ -25,9 +25,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import net.niconomicon.jrasterizer.utils.FastClipper;
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.TileCreatorApp;
+import net.niconomicon.tile.source.app.tiling.FastClipper;
 
 /**
  * @author niko
