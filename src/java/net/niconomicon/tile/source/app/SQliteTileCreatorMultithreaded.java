@@ -43,7 +43,7 @@ public class SQliteTileCreatorMultithreaded {
 	public String author;
 	public String source;
 
-	long mapKey;
+	long tilesetKey;
 	long layerKey;
 	int zIndex;
 	int sourceWidth;
@@ -51,38 +51,30 @@ public class SQliteTileCreatorMultithreaded {
 	byte[] mini;
 	byte[] thumb;
 
-	private static class libLoader implements Runnable {
-		public void run() {
-			System.out.println("Trying to load the sqlite JDBC driver ...");
-			try {
-				Class.forName("org.sqlite.JDBC");
-			} catch (ClassNotFoundException ex) {
-				System.out.println("Loading the sqlite JDBC driver failed.");
-				ex.printStackTrace();
-				return;
-			}
-			Connection connection = null;
-			try {
-				File temp = File.createTempFile("tempMap", Ref.ext_db);
-				// create a database connection
-				System.out.println("Opening a connection to the temp db");
-				connection = DriverManager.getConnection("jdbc:sqlite:" + temp.getAbsolutePath());
-				System.out.println("Connected to the temp file");
-				connection.close();
-				temp.delete();
-				System.out.println("Deleted the temp file");
-				System.out.println("SQLite JDBC driver loaded.");
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
 
 	public static void loadLib() {
-
-		Thread t = new Thread(new libLoader());
-		t.start();
-
+		System.out.println("Trying to load the sqlite JDBC driver ...");
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException ex) {
+			System.out.println("Loading the sqlite JDBC driver failed.");
+			ex.printStackTrace();
+			return;
+		}
+		Connection connection = null;
+		try {
+			File temp = File.createTempFile("tempMap", Ref.ext_db);
+			// create a database connection
+			System.out.println("Opening a connection to the temp db");
+			connection = DriverManager.getConnection("jdbc:sqlite:" + temp.getAbsolutePath());
+			System.out.println("Connected to the temp file");
+			connection.close();
+			temp.delete();
+			System.out.println("Deleted the temp file");
+			System.out.println("SQLite JDBC driver loaded.");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public boolean doneCalculating = false;
@@ -96,11 +88,11 @@ public class SQliteTileCreatorMultithreaded {
 	 * @param fileSansDot
 	 */
 	public void initSource(String archiveName, String fileSansDot) {
-		mapKey = -1;
+		tilesetKey = -1;
 		layerKey = -1;
 
-		if (mapKey == -1) {
-			mapKey = 0;// currently only one map per database
+		if (tilesetKey == -1) {
+			tilesetKey = 0;// currently only one map per database
 		}
 		if (layerKey == -1) {
 			layerKey = 0;// currently only one layer per map
@@ -126,15 +118,15 @@ public class SQliteTileCreatorMultithreaded {
 			statement.executeUpdate("drop table if exists infos");
 			statement.executeUpdate("drop table if exists tile_infos");
 			statement.executeUpdate("drop table if exists level_infos");
-			statement.executeUpdate("drop table if exists tiles_" + mapKey);
+			statement.executeUpdate("drop table if exists tiles_" + tilesetKey);
 			//
 			statement.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB)");
 			statement.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
 			// currently the layer name should be the same as the map name, as only one layer is supported
 			statement.executeUpdate("CREATE TABLE layers_infos (" + "layerName STRING, mapKey LONG, zindex LONG, zoom  LONG, width LONG,height LONG, tiles_x LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
-			statement.executeUpdate("CREATE TABLE tiles_" + mapKey + "_" + layerKey + " (x LONG , y LONG, z LONG, data BLOB)");
+			statement.executeUpdate("CREATE TABLE tiles_" + tilesetKey + "_" + layerKey + " (x LONG , y LONG, z LONG, data BLOB)");
 			// Prepare most frequently used statement;
-			String insertTiles = "insert into tiles_" + mapKey + "_" + layerKey + " values( ?, ?, ?, ?)";
+			String insertTiles = "insert into tiles_" + tilesetKey + "_" + layerKey + " values( ?, ?, ?, ?)";
 			insertTile = connection.prepareStatement(insertTiles);
 			insertTile.clearParameters();
 		} catch (SQLException e) {
@@ -166,7 +158,7 @@ public class SQliteTileCreatorMultithreaded {
 			PreparedStatement ps = connection.prepareStatement(stat);
 			int i = 1;
 			ps.setString(i++, title);
-			ps.setLong(i++, mapKey);
+			ps.setLong(i++, tilesetKey);
 			// ps.setString(i++, name);
 			ps.setString(i++, description);
 			ps.setString(i++, author);
@@ -379,9 +371,9 @@ public class SQliteTileCreatorMultithreaded {
 		plumberPool.shutdown();
 		plumberPool.awaitTermination(15, TimeUnit.MINUTES);
 		System.out.println(" ... setting tile info");
-		setTileInfo(mapKey, tileType, tileSize, tileSize, null);
+		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null);
 		System.out.println(" ... creating index");
-		createIndexOnTileTable(connection, mapKey, layerKey);
+		createIndexOnTileTable(connection, tilesetKey, layerKey);
 		System.out.println("tiles created");
 		stop = System.nanoTime();
 		// System.out.println("scaled_image_" + zoom + ": " + ((double) (stop - start) / 1000000) + " ms");
@@ -416,23 +408,19 @@ public class SQliteTileCreatorMultithreaded {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// "Beijing.pdf","Lijnennetkaartjul09kaartkant.pdf","allochrt.pdf",
 		String[] files;
-		// files = new String[] { "allochrt.pdf" };
 		files = new String[] { "pdfs/CERN_Prevessin_A3_Paysage.pdf" };
-		// files = new String[] { "globcover_MOSAIC_H.png" };
 
 		String destDir = "/Users/niko/tileSources/bench/";
 		String src = "/Users/niko/tileSources/";
-		// String file = ;
-		// files = new String[]{"manbus.pdf"};
+		
 		SQliteTileCreatorMultithreaded.loadLib();
 		SQliteTileCreatorMultithreaded creator = new SQliteTileCreatorMultithreaded();
 		long start, stop;
 		int count = 1;
 		int nThreads = 4;
 		int c = 0;
-		Thread.sleep(5000);
+		//Thread.sleep(5000);
 		for (int i = 0; i < count; i++) {
 			System.gc();
 			for (String file : files) {

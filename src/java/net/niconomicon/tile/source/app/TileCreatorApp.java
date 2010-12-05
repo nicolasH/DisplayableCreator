@@ -44,7 +44,12 @@ public class TileCreatorApp {
 		f.pack();
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		SQliteTileCreatorMultithreaded.loadLib();
+		Thread t = new Thread(new Runnable(){
+			public void run(){
+				SQliteTileCreatorMultithreaded.loadLib();				
+			}
+		});
+		t.start();
 	}
 
 	public static void main(String[] args) {
