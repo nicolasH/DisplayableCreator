@@ -413,14 +413,14 @@ public class SQliteTileCreatorMultithreaded {
 
 		String destDir = "/Users/niko/tileSources/bench/";
 		String src = "/Users/niko/tileSources/";
-		
+		//This call blocks until done (duh) - for usually more than 2 second. It loads the native sqlite library.
 		SQliteTileCreatorMultithreaded.loadLib();
 		SQliteTileCreatorMultithreaded creator = new SQliteTileCreatorMultithreaded();
 		long start, stop;
 		int count = 1;
 		int nThreads = 4;
 		int c = 0;
-		//Thread.sleep(5000);
+
 		for (int i = 0; i < count; i++) {
 			System.gc();
 			for (String file : files) {

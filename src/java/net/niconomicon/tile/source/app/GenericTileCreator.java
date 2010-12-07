@@ -30,13 +30,6 @@ public class GenericTileCreator {
 
 	public void createTileSource(String sourcePath, String destFile, String title) throws Exception{
 
-//		int a = destFile.lastIndexOf(File.separator) + 1;
-//		int b = destFile.lastIndexOf(".");
-//		if (-1 == b) {
-//			b = sourcePath.length();
-//		}
-//		String fileNameNoExt = sourcePath.substring(a, b);
-
 		System.out.println("Processing " + creator.title);
 		creator.title = title;
 		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null,4);// new JProgressBar());
