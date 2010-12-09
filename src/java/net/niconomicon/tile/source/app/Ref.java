@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public final class Ref {
 
-	public static int sharing_port = 8080;
+	public static int sharing_port = 8889;
 	public static final String sharing_serviceName = "TiledImageSharingService";
 
 	public static final String sharing_xmlRef = "TiledImages.xml";

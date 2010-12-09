@@ -20,6 +20,7 @@ import javax.swing.filechooser.FileFilter;
 import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
 import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
+import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
 import com.jgoodies.forms.builder.PanelBuilder;

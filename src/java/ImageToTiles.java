@@ -3,7 +3,7 @@ import java.io.File;
 import javax.swing.JProgressBar;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.SQliteTileCreatorMultithreaded;
+import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 
 /**
  * 

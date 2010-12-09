@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
+import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 
 /**

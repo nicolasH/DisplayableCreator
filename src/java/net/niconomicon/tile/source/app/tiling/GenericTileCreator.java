@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.niconomicon.tile.source.app;
+package net.niconomicon.tile.source.app.tiling;
 
 import java.awt.Graphics;
 import java.awt.Image;

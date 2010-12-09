@@ -1,4 +1,4 @@
-package net.niconomicon.tile.source.app;
+package net.niconomicon.tile.source.app.tiling;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -19,9 +19,6 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.JProgressBar;
-
-import net.niconomicon.tile.source.app.tiling.FastClipper;
-import net.niconomicon.tile.source.app.tiling.TileSerializeJob;
 
 public class SQliteTileCreatorMultithreaded {
 	Connection connection;
@@ -63,7 +60,7 @@ public class SQliteTileCreatorMultithreaded {
 		}
 		Connection connection = null;
 		try {
-			File temp = File.createTempFile("tempMap", Ref.ext_db);
+			File temp = File.createTempFile("tempMap", "tmp");
 			// create a database connection
 			System.out.println("Opening a connection to the temp db");
 			connection = DriverManager.getConnection("jdbc:sqlite:" + temp.getAbsolutePath());
@@ -411,6 +408,7 @@ public class SQliteTileCreatorMultithreaded {
 		String[] files;
 		files = new String[] { "pdfs/CERN_Prevessin_A3_Paysage.pdf" };
 
+		
 		String destDir = "/Users/niko/tileSources/bench/";
 		String src = "/Users/niko/tileSources/";
 		//This call blocks until done (duh) - for usually more than 2 second. It loads the native sqlite library.
@@ -420,26 +418,24 @@ public class SQliteTileCreatorMultithreaded {
 		int count = 1;
 		int nThreads = 4;
 		int c = 0;
-
+		String extension = ".its";//For "image tile set"
 		for (int i = 0; i < count; i++) {
 			System.gc();
 			for (String file : files) {
 				creator.title = file.substring(0, file.lastIndexOf(".")) + "_multi";
 				System.out.println("Processing " + creator.title);
-				String dstFile = destDir + creator.title + Ref.ext_db;
+				String dstFile = destDir + creator.title + extension;
 				File f = new File(dstFile);
 				if (f.exists()) {
 					System.out.println("removing this file : " + dstFile);
 					f.delete();
 				}
 				start = System.nanoTime();
-				String fullPathdestFile = destDir + creator.title + Ref.ext_db;
-				System.out.println("Started : " + fullPathdestFile);
-				creator.calculateTiles(fullPathdestFile, src + file, 192, "png", new JProgressBar(), nThreads);
+				System.out.println("Started : " + dstFile);
+				creator.calculateTiles(dstFile, src + file, 192, "png", new JProgressBar(), nThreads);
 				creator.finalizeFile();
 				stop = System.nanoTime();
 				System.out.println("## => total_time: " + ((double) (stop - start) / 1000000) + " ms nThreads = " + nThreads + " + 1 mains + 1 writer");
-				// MapViewer.main(new String[] { fullPathdestFile });
 			}
 		}
 	}
