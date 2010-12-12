@@ -39,9 +39,9 @@ public class TileCreatorPanel extends JPanel {
 	public static final String USER_HOME = "user.home";
 	protected JComboBox tileSize;
 
-	protected JTextField where;
+	protected JLabel where;
 	protected JTextField outputFileName;
-	protected JTextField from;
+	protected JLabel from;
 
 	protected JButton browseInput;
 	protected JButton browseOutput;
@@ -109,7 +109,7 @@ public class TileCreatorPanel extends JPanel {
 		}
 		preview = new TilingPreview();
 
-		from = new JTextField("", 20);
+		from = new JLabel("");
 		browseInput = new JButton("Browse");
 		browseInput.addActionListener(new InputActionListener());
 
@@ -129,7 +129,7 @@ public class TileCreatorPanel extends JPanel {
 
 		// load from file name
 		outputFileName = new JTextField("", 10);
-		where = new JTextField("", 20);
+		where = new JLabel("");
 
 		browseOutput = new JButton("Browse");
 		browseOutput.addActionListener(new ActionListener() {
