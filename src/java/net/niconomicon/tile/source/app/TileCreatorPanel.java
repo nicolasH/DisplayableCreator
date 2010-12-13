@@ -1,11 +1,13 @@
 package net.niconomicon.tile.source.app;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -39,9 +41,9 @@ public class TileCreatorPanel extends JPanel {
 	public static final String USER_HOME = "user.home";
 	protected JComboBox tileSize;
 
-	protected JLabel where;
+	protected JTextField where;
 	protected JTextField outputFileName;
-	protected JLabel from;
+	protected JTextField from;
 
 	protected JButton browseInput;
 	protected JButton browseOutput;
@@ -109,7 +111,8 @@ public class TileCreatorPanel extends JPanel {
 		}
 		preview = new TilingPreview();
 
-		from = new JLabel("");
+		from = new JTextField("", 20);
+		from.setEditable(false);
 		browseInput = new JButton("Browse");
 		browseInput.addActionListener(new InputActionListener());
 
@@ -129,7 +132,9 @@ public class TileCreatorPanel extends JPanel {
 
 		// load from file name
 		outputFileName = new JTextField("", 10);
-		where = new JLabel("");
+
+		where = new JTextField("", 20);
+		where.setEditable(false);
 
 		browseOutput = new JButton("Browse");
 		browseOutput.addActionListener(new ActionListener() {
@@ -272,7 +277,6 @@ public class TileCreatorPanel extends JPanel {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-
 	}
 
 	public void finalizeTilesDB() {
@@ -341,6 +345,7 @@ public class TileCreatorPanel extends JPanel {
 				s = sourceChooser.getSelectedFile().getName();
 				try {
 					from.setText(sourceChooser.getSelectedFile().getCanonicalPath());
+					from.setToolTipText("Image Tile set is going to be created from "+sourceChooser.getSelectedFile().getCanonicalPath());
 					String fileName = sourceChooser.getSelectedFile().getName();
 					String fileSansDot = fileName.substring(0, fileName.lastIndexOf("."));
 					title.setText(fileSansDot);
@@ -350,7 +355,7 @@ public class TileCreatorPanel extends JPanel {
 					outputFileName.setText(fileSansDot + Ref.ext_db);
 					preTile(sourceChooser.getSelectedFile().getAbsolutePath());
 				} catch (Exception e) {
-					from.setText("cannot Open File");
+					from.setText("Sorry, cannot open the file");
 					e.printStackTrace();
 				}
 			}
@@ -380,6 +385,7 @@ public class TileCreatorPanel extends JPanel {
 					path = dir;
 				}
 				where.setText(path);
+				where.setToolTipText("Going to save the image tileSet in :"+path);
 				setRootDir(path);
 				return;
 			}

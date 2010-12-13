@@ -106,28 +106,28 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		// //////////////////////////////////////////
 		// port number
 		JPanel p = new JPanel(new GridLayout(0, 2));
-		p.add(new JLabel("Map sharing port : "));
+		p.add(new JLabel("Image TileSet sharing port : "));
 		portNumber = new JSpinner(new SpinnerNumberModel(Ref.sharing_port, 1025, 65536, 1));
 		p.add(portNumber);
 		options.add(p);
 		// start sharing
-		sharingStatus = new JLabel("Map Sharing status : [not running]");
+		sharingStatus = new JLabel("Image TileSet Sharing status : [not running]");
 		options.add(sharingStatus);
-		JButton shareButton = new JButton("Start map sharing");
+		JButton shareButton = new JButton("Start Image TileSet sharing");
 		shareButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				currentlySharing = !currentlySharing;
 				JButton b = (JButton) e.getSource();
 				if (currentlySharing) {
-					sharingStatus.setText("Map Sharing status : [starting ...]");
+					sharingStatus.setText("Image TileSet Sharing status : [starting ...]");
 					startSharing();
-					sharingStatus.setText("Map Sharing status : [running]");
-					b.setText("Stop map sharing");
+					sharingStatus.setText("Image TileSet Sharing status : [running]");
+					b.setText("Stop Image TileSet sharing");
 				} else {
-					sharingStatus.setText("Map Sharing status : [stopping ...]");
+					sharingStatus.setText("Image TileSet Sharing status : [stopping ...]");
 					stopSharing();
-					sharingStatus.setText("Map Sharing status : [not running]");
-					b.setText("Start mapsharing");
+					sharingStatus.setText("Image TileSet Sharing status : [not running]");
+					b.setText("Start Image TileSet sharing");
 				}
 			}
 		});
