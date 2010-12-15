@@ -32,6 +32,11 @@
 	</dependencies>
 	<!--distributionManagement> <repository> <id>niconomicon.repo</id> <url>scp://ssh.phx.nearlyfreespeech.net/home/public/tests/maven</url> 
 		</repository> </distributionManagement -->
+	<scm>
+		<developerConnection>Nicolas Hoibian</developerConnection>
+		<!-- Read only -->
+		<url>git://github.com/nicolasH/displayatorTileCreator.git</url>
+	</scm>
 	<build>
 		<sourceDirectory>src/java/</sourceDirectory>
 		<extensions>
@@ -92,7 +97,7 @@
 					<!-- JNLP generation -->
 					<jnlp>
 						<outputFile>tile-creator-app.jnlp</outputFile> <!-- defaults to launch.jnlp -->
-						<mainClass>net.niconomicon.tile.source.appTileCreatorApp</mainClass>
+						<mainClass>net.niconomicon.tile.source.app.TileCreatorApp</mainClass>
 					</jnlp>
 					<sign>
 						<keystore>/Users/niko/keystore_jnlp/ks</keystore>
@@ -106,7 +111,7 @@
 
 						<dnameCn>displayator.com</dnameCn>
 						<dnameOu>engineering</dnameOu>
-						<dnameO>ndisplayator.com</dnameO>
+						<dnameO>displayator.com</dnameO>
 						<dnameL>Geneva</dnameL>
 						<dnameSt>Geneva</dnameSt>
 						<dnameC>Switzerland</dnameC>
@@ -133,7 +138,7 @@
 					<!--install>false</install --> <!-- not yet supported -->
 					<verbose>false</verbose>
 					<!-- deploy command : -->
-					<!-- scp -r target/jnlp/* nhoibian_niconomicon@ssh.phx.nearlyfreespeech.net:/home/public/tests/maven/net/niconomicon/pdf-jrasterizer/ -->
+					<!-- scp -r target/jnlp/* nhoibian_displayator@ssh.phx.nearlyfreespeech.net:/home/public/TileCreatorApp/jnlp/ -->
 				</configuration>
 			</plugin>
 		</plugins>

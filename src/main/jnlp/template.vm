@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="www.displayator.com/TileCreatorApp/jnlp">
+    <information>
+        <title>Tile Creator App</title>
+        <vendor>Nicolas Hoibian</vendor>
+        <description>This app is meant to create tilesets for the displayator iPhone / iPod touch app</description>
+        <description kind="short">TileCreatorApp</description>
+        <homepage href=""/>
+        <offline-allowed/>
+    </information>
+  <security>
+    <all-permissions/>
+  </security>
+
+    <resources>
+        <j2se version="1.5+" java-vm-args="-Xmx1024M"/>
+        $dependencies
+	</resources>
+	<application-desc main-class="$mainClass"/>
+</jnlp>
