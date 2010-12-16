@@ -6,6 +6,8 @@ It then allows one to share the created db over the network.
 
 It uses jmdns for announcing the service on the lan and Jetty for the file serving.
 
+You can run it [from the displayator website as a jnlp][jnlp] (java webstart).
+
 ### Usage :
 
 # Phase 1 : Tile set creation.
@@ -21,3 +23,5 @@ Your iphone needs to be on the same network as the computer on which you run the
 
 - Click "start sharing".  
 - On your iPhone/ iPod launch the app and then go in the "download images" view. The availables images should appear quickly. You can then download them.
+
+[jnlp]:http://www.displayator.com/TileCreatorApp/jnlp/tile-creator-app.jnlp
