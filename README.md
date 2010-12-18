@@ -11,6 +11,8 @@ For transferring the tile sets to the iDevice, the app uses the mDNS standard (a
 
 You can run the current latest version of it [from the displayator website as a jnlp][jnlp] (java webstart).
 
+The supported images types are the standard GIF, PNG, BMP and most jpgs (but not those that use the CMYK color profile).
+
 ### Usage :
 
 # Phase 1 : Tile set creation.
@@ -25,7 +27,7 @@ You can run the current latest version of it [from the displayator website as a 
 Your iphone needs to be on the same network as the computer on which you run the tile set creator for sharing to work.
 
 - Click "start sharing".  
-- On your iPhone/ iPod launch the app and then go in the "download images" view. The available images should appear shortly. You can then download them.
+- On your iPhone/ iPod launch the app and then tap on the "Download images" list item. The available images should appear shortly. You can then download them.
 
 [jnlp]:http://www.displayator.com/TileCreatorApp/jnlp/tile-creator-app.jnlp
 [jmdns]:http://jmdns.sourceforge.net/
