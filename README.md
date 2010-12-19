@@ -11,7 +11,12 @@ For transferring the tile sets to the iDevice, the app uses the mDNS standard (a
 
 You can run the current latest version of it [from the displayator website as a jnlp][jnlp] (java webstart).
 
-The supported images types are the standard GIF, PNG, BMP and most jpgs (but not those that use the CMYK color profile).
+The supported images types are the standard GIF, PNG, BMP and most jpgs. Not supported formats include CMYK JPEG, PDF and TIFFs.
+
+The Java app [PDF-JRasterizer][pdf-jr] can save some PDFs to the JPEG or PNG formats. Here are the [PDF-JRasterizer project on github][pdf-jr-git] & [PDF-JRasterizer jnlp][pdf-jr-jnlp].
+
+For PDFs that don't work with [PDF-JRasterizer][pdf-jr], Mac users can use the Preview app to save PDFs as png or JPEGs. 
+
 
 ### Usage :
 
@@ -32,3 +37,6 @@ Your iphone needs to be on the same network as the computer on which you run the
 [jnlp]:http://www.displayator.com/TileCreatorApp/jnlp/tile-creator-app.jnlp
 [jmdns]:http://jmdns.sourceforge.net/
 [jetty]:http://eclipse.org/jetty/
+[pdf-jr]:http://www.niconomicon.net/projects/java/pdf-jrasterizer/
+[pdf-jr-git]:https://github.com/nicolasH/pdf-jrasterizer
+[pdf-jr-jnlp]:http://www.niconomicon.net/tests/maven/net/niconomicon/pdf-jrasterizer/pdf-jrasterizer.jnlp
