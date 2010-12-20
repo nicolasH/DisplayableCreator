@@ -94,9 +94,9 @@ public class TileCreatorPanel extends JPanel {
 		sourceChooser.setAcceptAllFileFilterUsed(false);
 		sourceChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		sourceChooser.setFileFilter(imageFilter);
-		sourceChooser.setDialogTitle("Open image or pdf");
+		sourceChooser.setDialogTitle("Open Supported Images");
 		sourceChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME)));
-		System.out.println("Current os name : " + System.getProperty("os.name"));
+		//TODO check if java version > 1.5 otherwise it might crash :-(
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
 			dirChooserOSX = new FileDialog(JFrame.getFrames()[0]);
