@@ -1,13 +1,13 @@
 package net.niconomicon.tile.source.app;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FileDialog;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -19,15 +19,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
-import net.niconomicon.tile.source.app.filter.ImageAndPDFFileFilter;
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
 import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * @author niko
@@ -82,7 +77,7 @@ public class TileCreatorPanel extends JPanel {
 		creator = new SQliteTileCreatorMultithreaded();
 		// setTitle("Tile Creator");
 		JPanel content = new JPanel(new BorderLayout());
-		JPanel option;
+		JPanel option = new JPanel(new GridBagLayout());
 		// option = new JPanel();
 		// BoxLayout l = new BoxLayout(option, BoxLayout.Y_AXIS);
 		// option.setLayout(l);
@@ -144,74 +139,50 @@ public class TileCreatorPanel extends JPanel {
 				// SwingUtilities.invokeLater(new RootDirSetter());
 			}
 		});
-		// //////////////////
-		// Using the form layout.
-		FormLayout layout = new FormLayout(
-		// columns
-		"right:pref, 5dlu, left:pref, 5dlu, left:pref",
-		// rows
-		"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu,p, 3dlu, p, 3dlu, p, 9dlu, p");
-		// 15
-		PanelBuilder builder = new PanelBuilder(layout);
-		builder.setDefaultDialogBorder();
 
-		// Obtain a reusable constraints object to place components in the grid.
-		CellConstraints cc = new CellConstraints();
+		//Replacing the FormLayout by a GridBagLayout
+		GridBagConstraints c;
+		int y = 0;
+		int x = 0;
 
-		// Fill the grid with components; the builder can create
-		// frequently used components, e.g. separators and labels.
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		c.anchor = c.LINE_END;
+		option.add(new JLabel("Source image :"),c);
 
-		// Add a titled separator to cell (1, 1) that spans 7 columns.
-		int y = 1;
-		builder.addLabel("Source image", cc.xy(1, y));
-		builder.add(from, cc.xy(3, y));
-		builder.add(browseInput, cc.xy(5, y));
-
-		y++;
-		y++;
-		builder.addLabel("Title : ", cc.xy(1, y));
-		builder.add(title, cc.xy(3, y));
-
-		// y++;
-		// y++;
-		// builder.addLabel("Author : ", cc.xy(1, y));
-		// builder.add(author, cc.xy(3, y));
-
-		// y++;
-		// y++;
-		// builder.addLabel("Source : ", cc.xy(1, y));
-		// builder.add(source, cc.xy(3, y));
-
-		// y++;
-		// y++;
-		// builder.addLabel("Description :", cc.xy(1, y));
-		// builder.add(description, cc.xyw(3, y, 3));
-		//
-		// y++;
-		// y++;
-		// builder.addLabel("tile side size", cc.xy(1, y));
-		// builder.add(tileSize, cc.xy(3, y));
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		c.anchor = c.LINE_END;
+		option.add(new JLabel("Title :"), c);
 
 		// //////////////
-		y++;
-		y++;
-		builder.addLabel("save as", cc.xy(1, y));
-		builder.add(outputFileName, cc.xyw(3, y, 3));
 
-		y++;
-		y++;
-		builder.addLabel("in directory", cc.xy(1, y));
-		builder.add(where, cc.xy(3, y));
-		builder.add(browseOutput, cc.xy(5, y));
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		c.anchor = c.LINE_END;
+		option.add(new JLabel("Save as :"), c);
+		
 
-		y++;
-		y++;
+
+
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		c.anchor = c.LINE_END;
+		option.add(new JLabel("In directory :"),c);
+		
+
 		progressIndicator = new JProgressBar(0, 100);
-		builder.addLabel("current action", cc.xy(1, y));
-		builder.add(progressIndicator, cc.xyw(3, y, 3));
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		c.anchor = c.LINE_END;
+		option.add(new JLabel("Current action :"),c);
 
-		y++;
-		y++;
+
 		finalizeButton = new JButton("Finalize Tiles DB");
 		finalizeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -219,11 +190,18 @@ public class TileCreatorPanel extends JPanel {
 			}
 		});
 		finalizeButton.setEnabled(false);
-		builder.add(finalizeButton, cc.xy(3, y));
+
+//		builder.add(title, cc.xy(3, y));
+//		builder.add(from, cc.xy(3, y));
+//		builder.add(browseInput, cc.xy(5, y));
+//		builder.add(outputFileName, cc.xyw(3, y, 3));
+//		builder.add(where, cc.xy(3, y));
+//		builder.add(browseOutput, cc.xy(5, y));
+//		builder.add(progressIndicator, cc.xyw(3, y, 3));
+//		builder.add(finalizeButton, cc.xy(3, y));
 
 		// The builder holds the layout container that we now return.
-		option = builder.getPanel();
-		// return builder.getPanel();
+////		option = builder.getPanel();
 		content.add(option, BorderLayout.CENTER);
 		// content.add(new JLabel("Image goes here"), BorderLayout.CENTER);
 
@@ -345,7 +323,7 @@ public class TileCreatorPanel extends JPanel {
 				s = sourceChooser.getSelectedFile().getName();
 				try {
 					from.setText(sourceChooser.getSelectedFile().getCanonicalPath());
-					from.setToolTipText("Image Tile set is going to be created from "+sourceChooser.getSelectedFile().getCanonicalPath());
+					from.setToolTipText("Image Tile set is going to be created from " + sourceChooser.getSelectedFile().getCanonicalPath());
 					String fileName = sourceChooser.getSelectedFile().getName();
 					String fileSansDot = fileName.substring(0, fileName.lastIndexOf("."));
 					title.setText(fileSansDot);
@@ -385,7 +363,7 @@ public class TileCreatorPanel extends JPanel {
 					path = dir;
 				}
 				where.setText(path);
-				where.setToolTipText("Going to save the image tileSet in :"+path);
+				where.setToolTipText("Going to save the image tileSet in :" + path);
 				setRootDir(path);
 				return;
 			}
