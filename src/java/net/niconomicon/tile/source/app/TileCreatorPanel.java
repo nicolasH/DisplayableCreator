@@ -165,9 +165,6 @@ public class TileCreatorPanel extends JPanel {
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("Save as :"), c);
 		
-
-
-
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
@@ -191,14 +188,47 @@ public class TileCreatorPanel extends JPanel {
 		});
 		finalizeButton.setEnabled(false);
 
-//		builder.add(title, cc.xy(3, y));
-//		builder.add(from, cc.xy(3, y));
-//		builder.add(browseInput, cc.xy(5, y));
-//		builder.add(outputFileName, cc.xyw(3, y, 3));
-//		builder.add(where, cc.xy(3, y));
-//		builder.add(browseOutput, cc.xy(5, y));
-//		builder.add(progressIndicator, cc.xyw(3, y, 3));
-//		builder.add(finalizeButton, cc.xy(3, y));
+		y= 0;
+		x = 1;
+		c = new GridBagConstraints();
+		c.gridy = y;
+		c.gridx = x;
+		option.add(from, c);
+		
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x+1;
+		option.add(browseInput, c);
+
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		option.add(title, c);
+		
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		option.add(outputFileName, c);
+		
+		c = new GridBagConstraints();
+		c.gridy = y;
+		c.gridx = x;
+		option.add(where, c);
+		
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x+1;
+		option.add(browseOutput, c);
+	
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		option.add(progressIndicator, c);
+
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		option.add(finalizeButton, c);
 
 		// The builder holds the layout container that we now return.
 ////		option = builder.getPanel();
