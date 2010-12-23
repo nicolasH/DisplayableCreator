@@ -75,13 +75,8 @@ public class TileCreatorPanel extends JPanel {
 	public TileCreatorPanel() {
 
 		creator = new SQliteTileCreatorMultithreaded();
-		// setTitle("Tile Creator");
 		JPanel content = new JPanel(new BorderLayout());
 		JPanel option = new JPanel(new GridBagLayout());
-		// option = new JPanel();
-		// BoxLayout l = new BoxLayout(option, BoxLayout.Y_AXIS);
-		// option.setLayout(l);
-		JPanel arch = new JPanel();
 
 		imageFilter = new ImageFileFilter();
 
@@ -136,7 +131,6 @@ public class TileCreatorPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Thread t = new Thread(new RootDirSetter());
 				t.start();
-				// SwingUtilities.invokeLater(new RootDirSetter());
 			}
 		});
 
@@ -230,22 +224,12 @@ public class TileCreatorPanel extends JPanel {
 		c.gridx = x;
 		option.add(finalizeButton, c);
 
-		// The builder holds the layout container that we now return.
-////		option = builder.getPanel();
+
 		content.add(option, BorderLayout.CENTER);
 		// content.add(new JLabel("Image goes here"), BorderLayout.CENTER);
 
 		this.setLayout(new BorderLayout());
 		this.add(content, BorderLayout.NORTH);
-		/*
-		JPanel all = new JPanel(new BorderLayout());
-		all.add(content, BorderLayout.NORTH);
-		//TilingPreview preview = new TilingPreview();
-		// this.setContentPane(content);
-		 		this.setContentPane(all);
-				this.pack();
-				this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				this.setVisible(true);*/
 	}
 
 	protected String currentSourcePath;
