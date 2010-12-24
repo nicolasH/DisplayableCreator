@@ -187,26 +187,31 @@ public class TileCreatorPanel extends JPanel {
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x;
+		c.anchor = c.LINE_START;
 		option.add(from, c);
 		
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x+1;
+		c.anchor = c.LINE_START;
 		option.add(browseInput, c);
 
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
+		c.anchor = c.LINE_START;
 		option.add(title, c);
 		
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
+		c.anchor = c.LINE_START;
 		option.add(outputFileName, c);
 		
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x;
+		c.anchor = c.LINE_START;
 		option.add(where, c);
 		
 		c = new GridBagConstraints();
@@ -214,14 +219,21 @@ public class TileCreatorPanel extends JPanel {
 		c.gridx = x+1;
 		option.add(browseOutput, c);
 	
+		y++;
 		c = new GridBagConstraints();
 		c.gridy = y++;
-		c.gridx = x;
+		c.gridx = 0;
+		c.gridwidth = 3;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = c.LINE_START;
 		option.add(progressIndicator, c);
 
 		c = new GridBagConstraints();
 		c.gridy = y++;
-		c.gridx = x;
+		c.gridx = 0;
+		c.gridwidth = 3;
+//		c.fill = c.REMAINDER;
+//		c.anchor = c.LINE_START;
 		option.add(finalizeButton, c);
 
 
