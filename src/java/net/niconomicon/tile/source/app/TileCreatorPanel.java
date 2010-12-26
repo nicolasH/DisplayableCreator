@@ -199,13 +199,17 @@ public class TileCreatorPanel extends JPanel {
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
-		c.anchor = c.LINE_START;
+		c.gridwidth = 2;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		option.add(title, c);
 		
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
+		c.gridwidth = 2;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = c.LINE_START;
+
 		option.add(outputFileName, c);
 		
 		c = new GridBagConstraints();
