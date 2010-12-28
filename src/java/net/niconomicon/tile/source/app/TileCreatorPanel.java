@@ -60,9 +60,6 @@ public class TileCreatorPanel extends JPanel {
 	TilesetSharingPanel sharingPanel;
 	TilingPreview preview;
 
-	JTextArea description;
-	JTextField author;
-	JTextField title;
 	JTextField source;
 
 	JButton finalizeButton;
@@ -103,7 +100,7 @@ public class TileCreatorPanel extends JPanel {
 
 		from = new JTextField("", 20);
 		from.setEditable(false);
-		browseInput = new JButton("Browse");
+		browseInput = new JButton("Choose image");
 		browseInput.addActionListener(new InputActionListener());
 
 		// tileSize = new JComboBox(new String[] { "64", "128", "192", "256" });
@@ -111,14 +108,11 @@ public class TileCreatorPanel extends JPanel {
 		tileSize = new JComboBox(new String[] { "" + TILE_SIZE });
 		tileSize.setSelectedIndex(0);
 
-		title = new JTextField("", 20);
-		description = new JTextArea("", 5, 30);
 
 		// could also load from the user's preferences
 		source = new JTextField("", 20);
 
 		// could also load from the user's preferences
-		author = new JTextField(System.getProperty("user.name"), 20);
 
 		// load from file name
 		outputFileName = new JTextField("", 10);
@@ -126,7 +120,7 @@ public class TileCreatorPanel extends JPanel {
 		where = new JTextField("", 20);
 		where.setEditable(false);
 
-		browseOutput = new JButton("Browse");
+		browseOutput = new JButton("Choose Directory");
 		browseOutput.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Thread t = new Thread(new RootDirSetter());
@@ -145,25 +139,6 @@ public class TileCreatorPanel extends JPanel {
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("Source image :"),c);
 
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = x;
-		c.anchor = c.LINE_END;
-		option.add(new JLabel("Title :"), c);
-
-		// //////////////
-
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = x;
-		c.anchor = c.LINE_END;
-		option.add(new JLabel("Save as :"), c);
-		
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = x;
-		c.anchor = c.LINE_END;
-		option.add(new JLabel("In directory :"),c);
 		
 
 		progressIndicator = new JProgressBar(0, 100);
@@ -195,33 +170,6 @@ public class TileCreatorPanel extends JPanel {
 		c.gridx = x+1;
 		c.anchor = c.LINE_START;
 		option.add(browseInput, c);
-
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = x;
-		c.gridwidth = 2;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		option.add(title, c);
-		
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = x;
-		c.gridwidth = 2;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = c.LINE_START;
-
-		option.add(outputFileName, c);
-		
-		c = new GridBagConstraints();
-		c.gridy = y;
-		c.gridx = x;
-		c.anchor = c.LINE_START;
-		option.add(where, c);
-		
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = x+1;
-		option.add(browseOutput, c);
 	
 		y++;
 		c = new GridBagConstraints();
@@ -294,10 +242,10 @@ public class TileCreatorPanel extends JPanel {
 			name = outputFileName.getText();
 			place = where.getText();
 
-			creator.author = author.getText();
-			creator.description = description.getText();
+//			creator.author = author.getText();
+//			creator.description = description.getText();
 			creator.source = source.getText();
-			creator.title = title.getText();
+			creator.title =name.substring(0,name.lastIndexOf("."));// title.getText();
 
 			if (!place.endsWith(File.pathSeparator)) {
 				place += File.separator;
@@ -356,7 +304,7 @@ public class TileCreatorPanel extends JPanel {
 					from.setToolTipText("Image Tile set is going to be created from " + sourceChooser.getSelectedFile().getCanonicalPath());
 					String fileName = sourceChooser.getSelectedFile().getName();
 					String fileSansDot = fileName.substring(0, fileName.lastIndexOf("."));
-					title.setText(fileSansDot);
+//					title.setText(fileSansDot);
 					if (null == where.getText() || 0 == where.getText().length()) {
 						where.setText(sourceChooser.getSelectedFile().getParent());
 					}
