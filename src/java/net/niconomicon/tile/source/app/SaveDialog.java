@@ -84,6 +84,8 @@ public class SaveDialog extends JPanel {
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("In directory :"), c);
 
+		x=1;
+		y=0;
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
@@ -97,7 +99,6 @@ public class SaveDialog extends JPanel {
 		c.gridwidth = 2;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = c.LINE_START;
-
 		option.add(outputFileName, c);
 
 		c = new GridBagConstraints();
