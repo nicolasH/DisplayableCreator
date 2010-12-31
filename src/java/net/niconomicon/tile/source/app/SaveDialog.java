@@ -12,10 +12,10 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
 
 /**
  * @author Nicolas Hoibian
@@ -58,12 +58,11 @@ public class SaveDialog extends JPanel {
 		browseOutput = new JButton("Choose Directory");
 		browseOutput.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			//	Thread t = new Thread(new RootDirSetter());
-			//	t.start();
+				// Thread t = new Thread(new RootDirSetter());
+				// t.start();
 			}
 		});
 
-		
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
@@ -84,8 +83,8 @@ public class SaveDialog extends JPanel {
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("In directory :"), c);
 
-		x=1;
-		y=0;
+		x = 1;
+		y = 0;
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
@@ -119,6 +118,7 @@ public class SaveDialog extends JPanel {
 	public static void main(String[] args) {
 		SaveDialog d = new SaveDialog();
 		JFrame f = new JFrame();
+		JOptionPane.showInputDialog(d);
 		f.setContentPane(d);
 		f.pack();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
