@@ -112,13 +112,13 @@ public class SaveDialog extends JPanel {
 		option.add(browseOutput, c);
 
 		this.add(option, BorderLayout.CENTER);
-		this.add(new JLabel("Save !"), BorderLayout.NORTH);
+//		this.add(new JLabel("Save !"), BorderLayout.NORTH);
 	}
 
 	public static void main(String[] args) {
 		SaveDialog d = new SaveDialog();
 		JFrame f = new JFrame();
-		JOptionPane.showInputDialog(d);
+		JOptionPane.showOptionDialog(f, d, "Save Image Tileset", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 		f.setContentPane(d);
 		f.pack();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
