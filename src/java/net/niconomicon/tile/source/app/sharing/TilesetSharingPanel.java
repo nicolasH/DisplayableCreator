@@ -26,8 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -140,7 +138,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			this.rootDir = rDir;
 		}
 		String[] children = Ref.getDBFiles(rootDir);
-		Map<String, String> mapsMap = getMapList(rootDir, children);
+		Map<String, String> mapsMap = getTilesetList(rootDir, children);
 		mapList.setData(mapsMap);
 		if (sharingManager.isSharing()) {
 			sharingManager.setSharingList(mapList.getSelectedMapFiles());
@@ -169,7 +167,15 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		}
 	}
 
-	public Map<String, String> getMapList(String rootDir, String[] maps) {
+	public void addTileSetToShare(String fileLocation) {
+
+	}
+
+	public void updateTileSetLocation(String oldLocation, String newLocation) {
+
+	}
+
+	public Map<String, String> getTilesetList(String rootDir, String[] maps) {
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (Exception ex) {
