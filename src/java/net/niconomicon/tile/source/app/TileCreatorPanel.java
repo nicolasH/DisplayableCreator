@@ -267,6 +267,7 @@ public class TileCreatorPanel extends JPanel {
 
 							creator.finalizeFile();
 							temp.renameTo(new File(place, name));
+							sharingPanel.addTileSetToShare(temp.getAbsolutePath());
 							sharingPanel.setRootDir(place);
 							System.gc();
 						} catch (Exception ex) {
