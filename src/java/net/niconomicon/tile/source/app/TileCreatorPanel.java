@@ -223,7 +223,8 @@ public class TileCreatorPanel extends JPanel {
 						finalizeButton.setEnabled(true);
 						// progressIndicator.setIndeterminate(false);
 						progressIndicator.setValue(100);
-						progressIndicator.setString("100%");
+						progressIndicator.setString("Ready");
+						sharingPanel.addTileSetToShare(temp.getAbsolutePath());
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
@@ -266,8 +267,9 @@ public class TileCreatorPanel extends JPanel {
 							// from.getText(), tSize, tType);
 
 							creator.finalizeFile();
+							String tmp = temp.getAbsolutePath();
 							temp.renameTo(new File(place, name));
-							sharingPanel.addTileSetToShare(temp.getAbsolutePath());
+							sharingPanel.updateTileSetLocation(tmp, temp.getAbsolutePath());
 							sharingPanel.setRootDir(place);
 							System.gc();
 						} catch (Exception ex) {
