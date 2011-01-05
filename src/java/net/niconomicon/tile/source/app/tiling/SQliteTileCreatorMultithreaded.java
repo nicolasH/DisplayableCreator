@@ -173,6 +173,14 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
+	/**
+	 * Adds a tile to the current tile source
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param data
+	 * @param fileSansDot
+	 */
 	public void addTile(int x, int y, int z, byte[] data, String fileSansDot) {
 		long stop, start;
 		start = System.nanoTime();
