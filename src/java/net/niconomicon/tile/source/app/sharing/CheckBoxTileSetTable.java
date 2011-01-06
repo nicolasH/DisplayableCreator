@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -34,78 +35,135 @@ public class CheckBoxTileSetTable extends JTable {
 		this.setModel(model);
 		this.getColumnModel().getColumn(0).setPreferredWidth(30);
 		this.getColumnModel().getColumn(1).setPreferredWidth(200);
-		this.setMinimumSize(new Dimension(230, 100));
-		ButtonForTable b = new ButtonForTable(viewer);
+		this.setMinimumSize(new Dimension(330, 100));
+
+		ButtonForTable b = new ButtonForTable(viewer, "view");
 		this.getColumnModel().getColumn(2).setCellEditor(b);
 		this.getColumnModel().getColumn(2).setCellRenderer(b);
+
+		ButtonForTable b1 = new ButtonForTable(viewer, "edit");
+		this.getColumnModel().getColumn(3).setCellEditor(b1);
+		this.getColumnModel().getColumn(3).setCellRenderer(b1);
 		// Add the scroll pane to this panel.
 		// this.add(scrollPane,BorderLayout.CENTER);
 	}
 
-	public void setData(Map<String, String> names) {
-		model.setData(names);
+	public void setData(Map<String, String> pathToTitle) {
+		model.setData(pathToTitle);
 	}
 
-	public String getFileLocation(int index) {
-		return (String) ((Vector) model.getDataVector().elementAt(index)).elementAt(3);
+	private class TileSetInfos implements Comparable<TileSetInfos> {
+		String title;
+		String location;
+		boolean shouldShare;
+
+		public TileSetInfos(String path, String title) {
+			this.title = title;
+			this.location = path;
+			this.shouldShare = true;
+		}
+
+		public int compareTo(TileSetInfos o) {
+			return title.compareTo(o.title);
+		}
 	}
 
 	private class CustomTableModel extends DefaultTableModel {
 
+		private final String[] columnsTitles = new String[] { "shared", "title", "view", "edit" };
+		List<TileSetInfos> backstore;
+
 		public CustomTableModel() {
-			super(new Object[0][3], new String[] { "shared", "map name", "view" });
+			super();
+			// new Object[0][3], new String[] { "shared", "map name", "view" });
+			setColumnIdentifiers(columnsTitles);
+			backstore = new ArrayList<CheckBoxTileSetTable.TileSetInfos>();
 		}
 
 		public int getColumnCount() {
-			return 3;
+			return columnsTitles.length;
 		}
 
-		public void setData(Map<String, String> names) {
-			// save the current state
-			Vector<Vector<Object>> newVec = new Vector<Vector<Object>>();
-			for (String path : names.keySet()) {// looking for existing line
-				Vector<Object> line = new Vector<Object>();
-				String name = names.get(path);
-				for (Object o : this.dataVector) {
-					Vector<Object> v = (Vector<Object>) o;
-					if (((String) v.elementAt(2)).compareTo(path) == 0) {
-						line.add(v.elementAt(0));
-						line.add(name);
-						line.add(path);
-						break;
-					}
+		/* (non-Javadoc)
+		 * @see javax.swing.table.DefaultTableModel#getValueAt(int, int)
+		 */
+		@Override
+		public Object getValueAt(int row, int column) {
+			if (null != backstore && column < columnsTitles.length && row < backstore.size()) {
+				TileSetInfos i = backstore.get(row);
+				switch (column) {
+				case 0:
+					return i.shouldShare;
+				case 1:
+					return i.title;
+				case 2:
+					return "view";
+				case 3:
+					return "edit";
 				}
-				if (line.size() == 0) {// new line
-					line.add(new Boolean(sharingDefaut));
-					line.add(name);
-					line.add(path);
-				}
-				newVec.add(line);
 			}
-			this.dataVector = newVec;
+			return null;
+		}
+
+
+		public void setValueAt(Object aValue, int row, int column) {
+			System.out.println("aValue:" + aValue);
+		}
+
+		public int getRowCount() {
+			if (null == backstore) { return 0; }
+			return backstore.size();
+		}
+
+		public void setData(Map<String, String> pathToTitle) {
+			backstore.clear();
+			for (Entry<String, String> elem : pathToTitle.entrySet()) {
+				TileSetInfos info = new TileSetInfos(elem.getKey(), elem.getValue());
+				backstore.add(info);
+			}
+			fireTableDataChanged();
+		}
+
+		public void addTileSet(String title, String location) {
+			TileSetInfos i = new TileSetInfos(location, title);
+			backstore.add(i);
+			fireTableDataChanged();
+		}
+
+		public void updateTileSetLocation(String oldLocation, String newlocation) {
+			TileSetInfos i;
+			for (TileSetInfos info : backstore) {
+				if (info.location.contentEquals(oldLocation)) {
+					info.location = newlocation;;
+				}
+			}
 			fireTableDataChanged();
 		}
 
 		public Collection<String> getSelectedItems() {
 			List<String> l = new ArrayList<String>();
-			for (Object o : this.dataVector) {
-				Vector<Object> v = (Vector<Object>) o;
-				if (((Boolean) v.elementAt(0)).booleanValue()) {
-					l.add((String) v.elementAt(2));
+			for (TileSetInfos info : backstore) {
+				if (info.shouldShare) {
+					l.add(info.location);
 				}
 			}
 			return l;
+		}
+
+		public boolean isCellEditable(int row, int column) {
+			return null != backstore && row < backstore.size() && column < columnsTitles.length && column != 1;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
 			if (columnIndex == 0) { return Boolean.class; }
 			if (columnIndex == 1) { return String.class; }
 			if (columnIndex == 2) { return String.class; }
+			if (columnIndex == 3) { return String.class; }
 			return super.getColumnClass(columnIndex);
 		}
 	}
 
-	public Collection<String> getSelectedMapFiles() {
+	public Collection<String> getSelectedTilesSetFiles() {
 		return model.getSelectedItems();
 	}
 
@@ -113,7 +171,7 @@ public class CheckBoxTileSetTable extends JTable {
 		// TODO Auto-generated method stub
 		JFrame f = new JFrame("test map list model");
 		Map<String, String> mapLost = new HashMap<String, String>();
-		mapLost.put("frane.mdb", "Map of france");
+		mapLost.put("france.mdb", "Map of france");
 		mapLost.put("faso.mdb", "Map of burkina Faso");
 		mapLost.put("uk.mdb", "Map of United kingdom of england and northern ireland");
 		CheckBoxTileSetTable list = new CheckBoxTileSetTable(null);

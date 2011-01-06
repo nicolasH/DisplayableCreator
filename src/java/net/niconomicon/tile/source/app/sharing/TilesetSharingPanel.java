@@ -78,7 +78,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	 */
 	public void tableChanged(TableModelEvent e) {
 		if (sharingManager.isSharing()) {
-			sharingManager.setSharingList(mapList.getSelectedMapFiles());
+			sharingManager.setSharingList(mapList.getSelectedTilesSetFiles());
 			// update the list of shared documents
 		} else {
 			// don't care ;-)
@@ -141,13 +141,13 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		Map<String, String> mapsMap = getTilesetList(rootDir, children);
 		mapList.setData(mapsMap);
 		if (sharingManager.isSharing()) {
-			sharingManager.setSharingList(mapList.getSelectedMapFiles());
+			sharingManager.setSharingList(mapList.getSelectedTilesSetFiles());
 		}
 	}
 
 	public void startSharing() {
 		// HashSet<String> sharedDB = new HashSet<String>();
-		Collection<String> sharedMaps = mapList.getSelectedMapFiles();
+		Collection<String> sharedMaps = mapList.getSelectedTilesSetFiles();
 		System.out.println("should start sharing the maps");
 		// generate the xml;
 		try {

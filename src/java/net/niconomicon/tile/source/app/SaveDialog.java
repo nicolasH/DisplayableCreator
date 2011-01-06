@@ -4,6 +4,7 @@
 package net.niconomicon.tile.source.app;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -114,12 +115,17 @@ public class SaveDialog extends JPanel {
 		this.add(option, BorderLayout.CENTER);
 //		this.add(new JLabel("Save !"), BorderLayout.NORTH);
 	}
+	public void showDialog(Component parent, String originalFile,String possibleLocation){
+		
+		
+		JOptionPane.showOptionDialog(parent, this, "Save Image Tileset", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+			
+	}
 
 	public static void main(String[] args) {
 		SaveDialog d = new SaveDialog();
 		JFrame f = new JFrame();
 		//
-		JOptionPane.showOptionDialog(f, d, "Save Image Tileset", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 		f.setContentPane(d);
 		f.pack();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
