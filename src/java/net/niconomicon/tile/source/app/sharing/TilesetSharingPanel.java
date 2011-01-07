@@ -169,14 +169,15 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 
 	/**
 	 * 
-	 * @param fileLocation This can be a temporary file.
+	 * @param fileLocation
+	 *            This can be a temporary file.
 	 */
-	public void addTileSetToShare(String fileLocation) {
-
+	public void addTileSetToShare(String fileLocation, String title) {
+		mapList.addTileSet(fileLocation, title);
 	}
 
 	public void updateTileSetLocation(String oldLocation, String newLocation) {
-
+		mapList.updateLocation(oldLocation,newLocation);
 	}
 
 	public Map<String, String> getTilesetList(String rootDir, String[] maps) {

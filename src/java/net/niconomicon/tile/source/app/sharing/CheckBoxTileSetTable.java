@@ -52,6 +52,19 @@ public class CheckBoxTileSetTable extends JTable {
 		model.setData(pathToTitle);
 	}
 
+	public void addTileSet(String location, String title) {
+		TileSetInfos i = new TileSetInfos(location, title);
+		model.addTileSet(i);
+	}
+
+	public Collection<String> getSelectedTilesSetFiles() {
+		return model.getSelectedItems();
+	}
+
+	public void updateLocation(String oldLocation, String newLocation) {
+		model.updateTileSetLocation(oldLocation, newLocation);
+	}
+
 	private class TileSetInfos implements Comparable<TileSetInfos> {
 		String title;
 		String location;
@@ -92,6 +105,8 @@ public class CheckBoxTileSetTable extends JTable {
 			if (null != backstore && column < columnsTitles.length && row < backstore.size()) {
 				TileSetInfos i = backstore.get(row);
 				switch (column) {
+				case -1:
+					return i.location;
 				case 0:
 					return i.shouldShare;
 				case 1:
@@ -104,7 +119,6 @@ public class CheckBoxTileSetTable extends JTable {
 			}
 			return null;
 		}
-
 
 		public void setValueAt(Object aValue, int row, int column) {
 			System.out.println("aValue:" + aValue);
@@ -124,9 +138,8 @@ public class CheckBoxTileSetTable extends JTable {
 			fireTableDataChanged();
 		}
 
-		public void addTileSet(String title, String location) {
-			TileSetInfos i = new TileSetInfos(location, title);
-			backstore.add(i);
+		public void addTileSet(TileSetInfos infos) {
+			backstore.add(infos);
 			fireTableDataChanged();
 		}
 
@@ -161,10 +174,6 @@ public class CheckBoxTileSetTable extends JTable {
 			if (columnIndex == 3) { return String.class; }
 			return super.getColumnClass(columnIndex);
 		}
-	}
-
-	public Collection<String> getSelectedTilesSetFiles() {
-		return model.getSelectedItems();
 	}
 
 	public static void main(String[] args) {

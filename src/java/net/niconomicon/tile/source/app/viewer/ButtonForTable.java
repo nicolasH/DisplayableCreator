@@ -24,17 +24,19 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	ImageTileSetViewer viewer;
 	String defaultText;
 
+	int lastRow;
+	JTable lastTable;
+
 	public ButtonForTable(ImageTileSetViewer viewer, String text) {
 		defaultText = text;
 		ren = new JButton(text);
 		this.viewer = viewer;
 	}
 
-	public Object getCellEditorValue() {
-		return lastValue;
-	}
-
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		lastRow = row;
+		lastTable = table;
+
 		JButton b = ren;
 		if (value == null) {
 			b.setText(defaultText);
@@ -45,6 +47,9 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	}
 
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+		lastRow = row;
+		lastTable = table;
+
 		lastValue = value.toString();
 		JButton b = new JButton();
 		b.addActionListener(this);
@@ -56,10 +61,12 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
+		String s ="";
 		if (null != viewer) {
-			viewer.setTileSet(lastValue);
+			s =(String) lastTable.getValueAt(lastRow,-1);
+			viewer.setTileSet(s);
 		}
-		System.out.println("Action performed. Presumably at row " + lastValue);
+		System.out.println("Action performed. Presumably at row " + s);
 		// setTileSet()
 	}
 }

@@ -83,7 +83,7 @@ public class TileCreatorPanel extends JPanel {
 		sourceChooser.setFileFilter(imageFilter);
 		sourceChooser.setDialogTitle("Open Supported Images");
 		sourceChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME)));
-		//TODO check if java version > 1.5 otherwise it might crash :-(
+		// TODO check if java version > 1.5 otherwise it might crash :-(
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
 			dirChooserOSX = new FileDialog(JFrame.getFrames()[0]);
@@ -108,7 +108,6 @@ public class TileCreatorPanel extends JPanel {
 		tileSize = new JComboBox(new String[] { "" + TILE_SIZE });
 		tileSize.setSelectedIndex(0);
 
-
 		// could also load from the user's preferences
 		source = new JTextField("", 20);
 
@@ -128,7 +127,7 @@ public class TileCreatorPanel extends JPanel {
 			}
 		});
 
-		//Replacing the FormLayout by a GridBagLayout
+		// Replacing the FormLayout by a GridBagLayout
 		GridBagConstraints c;
 		int y = 0;
 		int x = 0;
@@ -137,17 +136,14 @@ public class TileCreatorPanel extends JPanel {
 		c.gridy = y++;
 		c.gridx = x;
 		c.anchor = c.LINE_END;
-		option.add(new JLabel("Source image :"),c);
-
-		
+		option.add(new JLabel("Source image :"), c);
 
 		progressIndicator = new JProgressBar(0, 100);
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
 		c.anchor = c.LINE_END;
-		option.add(new JLabel("Current action :"),c);
-
+		option.add(new JLabel("Current action :"), c);
 
 		finalizeButton = new JButton("Finalize Tiles DB");
 		finalizeButton.addActionListener(new ActionListener() {
@@ -157,20 +153,20 @@ public class TileCreatorPanel extends JPanel {
 		});
 		finalizeButton.setEnabled(false);
 
-		y= 0;
+		y = 0;
 		x = 1;
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x;
 		c.anchor = c.LINE_START;
 		option.add(from, c);
-		
+
 		c = new GridBagConstraints();
 		c.gridy = y++;
-		c.gridx = x+1;
+		c.gridx = x + 1;
 		c.anchor = c.LINE_START;
 		option.add(browseInput, c);
-	
+
 		y++;
 		c = new GridBagConstraints();
 		c.gridy = y++;
@@ -184,10 +180,9 @@ public class TileCreatorPanel extends JPanel {
 		c.gridy = y++;
 		c.gridx = 0;
 		c.gridwidth = 3;
-//		c.fill = c.REMAINDER;
-//		c.anchor = c.LINE_START;
+		// c.fill = c.REMAINDER;
+		// c.anchor = c.LINE_START;
 		option.add(finalizeButton, c);
-
 
 		content.add(option, BorderLayout.CENTER);
 		// content.add(new JLabel("Image goes here"), BorderLayout.CENTER);
@@ -220,11 +215,11 @@ public class TileCreatorPanel extends JPanel {
 						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator, 8);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
-						finalizeButton.setEnabled(true);
+//						finalizeButton.setEnabled(true);
 						// progressIndicator.setIndeterminate(false);
 						progressIndicator.setValue(100);
-						progressIndicator.setString("Ready");
-						sharingPanel.addTileSetToShare(temp.getAbsolutePath());
+						progressIndicator.setString("Done");
+						sharingPanel.addTileSetToShare(temp.getAbsolutePath(), temp.getName().substring(0, temp.getName().lastIndexOf('.')));
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
@@ -243,10 +238,10 @@ public class TileCreatorPanel extends JPanel {
 			name = outputFileName.getText();
 			place = where.getText();
 
-//			creator.author = author.getText();
-//			creator.description = description.getText();
+			// creator.author = author.getText();
+			// creator.description = description.getText();
 			creator.source = source.getText();
-			creator.title =name.substring(0,name.lastIndexOf("."));// title.getText();
+			creator.title = name.substring(0, name.lastIndexOf("."));// title.getText();
 
 			if (!place.endsWith(File.pathSeparator)) {
 				place += File.separator;
@@ -307,7 +302,7 @@ public class TileCreatorPanel extends JPanel {
 					from.setToolTipText("Image Tile set is going to be created from " + sourceChooser.getSelectedFile().getCanonicalPath());
 					String fileName = sourceChooser.getSelectedFile().getName();
 					String fileSansDot = fileName.substring(0, fileName.lastIndexOf("."));
-//					title.setText(fileSansDot);
+					// title.setText(fileSansDot);
 					if (null == where.getText() || 0 == where.getText().length()) {
 						where.setText(sourceChooser.getSelectedFile().getParent());
 					}
