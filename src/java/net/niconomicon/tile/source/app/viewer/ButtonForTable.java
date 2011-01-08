@@ -46,6 +46,14 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		return b;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.CellEditor#getCellEditorValue()
+	 */
+	public Object getCellEditorValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 		lastRow = row;
 		lastTable = table;
@@ -61,9 +69,9 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		String s ="";
+		String s = "";
 		if (null != viewer) {
-			s =(String) lastTable.getValueAt(lastRow,-1);
+			s = (String) lastTable.getValueAt(lastRow, -1);
 			viewer.setTileSet(s);
 		}
 		System.out.println("Action performed. Presumably at row " + s);
