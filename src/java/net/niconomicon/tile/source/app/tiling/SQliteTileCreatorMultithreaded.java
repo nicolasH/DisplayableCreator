@@ -20,6 +20,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.JProgressBar;
 
+import net.niconomicon.tile.source.app.Ref;
+
 public class SQliteTileCreatorMultithreaded {
 	Connection connection;
 
@@ -47,7 +49,6 @@ public class SQliteTileCreatorMultithreaded {
 	int sourceHeigth;
 	byte[] mini;
 	byte[] thumb;
-
 
 	public static void loadLib() {
 		System.out.println("Trying to load the sqlite JDBC driver ...");
@@ -84,7 +85,7 @@ public class SQliteTileCreatorMultithreaded {
 	 * @param archiveName
 	 * @param fileSansDot
 	 */
-	public void initSource(String archiveName, String fileSansDot) {
+	public void initSource(String archiveName) {
 		tilesetKey = -1;
 		layerKey = -1;
 
@@ -145,6 +146,27 @@ public class SQliteTileCreatorMultithreaded {
 		// add source, author,date , thumb
 	}
 
+	public static void updateTitle(String dbFile, String oldTitle, String newTitle) {
+		String stat = "UPDATE infos SET title=? WHERE title=?";
+		String date = new Date(System.currentTimeMillis()).toString();
+		// System.out.println("stat = " + stat);
+		try {
+			Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile);
+			connection.setAutoCommit(false);
+
+			PreparedStatement ps = connection.prepareStatement(stat);
+
+			ps.setString(1, newTitle);
+			ps.setString(2, oldTitle);
+			ps.executeUpdate();
+			connection.commit();
+			connection.close();
+		} catch (SQLException e) {
+			System.err.println("Information insertion failed.");
+			e.printStackTrace();
+		}
+	}
+
 	public void addInfos(String name, String author, String source, String title, String description, int zindex, int width, int height, byte[] mini, byte[] thumb) {
 		long mapID = 0;
 
@@ -175,6 +197,7 @@ public class SQliteTileCreatorMultithreaded {
 
 	/**
 	 * Adds a tile to the current tile source
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -229,8 +252,8 @@ public class SQliteTileCreatorMultithreaded {
 		if (destinationFile == null || pathToFile == null) { return; }
 		// the pathTo file includes the fileName.
 		File originalFile = new File(pathToFile);
-		String fileSansDot = pathToFile.substring(pathToFile.lastIndexOf(File.separator) + 1, pathToFile.lastIndexOf("."));
-		initSource(destinationFile, fileSansDot);
+		String fileSansDot = Ref.fileSansDot(pathToFile);
+		initSource(destinationFile);
 
 		name = fileSansDot;
 		title = (null == title ? fileSansDot : title);
@@ -377,7 +400,7 @@ public class SQliteTileCreatorMultithreaded {
 		plumberPool.awaitTermination(15, TimeUnit.MINUTES);
 		System.out.println(" ... setting tile info");
 		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null);
-		System.out.println(" ... creating index");
+		System.out.println(" ... creating index ...");
 		createIndexOnTileTable(connection, tilesetKey, layerKey);
 		System.out.println("tiles created");
 		stop = System.nanoTime();
@@ -416,17 +439,16 @@ public class SQliteTileCreatorMultithreaded {
 		String[] files;
 		files = new String[] { "pdfs/CERN_Prevessin_A3_Paysage.pdf" };
 
-		
 		String destDir = "/Users/niko/tileSources/bench/";
 		String src = "/Users/niko/tileSources/";
-		//This call blocks until done (duh) - for usually more than 2 second. It loads the native sqlite library.
+		// This call blocks until done (duh) - for usually more than 2 second. It loads the native sqlite library.
 		SQliteTileCreatorMultithreaded.loadLib();
 		SQliteTileCreatorMultithreaded creator = new SQliteTileCreatorMultithreaded();
 		long start, stop;
 		int count = 1;
 		int nThreads = 4;
 		int c = 0;
-		String extension = ".its";//For "image tile set"
+		String extension = ".its";// For "image tile set"
 		for (int i = 0; i < count; i++) {
 			System.gc();
 			for (String file : files) {

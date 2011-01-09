@@ -5,12 +5,21 @@ package net.niconomicon.tile.source.app;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.FileDialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,9 +37,15 @@ public class SaveDialog extends JPanel {
 	protected JTextField where;
 	protected JButton browseOutput;
 
+	FileDialog dirChooserOSX;
+	JFileChooser dirChooser;
+
 	JTextArea description;
 	JTextField author;
 	JTextField title;
+
+	String defaultDir = null;
+	String currentTitle = "";
 
 	public SaveDialog() {
 		super();
@@ -48,19 +63,20 @@ public class SaveDialog extends JPanel {
 		description = new JTextArea("", 5, 30);
 		author = new JTextField(System.getProperty("user.name"), 20);
 
-		// could also load from the user's preferences
-
 		// load from file name
 		outputFileName = new JTextField("", 10);
 
-		where = new JTextField("", 20);
+		// could also load from the user's preferences
+		defaultDir = Preferences.userNodeForPackage(Ref.class).get(Ref.storingDirectoryKey, null);
+
+		where = new JTextField(defaultDir, 20);
 		where.setEditable(false);
 
 		browseOutput = new JButton("Choose Directory");
 		browseOutput.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Thread t = new Thread(new RootDirSetter());
-				// t.start();
+				Thread t = new Thread(new RootDirSetter());
+				t.start();
 			}
 		});
 
@@ -113,13 +129,119 @@ public class SaveDialog extends JPanel {
 		option.add(browseOutput, c);
 
 		this.add(option, BorderLayout.CENTER);
-//		this.add(new JLabel("Save !"), BorderLayout.NORTH);
+		// this.add(new JLabel("Save !"), BorderLayout.NORTH);
 	}
-	public void showDialog(Component parent, String originalFile,String possibleLocation){
-		
-		
-		JOptionPane.showOptionDialog(parent, this, "Save Image Tileset", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-			
+
+	private void initDialogs() {
+		String f = defaultDir;
+		if (null == f) {
+			f = System.getProperty("user.home");
+		}
+		File defDir = new File(f);
+		// TODO check if java version > 1.5 otherwise it might crash :-(
+		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+			System.setProperty("apple.awt.fileDialogForDirectories", "true");
+			dirChooserOSX = new FileDialog(JFrame.getFrames()[0]);
+		} else {
+
+			dirChooser = new JFileChooser();
+			dirChooser.setAcceptAllFileFilterUsed(false);
+			dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+			dirChooser.setDialogTitle("Choose directory to save the tile source");
+			dirChooser.setCurrentDirectory(defDir);
+		}
+
+	}
+
+	public void showDialog(Component parent, String currentLocation) {
+		fillForm(currentLocation);
+		int result = JOptionPane.showOptionDialog(parent, this, "Save Image Tileset", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+		if (JOptionPane.YES_OPTION == result) {
+			save(currentLocation);
+		}
+	}
+
+	public void fillForm(String currentLocation) {
+
+		Connection connection = null;
+		try {
+			// create a database connection
+			connection = DriverManager.getConnection("jdbc:sqlite:" + currentLocation);
+			connection.setAutoCommit(false);
+			// System.out.println("Archive name : " + archiveName);
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(3);
+			ResultSet set = statement.executeQuery("select title from infos");
+			currentTitle = set.getString(1);
+			title.setText(currentTitle);
+			String suggestedFile = Ref.fileSansDot(currentLocation);
+			try {
+				File f = File.createTempFile("tmp", "tmp");
+				System.out.println("tmp files : " + f.getParent() + "vs" + Ref.pathSansFileSansSep(currentLocation));
+				if (f.getParent().compareTo(Ref.pathSansFileSansSep(currentLocation)) == 0) {
+					// in temporary directory.
+					suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf("_")) + Ref.ext_db;
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			this.outputFileName.setText(suggestedFile);
+			this.where.setText(defaultDir);
+		} catch (SQLException e) {
+			// if the error message is "out of memory",
+			// it probably means no database file is found
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public void save(String originalFile) {
+
+	}
+
+	private class RootDirSetter implements Runnable {
+
+		public void run() {
+			// this block until ## is working on mac.
+			if (null != dirChooserOSX) {
+				dirChooserOSX.setModal(true);// only from java 1.6 : setModalityType(ModalityType.APPLICATION_MODAL);
+				dirChooserOSX.setVisible(true);
+				String dir = dirChooserOSX.getDirectory();
+				String file = dirChooserOSX.getFile();
+				System.out.println("Returned with directory : " + dir + file);
+				if (null == dir || null == file) { return; }
+				File f = new File(dir + file);
+				String path;
+				if (f.isDirectory()) {
+					path = dir + file;
+				} else {
+					path = dir;
+				}
+				where.setText(path);
+				where.setToolTipText("Going to save the image tileSet in :" + path);
+				// setRootDir(path);
+				return;
+			}
+			// ##
+			String s = " some file";
+
+			int returnVal = dirChooser.showOpenDialog(null);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				// String s = dirChooser.getSelectedFile().getName();
+				try {
+					String path = dirChooser.getSelectedFile().getCanonicalPath();
+					where.setText(path);
+					String wh = dirChooser.getSelectedFile().getAbsolutePath();
+					// setRootDir(sourceChooser.getSelectedFile().getAbsolutePath());
+				} catch (Exception ex) {
+					outputFileName.setText("cannot Open File");
+					where.setText("cannot open file");
+					ex.printStackTrace();
+				}
+			}
+
+		}
 	}
 
 	public static void main(String[] args) {

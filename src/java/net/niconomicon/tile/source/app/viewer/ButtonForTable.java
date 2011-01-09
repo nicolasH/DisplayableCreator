@@ -13,19 +13,29 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import net.niconomicon.tile.source.app.SaveDialog;
+
 /**
  * @author Nicolas Hoibian
  * 
  */
 public class ButtonForTable extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, ActionListener {
 
+	ImageTileSetViewer viewer = null;
+	SaveDialog saveDialog = null;
+
 	String lastValue = null;
 	JButton ren;
-	ImageTileSetViewer viewer;
 	String defaultText;
 
 	int lastRow;
 	JTable lastTable;
+
+	public ButtonForTable(SaveDialog save, String text) {
+		saveDialog = save;
+		defaultText = text;
+		ren = new JButton(text);
+	}
 
 	public ButtonForTable(ImageTileSetViewer viewer, String text) {
 		defaultText = text;
@@ -69,12 +79,20 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		String s = "";
+		String fileLocation = "";
 		if (null != viewer) {
-			s = (String) lastTable.getValueAt(lastRow, -1);
-			viewer.setTileSet(s);
+			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
+			viewer.setTileSet(fileLocation);
+			return;
 		}
-		System.out.println("Action performed. Presumably at row " + s);
+		if (null != saveDialog) {
+
+			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
+			saveDialog.showDialog(lastTable, fileLocation);
+			return;
+		}
+		System.out.println("Action performed. Presumably for file " + fileLocation);
 		// setTileSet()
 	}
+
 }

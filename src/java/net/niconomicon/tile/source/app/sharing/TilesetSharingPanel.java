@@ -92,6 +92,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	public void init() {
 		sharingManager = new SharingManager();
 		mapList = new CheckBoxTileSetTable(viewer);
+		
 		mapList.getModel().addTableModelListener(this);
 		mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		// mapList.getSelectionModel().addListSelectionListener(this);

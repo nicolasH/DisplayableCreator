@@ -22,17 +22,18 @@ import java.util.Map;
 public final class Ref {
 
 	public static int sharing_port = 8889;
+	public static final String storingDirectoryKey = "TileSetStoringDirectoryKey";
 	public static final String sharing_serviceName = "TiledImageSharingService";
 
 	public static final String sharing_xmlRef = "TiledImages.xml";
 	public static final String sharing_htmlRef = "TiledImages.html";
 
-	public static final String app_handle="displayator-image:";
+	public static final String app_handle = "displayator-image:";
 
 	public static final String ext_db = ".mdb";
 	public static final String ext_thumb = ".thumb";
 	public static final String ext_mini = ".mini";
-	
+
 	public static final String layers_infos_table_name = "layers_infos";
 
 	public static final String infos_table_name = "infos";
@@ -46,6 +47,18 @@ public final class Ref {
 	public static final String infos_height = "height";
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
+
+	public static final String fileSansDot(String fullPath) {
+		return fullPath.substring(fullPath.lastIndexOf(File.separator) + 1, fullPath.lastIndexOf("."));
+	}
+
+	public static final String pathSansFile(String fullPath) {
+		return fullPath.substring(0, fullPath.lastIndexOf(File.separator) + 1);
+	}
+
+	public static final String pathSansFileSansSep(String fullPath) {
+		return fullPath.substring(0, fullPath.lastIndexOf(File.separator));
+	}
 
 	public static final FilenameFilter ext_db_filter = new FilenameFilter() {
 		public boolean accept(File dir, String name) {
@@ -162,7 +175,7 @@ public final class Ref {
 				// html.append(generateHTMLForConnection(connection,size,mapFileName));
 				if (connection != null) connection.close();
 			} catch (Exception ex) {
-				System.out.println("failed to get infos for ["+mapFileName+"]");
+				System.out.println("failed to get infos for [" + mapFileName + "]");
 				ex.printStackTrace();
 			}
 		}
@@ -219,21 +232,20 @@ public final class Ref {
 				s += "</map>\n";
 				ret += s;
 
-				String urlInfos=  "title=" + rs.getString(Ref.infos_title);
-				urlInfos+= "&updated=";
-				urlInfos += "&thumb=" + thumb ;
+				String urlInfos = "title=" + rs.getString(Ref.infos_title);
+				urlInfos += "&updated=";
+				urlInfos += "&thumb=" + thumb;
 				urlInfos += "&preview=" + mini;
 				urlInfos += "&weight=" + weight;
 				urlInfos += "&width=" + rs.getLong(Ref.infos_width);
 				urlInfos += "&height=" + rs.getLong(Ref.infos_height);
 				urlInfos += "&description=" + rs.getString(Ref.infos_description);
 
-				
 				String li = "\t\t\t<li>";
 				String li_ = "</li>\n";
 				String html = "<div><b>" + rs.getString(Ref.infos_title) + "</b><br/>";
-				html += "\n\t\t<a href=\""+mini+"\">\n\t\t\t<img src=\"" + thumb + "\">\n\t\t</a>\n\t\t";
-				html += "Download <a href=\""+app_handle+name+"?"+urlInfos+ "\" >and view with displayator</a>\n\t\t";
+				html += "\n\t\t<a href=\"" + mini + "\">\n\t\t\t<img src=\"" + thumb + "\">\n\t\t</a>\n\t\t";
+				html += "Download <a href=\"" + app_handle + name + "?" + urlInfos + "\" >and view with displayator</a>\n\t\t";
 				html += "or <a href=\"" + name + "\" >as file</a>.";
 				html += "\n\t<ul>";
 				html += li + "Weight : " + ((double) weight) / 1000000 + " MB." + li_;

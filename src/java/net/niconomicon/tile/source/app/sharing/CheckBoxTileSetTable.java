@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import net.niconomicon.tile.source.app.SaveDialog;
 import net.niconomicon.tile.source.app.viewer.ButtonForTable;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 
@@ -30,6 +30,7 @@ public class CheckBoxTileSetTable extends JTable {
 
 	public CheckBoxTileSetTable(ImageTileSetViewer viewer) {
 		super();
+		SaveDialog saveDialog = new SaveDialog();
 
 		model = new CustomTableModel();
 		this.setModel(model);
@@ -41,7 +42,7 @@ public class CheckBoxTileSetTable extends JTable {
 		this.getColumnModel().getColumn(2).setCellEditor(b);
 		this.getColumnModel().getColumn(2).setCellRenderer(b);
 
-		ButtonForTable b1 = new ButtonForTable(viewer, "edit");
+		ButtonForTable b1 = new ButtonForTable(saveDialog, "edit");
 		this.getColumnModel().getColumn(3).setCellEditor(b1);
 		this.getColumnModel().getColumn(3).setCellRenderer(b1);
 		// Add the scroll pane to this panel.

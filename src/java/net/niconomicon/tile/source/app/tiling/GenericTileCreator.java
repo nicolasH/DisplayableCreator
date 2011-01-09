@@ -13,6 +13,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 
+import net.niconomicon.tile.source.app.Ref;
+
 /**
  * @author niko
  * 
@@ -28,11 +30,11 @@ public class GenericTileCreator {
 		creator = new SQliteTileCreatorMultithreaded();
 	}
 
-	public void createTileSource(String sourcePath, String destFile, String title) throws Exception{
+	public void createTileSource(String sourcePath, String destFile, String title) throws Exception {
 
 		System.out.println("Processing " + creator.title);
 		creator.title = title;
-		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null,4);// new JProgressBar());
+		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null, 4);// new JProgressBar());
 		creator.finalizeFile();
 
 	}
@@ -44,7 +46,7 @@ public class GenericTileCreator {
 		if (pathToSource == null || pathToDestination == null) { return; }
 		// the pathTo file includes the fileName.
 		File originalFile = new File(pathToSource);
-		String fileSansExt = pathToSource.substring(pathToSource.lastIndexOf(File.separator) + 1, pathToSource.lastIndexOf("."));
+		String fileSansExt = Ref.fileSansDot(pathToSource);
 
 		System.out.println("Opening the image");
 		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
@@ -61,7 +63,7 @@ public class GenericTileCreator {
 	}
 
 	public static byte[] getMiniatureBytes(BufferedImage sourceImage, int miniMaxWidth, int miniMaxHeight, String pictureType) throws IOException {
-		System.out.println("Creating the miniature for size"+miniMaxWidth + "x"+miniMaxHeight);
+		System.out.println("Creating the miniature for size" + miniMaxWidth + "x" + miniMaxHeight);
 		int width = sourceImage.getWidth();
 		int height = sourceImage.getHeight();
 

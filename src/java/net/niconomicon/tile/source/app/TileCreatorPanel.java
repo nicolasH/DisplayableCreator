@@ -51,8 +51,6 @@ public class TileCreatorPanel extends JPanel {
 	protected String name;
 
 	JFileChooser sourceChooser;
-	FileDialog dirChooserOSX;
-	JFileChooser dirChooser;
 
 	ImageFileFilter imageFilter;
 	FileFilter archiveFilter;
@@ -62,7 +60,6 @@ public class TileCreatorPanel extends JPanel {
 
 	JTextField source;
 
-	JButton finalizeButton;
 	SQliteTileCreatorMultithreaded creator;
 
 	File temp;
@@ -83,19 +80,7 @@ public class TileCreatorPanel extends JPanel {
 		sourceChooser.setFileFilter(imageFilter);
 		sourceChooser.setDialogTitle("Open Supported Images");
 		sourceChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME)));
-		// TODO check if java version > 1.5 otherwise it might crash :-(
-		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-			System.setProperty("apple.awt.fileDialogForDirectories", "true");
-			dirChooserOSX = new FileDialog(JFrame.getFrames()[0]);
-		} else {
-
-			dirChooser = new JFileChooser();
-			dirChooser.setAcceptAllFileFilterUsed(false);
-			dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-			dirChooser.setDialogTitle("Choose directory to save the tile source");
-			dirChooser.setCurrentDirectory(sourceChooser.getCurrentDirectory());
-		}
+		
 		preview = new TilingPreview();
 
 		from = new JTextField("", 20);
@@ -119,13 +104,7 @@ public class TileCreatorPanel extends JPanel {
 		where = new JTextField("", 20);
 		where.setEditable(false);
 
-		browseOutput = new JButton("Choose Directory");
-		browseOutput.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Thread t = new Thread(new RootDirSetter());
-				t.start();
-			}
-		});
+
 
 		// Replacing the FormLayout by a GridBagLayout
 		GridBagConstraints c;
@@ -144,14 +123,6 @@ public class TileCreatorPanel extends JPanel {
 		c.gridx = x;
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("Current action :"), c);
-
-		finalizeButton = new JButton("Finalize Tiles DB");
-		finalizeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				finalizeTilesDB();
-			}
-		});
-		finalizeButton.setEnabled(false);
 
 		y = 0;
 		x = 1;
@@ -176,14 +147,6 @@ public class TileCreatorPanel extends JPanel {
 		c.anchor = c.LINE_START;
 		option.add(progressIndicator, c);
 
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = 0;
-		c.gridwidth = 3;
-		// c.fill = c.REMAINDER;
-		// c.anchor = c.LINE_START;
-		option.add(finalizeButton, c);
-
 		content.add(option, BorderLayout.CENTER);
 		// content.add(new JLabel("Image goes here"), BorderLayout.CENTER);
 
@@ -196,8 +159,9 @@ public class TileCreatorPanel extends JPanel {
 	public void preTile(String sourcePath) {
 		try {
 			// Create temp file.
+
 			if (temp == null) {
-				temp = File.createTempFile("tempMap", Ref.ext_db);
+				temp = File.createTempFile(Ref.fileSansDot(sourcePath)+"_", Ref.ext_db);
 			}
 			// Delete temp file when program exits.
 			temp.deleteOnExit();
@@ -215,11 +179,11 @@ public class TileCreatorPanel extends JPanel {
 						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator, 8);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
-//						finalizeButton.setEnabled(true);
 						// progressIndicator.setIndeterminate(false);
+						creator.finalizeFile();
 						progressIndicator.setValue(100);
 						progressIndicator.setString("Done");
-						sharingPanel.addTileSetToShare(temp.getAbsolutePath(), temp.getName().substring(0, temp.getName().lastIndexOf('.')));
+						sharingPanel.addTileSetToShare(temp.getAbsolutePath(), Ref.fileSansDot(currentSourcePath));
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
@@ -246,7 +210,6 @@ public class TileCreatorPanel extends JPanel {
 			if (!place.endsWith(File.pathSeparator)) {
 				place += File.separator;
 			}
-			finalizeButton.setEnabled(false);
 
 			try {
 				Thread t = new Thread() {
@@ -283,12 +246,6 @@ public class TileCreatorPanel extends JPanel {
 		this.sharingPanel = sharingPanel;
 	}
 
-	public void setRootDir(String rootDir) {
-		if (sharingPanel != null) {
-			sharingPanel.setRootDir(rootDir);
-		}
-	}
-
 	private class InputActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -320,50 +277,6 @@ public class TileCreatorPanel extends JPanel {
 		public void actionPerformed(ActionEvent arg0) {}
 	}
 
-	private class RootDirSetter implements Runnable {
-
-		public void run() {
-			// this block until ## is working on mac.
-			if (null != dirChooserOSX) {
-				dirChooserOSX.setModal(true);// only from java 1.6 : setModalityType(ModalityType.APPLICATION_MODAL);
-				dirChooserOSX.setVisible(true);
-				String dir = dirChooserOSX.getDirectory();
-				String file = dirChooserOSX.getFile();
-				System.out.println("Returned with directory : " + dir + file);
-				if (null == dir || null == file) { return; }
-				File f = new File(dir + file);
-				String path;
-				if (f.isDirectory()) {
-					path = dir + file;
-				} else {
-					path = dir;
-				}
-				where.setText(path);
-				where.setToolTipText("Going to save the image tileSet in :" + path);
-				setRootDir(path);
-				return;
-			}
-			// ##
-			String s = " some file";
-
-			int returnVal = dirChooser.showOpenDialog(null);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				System.out.println("You chose to open this file: " + sourceChooser.getSelectedFile().getName());
-				// String s = dirChooser.getSelectedFile().getName();
-				try {
-					String path = dirChooser.getSelectedFile().getCanonicalPath();
-					where.setText(path);
-					String wh = dirChooser.getSelectedFile().getAbsolutePath();
-					setRootDir(sourceChooser.getSelectedFile().getAbsolutePath());
-				} catch (Exception ex) {
-					outputFileName.setText("cannot Open File");
-					where.setText("cannot open file");
-					ex.printStackTrace();
-				}
-			}
-
-		}
-	}
 	// /**
 	// * @param args
 	// */
