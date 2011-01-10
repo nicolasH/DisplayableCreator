@@ -27,6 +27,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
+
 /**
  * @author Nicolas Hoibian
  * 
@@ -46,6 +48,7 @@ public class SaveDialog extends JPanel {
 
 	String defaultDir = null;
 	String currentTitle = "";
+	String newLocation = null;
 
 	public SaveDialog() {
 		super();
@@ -68,7 +71,7 @@ public class SaveDialog extends JPanel {
 
 		// could also load from the user's preferences
 		defaultDir = Preferences.userNodeForPackage(Ref.class).get(Ref.storingDirectoryKey, null);
-
+		defaultDir = defaultDir == null ? System.getProperty("user.home") : defaultDir;
 		where = new JTextField(defaultDir, 20);
 		where.setEditable(false);
 
@@ -130,6 +133,7 @@ public class SaveDialog extends JPanel {
 
 		this.add(option, BorderLayout.CENTER);
 		// this.add(new JLabel("Save !"), BorderLayout.NORTH);
+		initDialogs();
 	}
 
 	private void initDialogs() {
@@ -154,26 +158,25 @@ public class SaveDialog extends JPanel {
 
 	}
 
-	public void showDialog(Component parent, String currentLocation) {
+	public String showDialog(Component parent, String currentLocation) {
 		fillForm(currentLocation);
-		int result = JOptionPane.showOptionDialog(parent, this, "Save Image Tileset", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-		if (JOptionPane.YES_OPTION == result) {
-			save(currentLocation);
+		boolean resOk = false;
+		while (!resOk) {
+			int result = JOptionPane.showOptionDialog(parent, this, "Save Image Tileset", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+			if (JOptionPane.YES_OPTION == result) {
+				resOk = save(currentLocation);
+			} else {
+				resOk = true;
+			}
 		}
+		return newLocation;
 	}
 
 	public void fillForm(String currentLocation) {
 
-		Connection connection = null;
+		newLocation = null;
 		try {
-			// create a database connection
-			connection = DriverManager.getConnection("jdbc:sqlite:" + currentLocation);
-			connection.setAutoCommit(false);
-			// System.out.println("Archive name : " + archiveName);
-			Statement statement = connection.createStatement();
-			statement.setQueryTimeout(3);
-			ResultSet set = statement.executeQuery("select title from infos");
-			currentTitle = set.getString(1);
+			currentTitle = SQliteTileCreatorMultithreaded.getTitle(currentLocation);
 			title.setText(currentTitle);
 			String suggestedFile = Ref.fileSansDot(currentLocation);
 			try {
@@ -188,6 +191,7 @@ public class SaveDialog extends JPanel {
 			}
 			this.outputFileName.setText(suggestedFile);
 			this.where.setText(defaultDir);
+			//init dialog
 		} catch (SQLException e) {
 			// if the error message is "out of memory",
 			// it probably means no database file is found
@@ -196,8 +200,27 @@ public class SaveDialog extends JPanel {
 		}
 	}
 
-	public void save(String originalFile) {
+	public boolean save(String originalFile) {
+		String newPath = where.getText();
+		if (null == newPath || "null".equals(newPath)) { return false; }
+		if (null == outputFileName.getText() || "null".compareTo(outputFileName.getText()) == 0) { return false; }
+		newPath = newPath.endsWith(File.separator) ? newPath  : newPath + File.separator;
+		defaultDir = newPath; 
+		Preferences.userNodeForPackage(Ref.class).put(Ref.storingDirectoryKey, newPath);
+		newPath += outputFileName.getText();
+		if (originalFile.compareTo(newPath) != 0) {
+			File f = new File(originalFile);
+			boolean res = f.renameTo(new File(newPath));
+			if (!res) { return false; }
+			newLocation = newPath;
+		}
+		// else{// yes ! no change to the location !
 
+		if (null == title.getText() || "null".equals(title.getText())) { return false; }
+		if (!currentTitle.equals(title.getText())) {
+			SQliteTileCreatorMultithreaded.updateTitle(newPath, currentTitle, title.getText());
+		}
+		return true;
 	}
 
 	private class RootDirSetter implements Runnable {
@@ -205,7 +228,10 @@ public class SaveDialog extends JPanel {
 		public void run() {
 			// this block until ## is working on mac.
 			if (null != dirChooserOSX) {
-				dirChooserOSX.setModal(true);// only from java 1.6 : setModalityType(ModalityType.APPLICATION_MODAL);
+				if (getJavaMajorVersion() > 1.5) {
+					dirChooserOSX.setModal(true);// only from java 1.6 :
+													// setModalityType(ModalityType.APPLICATION_MODAL);
+				}
 				dirChooserOSX.setVisible(true);
 				String dir = dirChooserOSX.getDirectory();
 				String file = dirChooserOSX.getFile();
@@ -232,21 +258,31 @@ public class SaveDialog extends JPanel {
 				try {
 					String path = dirChooser.getSelectedFile().getCanonicalPath();
 					where.setText(path);
-					String wh = dirChooser.getSelectedFile().getAbsolutePath();
+					//String wh = dirChooser.getSelectedFile().getAbsolutePath();
+					
 					// setRootDir(sourceChooser.getSelectedFile().getAbsolutePath());
 				} catch (Exception ex) {
-					outputFileName.setText("cannot Open File");
-					where.setText("cannot open file");
+					outputFileName.setText(null);// "cannot Open File");
+					where.setText(null);// Ref.cantOpenDir);
 					ex.printStackTrace();
 				}
 			}
-
 		}
 	}
 
+	public static double getJavaMajorVersion() {
+		String javaVersion = System.getProperty("java.version");
+		int p1 = javaVersion.indexOf('.');
+		int p2 = javaVersion.indexOf('.', p1 + 1);
+		double v = Double.parseDouble(javaVersion.substring(0, p2));
+		System.out.println("java version : " + javaVersion + " a.k.a " + javaVersion.substring(0, p2) + " = " + v);
+		return v;
+		// System.out.println("");
+	}
+
 	public static void main(String[] args) {
-		SaveDialog d = new SaveDialog();
 		JFrame f = new JFrame();
+		SaveDialog d = new SaveDialog();
 		//
 		f.setContentPane(d);
 		f.pack();

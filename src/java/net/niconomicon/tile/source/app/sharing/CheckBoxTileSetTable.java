@@ -16,6 +16,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import net.niconomicon.tile.source.app.SaveDialog;
+import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.ButtonForTable;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 
@@ -122,7 +123,16 @@ public class CheckBoxTileSetTable extends JTable {
 		}
 
 		public void setValueAt(Object aValue, int row, int column) {
+			if (column == -1 && aValue != null && row < backstore.size()) {
+				backstore.get(row).location = (String) aValue;
+				try {
+					backstore.get(row).title = SQliteTileCreatorMultithreaded.getTitle((String) aValue);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				};
+			}
 			System.out.println("aValue:" + aValue);
+			fireTableDataChanged();
 		}
 
 		public int getRowCount() {

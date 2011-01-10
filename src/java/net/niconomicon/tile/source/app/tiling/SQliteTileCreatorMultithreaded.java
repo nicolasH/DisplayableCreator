@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
@@ -166,6 +167,21 @@ public class SQliteTileCreatorMultithreaded {
 			e.printStackTrace();
 		}
 	}
+	public static String getTitle(String currentLocation) throws SQLException {
+		Connection connection = null;
+		// create a database connection
+		connection = DriverManager.getConnection("jdbc:sqlite:" + currentLocation);
+		connection.setAutoCommit(false);
+		// System.out.println("Archive name : " + archiveName);
+		Statement statement = connection.createStatement();
+		statement.setQueryTimeout(3);
+		ResultSet set = statement.executeQuery("SELECT title FROM infos");
+		String s = set.getString(1);
+		connection.commit();
+		connection.close();
+		return s;
+	}
+
 
 	public void addInfos(String name, String author, String source, String title, String description, int zindex, int width, int height, byte[] mini, byte[] thumb) {
 		long mapID = 0;

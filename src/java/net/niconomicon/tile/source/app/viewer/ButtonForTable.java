@@ -88,7 +88,10 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		if (null != saveDialog) {
 
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
-			saveDialog.showDialog(lastTable, fileLocation);
+			String newLocation = saveDialog.showDialog(lastTable, fileLocation);
+			if (newLocation != null) {
+				lastTable.setValueAt(newLocation, lastRow, -1);
+			}
 			return;
 		}
 		System.out.println("Action performed. Presumably for file " + fileLocation);
