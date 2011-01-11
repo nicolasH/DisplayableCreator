@@ -155,7 +155,6 @@ public class SaveDialog extends JPanel {
 			dirChooser.setDialogTitle("Choose directory to save the tile source");
 			dirChooser.setCurrentDirectory(defDir);
 		}
-
 	}
 
 	public String showDialog(Component parent, String currentLocation) {
@@ -181,7 +180,6 @@ public class SaveDialog extends JPanel {
 			String suggestedFile = Ref.fileSansDot(currentLocation);
 			try {
 				File f = File.createTempFile("tmp", "tmp");
-				System.out.println("tmp files : " + f.getParent() + "vs" + Ref.pathSansFileSansSep(currentLocation));
 				if (f.getParent().compareTo(Ref.pathSansFileSansSep(currentLocation)) == 0) {
 					// in temporary directory.
 					suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf("_")) + Ref.ext_db;

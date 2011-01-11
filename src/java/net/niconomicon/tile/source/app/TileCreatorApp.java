@@ -25,6 +25,7 @@ public class TileCreatorApp {
 	ImageTileSetViewer tileSetViewer;
 
 	public static int ThreadCount = 4;
+
 	public TileCreatorApp() {
 		init();
 	}
@@ -45,9 +46,9 @@ public class TileCreatorApp {
 		f.pack();
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Thread t = new Thread(new Runnable(){
-			public void run(){
-				SQliteTileCreatorMultithreaded.loadLib();				
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				SQliteTileCreatorMultithreaded.loadLib();
 			}
 		});
 		t.start();

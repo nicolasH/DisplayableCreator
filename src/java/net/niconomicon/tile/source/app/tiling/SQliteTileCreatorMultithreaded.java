@@ -272,7 +272,7 @@ public class SQliteTileCreatorMultithreaded {
 		initSource(destinationFile);
 
 		name = fileSansDot;
-		title = (null == title ? fileSansDot : title);
+		title =  fileSansDot;
 		description = (null == description ? "No Description" : description);
 
 		// /////////////////////////////////

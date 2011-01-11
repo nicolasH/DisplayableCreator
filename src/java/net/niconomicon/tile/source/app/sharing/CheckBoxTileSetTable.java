@@ -6,6 +6,7 @@ package net.niconomicon.tile.source.app.sharing;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ import javax.swing.table.DefaultTableModel;
 
 import net.niconomicon.tile.source.app.SaveDialog;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.ButtonForTable;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 
 /**
@@ -132,6 +132,7 @@ public class CheckBoxTileSetTable extends JTable {
 				};
 			}
 			System.out.println("aValue:" + aValue);
+			Collections.sort(backstore);
 			fireTableDataChanged();
 		}
 
@@ -146,11 +147,13 @@ public class CheckBoxTileSetTable extends JTable {
 				TileSetInfos info = new TileSetInfos(elem.getKey(), elem.getValue());
 				backstore.add(info);
 			}
+			Collections.sort(backstore);
 			fireTableDataChanged();
 		}
 
 		public void addTileSet(TileSetInfos infos) {
 			backstore.add(infos);
+			Collections.sort(backstore);
 			fireTableDataChanged();
 		}
 

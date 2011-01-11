@@ -80,7 +80,7 @@ public class TileCreatorPanel extends JPanel {
 		sourceChooser.setFileFilter(imageFilter);
 		sourceChooser.setDialogTitle("Open Supported Images");
 		sourceChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME)));
-		
+
 		preview = new TilingPreview();
 
 		from = new JTextField("", 20);
@@ -104,8 +104,7 @@ public class TileCreatorPanel extends JPanel {
 		where = new JTextField("", 20);
 		where.setEditable(false);
 
-
-
+		progressIndicator = new JProgressBar(0, 100);
 		// Replacing the FormLayout by a GridBagLayout
 		GridBagConstraints c;
 		int y = 0;
@@ -117,12 +116,11 @@ public class TileCreatorPanel extends JPanel {
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("Source image :"), c);
 
-		progressIndicator = new JProgressBar(0, 100);
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = x;
-		c.anchor = c.LINE_END;
-		option.add(new JLabel("Current action :"), c);
+		// c = new GridBagConstraints();
+		// c.gridy = y++;
+		// c.gridx = x;
+		// c.anchor = c.LINE_END;
+		// option.add(new JLabel("Current action :"), c);
 
 		y = 0;
 		x = 1;
@@ -159,18 +157,16 @@ public class TileCreatorPanel extends JPanel {
 	public void preTile(String sourcePath) {
 		try {
 			// Create temp file.
-
-			if (temp == null) {
-				temp = File.createTempFile(Ref.fileSansDot(sourcePath)+"_", Ref.ext_db);
-			}
+			temp = File.createTempFile(Ref.fileSansDot(sourcePath) + "_", Ref.ext_db);
 			// Delete temp file when program exits.
-			temp.deleteOnExit();
+			temp.deleteOnExit();// Apparently survives if renamed before exit.
 			currentSourcePath = sourcePath;
 
 			Thread t = new Thread() {
 				public void run() {
 					try {
-						// progressIndicator.setIndeterminate(true);
+						progressIndicator.setValue(0);
+						progressIndicator.setEnabled(true);
 						progressIndicator.setStringPainted(true);
 						progressIndicator.setString("Opening file ...");
 						progressIndicator.setValue(1);
@@ -184,6 +180,8 @@ public class TileCreatorPanel extends JPanel {
 						progressIndicator.setValue(100);
 						progressIndicator.setString("Done");
 						sharingPanel.addTileSetToShare(temp.getAbsolutePath(), Ref.fileSansDot(currentSourcePath));
+						progressIndicator.setEnabled(false);
+						from.setText("");
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
