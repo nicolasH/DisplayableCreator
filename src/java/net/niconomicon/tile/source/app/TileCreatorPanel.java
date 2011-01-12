@@ -193,53 +193,6 @@ public class TileCreatorPanel extends JPanel {
 		}
 	}
 
-	public void finalizeTilesDB() {
-		System.err.println("maybe i should create the tiles");
-		if (outputFileName.getText() != null && outputFileName.getText().length() > 0 && where.getText() != null && where.getText().length() > 0) {
-
-			name = outputFileName.getText();
-			place = where.getText();
-
-			// creator.author = author.getText();
-			// creator.description = description.getText();
-			creator.source = source.getText();
-			creator.title = name.substring(0, name.lastIndexOf("."));// title.getText();
-
-			if (!place.endsWith(File.pathSeparator)) {
-				place += File.separator;
-			}
-
-			try {
-				Thread t = new Thread() {
-					public void run() {
-						try {
-							while (!creator.doneCalculating) {
-								Thread.sleep(150);
-							}
-							// JOptionPane.showInputDialog(new ImageIcon(creator.mini));
-							// JOptionPane.showInputDialog(new ImageIcon(creator.thumb));
-							// // Communicator comm = new Communicator(preview);
-							// creator.calculateTiles(place + name,
-							// from.getText(), tSize, tType);
-
-							creator.finalizeFile();
-							String tmp = temp.getAbsolutePath();
-							temp.renameTo(new File(place, name));
-							sharingPanel.updateTileSetLocation(tmp, temp.getAbsolutePath());
-							sharingPanel.setRootDir(place);
-							System.gc();
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				};
-				t.start();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
-
 	public void setSharingService(TilesetSharingPanel sharingPanel) {
 		this.sharingPanel = sharingPanel;
 	}

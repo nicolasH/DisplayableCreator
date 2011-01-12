@@ -46,7 +46,6 @@ public class SaveDialog extends JPanel {
 	JTextField author;
 	JTextField title;
 
-	String defaultDir = null;
 	String currentTitle = "";
 	String newLocation = null;
 
@@ -70,7 +69,7 @@ public class SaveDialog extends JPanel {
 		outputFileName = new JTextField("", 10);
 
 		// could also load from the user's preferences
-		defaultDir = Preferences.userNodeForPackage(Ref.class).get(Ref.storingDirectoryKey, null);
+		String defaultDir = Ref.getDefaultDir();
 		defaultDir = defaultDir == null ? System.getProperty("user.home") : defaultDir;
 		where = new JTextField(defaultDir, 20);
 		where.setEditable(false);
@@ -137,7 +136,7 @@ public class SaveDialog extends JPanel {
 	}
 
 	private void initDialogs() {
-		String f = defaultDir;
+		String f = Ref.getDefaultDir();
 		if (null == f) {
 			f = System.getProperty("user.home");
 		}
@@ -188,8 +187,8 @@ public class SaveDialog extends JPanel {
 				ex.printStackTrace();
 			}
 			this.outputFileName.setText(suggestedFile);
-			this.where.setText(defaultDir);
-			//init dialog
+			this.where.setText(Ref.getDefaultDir());
+			// init dialog
 		} catch (SQLException e) {
 			// if the error message is "out of memory",
 			// it probably means no database file is found
@@ -202,9 +201,9 @@ public class SaveDialog extends JPanel {
 		String newPath = where.getText();
 		if (null == newPath || "null".equals(newPath)) { return false; }
 		if (null == outputFileName.getText() || "null".compareTo(outputFileName.getText()) == 0) { return false; }
-		newPath = newPath.endsWith(File.separator) ? newPath  : newPath + File.separator;
-		defaultDir = newPath; 
-		Preferences.userNodeForPackage(Ref.class).put(Ref.storingDirectoryKey, newPath);
+		newPath = newPath.endsWith(File.separator) ? newPath : newPath + File.separator;
+
+		Ref.setDefaultDir(newPath);
 		newPath += outputFileName.getText();
 		if (originalFile.compareTo(newPath) != 0) {
 			File f = new File(originalFile);
@@ -256,8 +255,8 @@ public class SaveDialog extends JPanel {
 				try {
 					String path = dirChooser.getSelectedFile().getCanonicalPath();
 					where.setText(path);
-					//String wh = dirChooser.getSelectedFile().getAbsolutePath();
-					
+					// String wh = dirChooser.getSelectedFile().getAbsolutePath();
+
 					// setRootDir(sourceChooser.getSelectedFile().getAbsolutePath());
 				} catch (Exception ex) {
 					outputFileName.setText(null);// "cannot Open File");

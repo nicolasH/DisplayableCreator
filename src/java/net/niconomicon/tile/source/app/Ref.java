@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 /**
  * @author niko
@@ -60,15 +61,26 @@ public final class Ref {
 		return fullPath.substring(0, fullPath.lastIndexOf(File.separator));
 	}
 
+	public static String getDefaultDir() {
+		return Preferences.userNodeForPackage(Ref.class).get(Ref.storingDirectoryKey, null);
+	}
+
+	public static void setDefaultDir(String dir) {
+		Preferences.userNodeForPackage(Ref.class).put(Ref.storingDirectoryKey, dir);
+	}
+
 	public static final FilenameFilter ext_db_filter = new FilenameFilter() {
 		public boolean accept(File dir, String name) {
 			return name.endsWith(ext_db);
 		}
 	};
 
-	public static String[] getDBFiles(String dirPath) {
-		File dir = new File(dirPath);
-		return dir.list(Ref.ext_db_filter);
+	public static String[] getDBFiles(File dir) {
+		String[] files = dir.list(Ref.ext_db_filter);
+		for (int i = 0; i < files.length; i++) {
+			files[i] = dir.getAbsolutePath() + (dir.getAbsolutePath().endsWith(File.separator) ? files[i] : File.separator + files[i]);
+		}
+		return files;
 	}
 
 	public static String getDirOrTmpDir(String saveDirectory) {

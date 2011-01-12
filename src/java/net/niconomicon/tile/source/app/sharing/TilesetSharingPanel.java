@@ -13,12 +13,18 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,6 +36,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 
 /**
@@ -48,7 +55,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	ImageTileSetViewer viewer;
 
 	/**
-	 * stand alone main
+	 * Stand alone main
 	 * 
 	 */
 	public static void main(String[] args) {
@@ -86,18 +93,36 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		}
 	}
 
-	// { String tileSourceLocation = mapList.getFileLocation(arg0.getFirstIndex());
-	// System.out.println("Setting the tile source location to " + tileSourceLocation);
-	// viewer.setTileSet(tileSourceLocation);}
+	public JPanel getDirSelectionPanel() {
+		JPanel p = new JPanel();
+		p.add(new JLabel("Import TileSets : "));
+		JButton b = new JButton("Choose TileSets or TileSet directory");
+		b.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fc = new JFileChooser();
+				fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				fc.setMultiSelectionEnabled(true);
+				int res = fc.showOpenDialog(TilesetSharingPanel.this);
+				if (JFileChooser.APPROVE_OPTION == res) {
+					File[] files = fc.getSelectedFiles();
+					setSelectedFiles(files);
+				}
+			}
+		});
+		p.add(b);
+		return p;
+	}
+
 	public void init() {
 		sharingManager = new SharingManager();
 		mapList = new CheckBoxTileSetTable(viewer);
-		
+
 		mapList.getModel().addTableModelListener(this);
 		mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		// mapList.getSelectionModel().addListSelectionListener(this);
 		this.setLayout(new BorderLayout());
-
+		JPanel dirSelectorPanel = getDirSelectionPanel();
+		this.add(dirSelectorPanel, BorderLayout.NORTH);
 		// shared files
 		// //////////////////////////////////////////
 		this.add(new JScrollPane(mapList), BorderLayout.CENTER);
@@ -134,13 +159,41 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		this.add(options, BorderLayout.SOUTH);
 	}
 
-	public void setRootDir(String rDir) {
-		if (rDir != null) {
-			this.rootDir = rDir;
+	public static List<String> getDBFiles(File dir) {
+		List<String> dbFiles = new ArrayList<String>();
+		dbFiles.addAll(Arrays.asList(Ref.getDBFiles(dir)));
+		for (String p : dir.list()) {
+			File d = new File(p);
+			if (d.isDirectory()) {
+				dbFiles.addAll(getDBFiles(d));
+			}
 		}
-		String[] children = Ref.getDBFiles(rootDir);
-		Map<String, String> mapsMap = getTilesetList(rootDir, children);
-		mapList.setData(mapsMap);
+		return dbFiles;
+	}
+
+	public void setSelectedFiles(File[] files) {
+		if (null == files) { return; }// clear ?
+		List<String> dbFiles = new ArrayList<String>();
+		for (File f : files) {
+			if (f.isDirectory()) {
+				dbFiles.addAll(getDBFiles(f));
+			}
+			if (f.getAbsolutePath().endsWith(Ref.ext_db)) {
+				dbFiles.add(f.getAbsolutePath());
+			}
+		}
+		Collections.sort(dbFiles);
+		// String[] children = Ref.getDBFiles(rootDir);
+		Map<String, String> fileToTitle = new HashMap<String, String>();// getTilesetList(rootDir, children);
+		for (String path : dbFiles) {
+			try {
+				System.out.println("Going to get the title from " + path);
+				fileToTitle.put(path, SQliteTileCreatorMultithreaded.getTitle(path));
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+		mapList.setData(fileToTitle);
 		if (sharingManager.isSharing()) {
 			sharingManager.setSharingList(mapList.getSelectedTilesSetFiles());
 		}
@@ -178,15 +231,15 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	}
 
 	public void updateTileSetLocation(String oldLocation, String newLocation) {
-		mapList.updateLocation(oldLocation,newLocation);
+		mapList.updateLocation(oldLocation, newLocation);
 	}
 
 	public Map<String, String> getTilesetList(String rootDir, String[] maps) {
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		// try {
+		// Class.forName("org.sqlite.JDBC");
+		// } catch (Exception ex) {
+		// ex.printStackTrace();
+		// }
 
 		Map<String, String> fileToName = new HashMap<String, String>();
 		if (!rootDir.endsWith(File.separator)) {
