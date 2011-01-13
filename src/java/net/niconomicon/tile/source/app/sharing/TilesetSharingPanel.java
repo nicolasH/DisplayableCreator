@@ -159,13 +159,12 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		this.add(options, BorderLayout.SOUTH);
 	}
 
-	public static List<String> getDBFiles(File dir) {
+	public static List<String> getDBFilesInSubDirectory(File dir) {
 		List<String> dbFiles = new ArrayList<String>();
-		dbFiles.addAll(Arrays.asList(Ref.getDBFiles(dir)));
-		for (String p : dir.list()) {
-			File d = new File(p);
+		dbFiles.addAll(Arrays.asList(Ref.getAbsolutePathOfDBFilesInDirectory(dir)));
+		for (File d : dir.listFiles()) {
 			if (d.isDirectory()) {
-				dbFiles.addAll(getDBFiles(d));
+				dbFiles.addAll(getDBFilesInSubDirectory(d));
 			}
 		}
 		return dbFiles;
@@ -176,10 +175,11 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		List<String> dbFiles = new ArrayList<String>();
 		for (File f : files) {
 			if (f.isDirectory()) {
-				dbFiles.addAll(getDBFiles(f));
-			}
-			if (f.getAbsolutePath().endsWith(Ref.ext_db)) {
-				dbFiles.add(f.getAbsolutePath());
+				dbFiles.addAll(getDBFilesInSubDirectory(f));
+			} else {
+				if (f.getAbsolutePath().endsWith(Ref.ext_db)) {
+					dbFiles.add(f.getAbsolutePath());
+				}
 			}
 		}
 		Collections.sort(dbFiles);

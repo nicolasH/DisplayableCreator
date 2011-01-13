@@ -75,7 +75,7 @@ public final class Ref {
 		}
 	};
 
-	public static String[] getDBFiles(File dir) {
+	public static String[] getAbsolutePathOfDBFilesInDirectory(File dir) {
 		String[] files = dir.list(Ref.ext_db_filter);
 		for (int i = 0; i < files.length; i++) {
 			files[i] = dir.getAbsolutePath() + (dir.getAbsolutePath().endsWith(File.separator) ? files[i] : File.separator + files[i]);
