@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.SaveDialog;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
@@ -116,7 +117,7 @@ public class CheckBoxTileSetTable extends JTable {
 				case 2:
 					return "view";
 				case 3:
-					return "edit";
+					return Ref.isInTmpLocation(i.location) ? "save" : "edit";
 				}
 			}
 			return null;
@@ -132,6 +133,9 @@ public class CheckBoxTileSetTable extends JTable {
 				};
 			}
 			System.out.println("aValue:" + aValue);
+			if (column == 0) {//
+				backstore.get(row).shouldShare = ((Boolean) aValue).booleanValue();
+			}
 			Collections.sort(backstore);
 			fireTableDataChanged();
 		}

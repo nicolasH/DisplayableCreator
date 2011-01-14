@@ -49,6 +49,24 @@ public final class Ref {
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
 
+	public static File tmpFile;
+	static {
+		try {
+			tmpFile = File.createTempFile("tmp", "tmp");
+			tmpFile.deleteOnExit();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static final boolean isInTmpLocation(String currentLocation) {
+		if (tmpFile.getParent().compareTo(Ref.pathSansFileSansSep(currentLocation)) == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public static final String fileSansDot(String fullPath) {
 		return fullPath.substring(fullPath.lastIndexOf(File.separator) + 1, fullPath.lastIndexOf("."));
 	}

@@ -178,9 +178,7 @@ public class SaveDialog extends JPanel {
 			title.setText(currentTitle);
 			String suggestedFile = Ref.fileSansDot(currentLocation);
 			try {
-				File f = File.createTempFile("tmp", "tmp");
-				if (f.getParent().compareTo(Ref.pathSansFileSansSep(currentLocation)) == 0) {
-					// in temporary directory.
+				if (Ref.isInTmpLocation(currentLocation)) {
 					suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf("_")) + Ref.ext_db;
 				}
 			} catch (Exception ex) {
