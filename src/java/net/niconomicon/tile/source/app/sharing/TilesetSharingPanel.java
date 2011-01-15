@@ -36,6 +36,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.filter.DirOrTilesetFilter;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 
@@ -101,6 +102,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fc = new JFileChooser();
 				fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				fc.setFileFilter(new DirOrTilesetFilter());
 				fc.setMultiSelectionEnabled(true);
 				int res = fc.showOpenDialog(TilesetSharingPanel.this);
 				if (JFileChooser.APPROVE_OPTION == res) {
