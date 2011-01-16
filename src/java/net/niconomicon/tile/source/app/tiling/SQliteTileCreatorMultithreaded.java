@@ -167,6 +167,7 @@ public class SQliteTileCreatorMultithreaded {
 			e.printStackTrace();
 		}
 	}
+	
 	public static String getTitle(String currentLocation) throws SQLException {
 		Connection connection = null;
 		// create a database connection

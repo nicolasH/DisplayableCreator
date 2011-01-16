@@ -4,10 +4,13 @@
 package net.niconomicon.tile.source.app.viewer;
 
 import java.awt.Dimension;
+import java.sql.SQLException;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+
+import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 
 /**
  * @author Nicolas Hoibian
@@ -44,6 +47,13 @@ public class ImageTileSetViewer extends JScrollPane {
 	public void setTileSet(String tileSetLocation) {
 		System.out.println("setting tile set");
 		this.tileSetLocation = tileSetLocation;
+		try {
+			String title = SQliteTileCreatorMultithreaded.getTitle(tileSetLocation);
+			viewerFrame.setTitle(title);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+
 		viewerFrame.pack();
 		viewerFrame.setVisible(true);
 

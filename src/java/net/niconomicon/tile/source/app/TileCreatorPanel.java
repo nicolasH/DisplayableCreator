@@ -36,12 +36,9 @@ public class TileCreatorPanel extends JPanel {
 	public static final String USER_HOME = "user.home";
 	protected JComboBox tileSize;
 
-	protected JTextField where;
-	protected JTextField outputFileName;
 	protected JTextField from;
 
 	protected JButton browseInput;
-	protected JButton browseOutput;
 
 	protected JLabel imageProperty;
 
@@ -58,13 +55,11 @@ public class TileCreatorPanel extends JPanel {
 	TilesetSharingPanel sharingPanel;
 	TilingPreview preview;
 
-	JTextField source;
-
 	SQliteTileCreatorMultithreaded creator;
 
 	File temp;
 
-	// protected TileArchiveCreator tileCreator;
+	protected String currentSourcePath;
 
 	public TileCreatorPanel() {
 
@@ -90,19 +85,8 @@ public class TileCreatorPanel extends JPanel {
 
 		// tileSize = new JComboBox(new String[] { "64", "128", "192", "256" });
 		// tileSize.setSelectedIndex(2);
-		tileSize = new JComboBox(new String[] { "" + TILE_SIZE });
-		tileSize.setSelectedIndex(0);
-
-		// could also load from the user's preferences
-		source = new JTextField("", 20);
-
-		// could also load from the user's preferences
-
-		// load from file name
-		outputFileName = new JTextField("", 10);
-
-		where = new JTextField("", 20);
-		where.setEditable(false);
+		// tileSize = new JComboBox(new String[] { "" + TILE_SIZE });
+		// tileSize.setSelectedIndex(0);
 
 		progressIndicator = new JProgressBar(0, 100);
 		// Replacing the FormLayout by a GridBagLayout
@@ -115,12 +99,6 @@ public class TileCreatorPanel extends JPanel {
 		c.gridx = x;
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("Source image :"), c);
-
-		// c = new GridBagConstraints();
-		// c.gridy = y++;
-		// c.gridx = x;
-		// c.anchor = c.LINE_END;
-		// option.add(new JLabel("Current action :"), c);
 
 		y = 0;
 		x = 1;
@@ -151,8 +129,6 @@ public class TileCreatorPanel extends JPanel {
 		this.setLayout(new BorderLayout());
 		this.add(content, BorderLayout.NORTH);
 	}
-
-	protected String currentSourcePath;
 
 	public void preTile(String sourcePath) {
 		try {
@@ -211,10 +187,6 @@ public class TileCreatorPanel extends JPanel {
 					String fileName = sourceChooser.getSelectedFile().getName();
 					String fileSansDot = fileName.substring(0, fileName.lastIndexOf("."));
 					// title.setText(fileSansDot);
-					if (null == where.getText() || 0 == where.getText().length()) {
-						where.setText(sourceChooser.getSelectedFile().getParent());
-					}
-					outputFileName.setText(fileSansDot + Ref.ext_db);
 					preTile(sourceChooser.getSelectedFile().getAbsolutePath());
 				} catch (Exception e) {
 					from.setText("Sorry, cannot open the file");

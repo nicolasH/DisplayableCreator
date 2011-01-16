@@ -96,7 +96,8 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 
 	public JPanel getDirSelectionPanel() {
 		JPanel p = new JPanel();
-		p.add(new JLabel("Import TileSets : "));
+		p.setLayout(new BorderLayout());
+		p.add(new JLabel("Import TileSets : "),BorderLayout.WEST);
 		JButton b = new JButton("Choose TileSets or TileSet directory");
 		b.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -111,7 +112,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 				}
 			}
 		});
-		p.add(b);
+		p.add(b,BorderLayout.EAST);
 		return p;
 	}
 

@@ -91,7 +91,6 @@ public class ImageTileSetPanel extends JPanel {
 			}
 			// cache = new HashMap<String, byte[]>();
 			setupCacheForTiles(zoom);
-			revalidate();
 		} catch (Exception ex) {
 			System.err.println("ex for map : " + tileSourcePath);
 			ex.printStackTrace();
@@ -114,10 +113,10 @@ public class ImageTileSetPanel extends JPanel {
 			// System.out.println("found a tile for " + x + " " + y + " " + z);
 			byte[] data = rs.getBytes(4);
 			String key = x + "_" + y + "_" + z;
-			exe.execute(new FlipAndAddAction(data, key));
+			exe.submit(new FlipAndAddAction(data, key));
 		}
-		exe.awaitTermination(2, TimeUnit.MINUTES);
-		System.out.println("Caching done.");
+		// exe.awaitTermination(1, TimeUnit.SECONDS);
+		// System.out.println("Caching done.");
 	}
 
 	@Override
@@ -127,9 +126,9 @@ public class ImageTileSetPanel extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		Rectangle r = g2.getClipBounds();
 		int tileXa = r.x / tileSize;
-		int tileXb = tileXa + r.width / tileSize + 2;
+		int tileXb = tileXa + (int) (((double) r.width / (double) tileSize)) + 2;
 		int tileYa = r.y / tileSize;
-		int tileYb = tileYa + r.height / tileSize + 1;
+		int tileYb = tileYa + (int) (((double) r.height / (double) tileSize)) + 1;
 
 		// System.out.println("Painting between " + tileXa + "," + tileYa + "and " + tileXb + ", " + tileYb);
 		try {
@@ -140,19 +139,9 @@ public class ImageTileSetPanel extends JPanel {
 			macYb = tileYb;
 			for (int x = tileXa; x < tileXb; x++) {
 				for (int y = macYa; y < macYb + 1; y++) {
-					// byte[] data = cache.get(x + "_" + y + "_" + zoom);
 					BufferedImage tile = cache.get(x + "_" + y + "_" + zoom);
-					// if (null != data) {
 					if (null != tile) {
-						// BufferedImage image = ImageIO.read(new ByteArrayInputStream(data));
-						// g2.drawImage(image, x * tileSize, (maxY - 1 - y) * tileSize, null);
-						// g2.scale(1, 1);
-						// g2.drawImage(tile, x * tileSize, (maxY - 1 - y) * tileSize, null);
-						// System.out.println("painting " + x + "_" + y + " at " + x * tileSize +" "+( maxY - 1 - y) *
-						// tileSize);
 						g2.drawImage(tile, x * tileSize, (y) * tileSize, null);
-					} else {
-						// System.out.println("tile is null for : "+x + "_" + y + "_" + zoom);
 					}
 				}
 			}
