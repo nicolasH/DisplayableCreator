@@ -34,7 +34,8 @@ public class GenericTileCreator {
 
 		System.out.println("Processing " + creator.title);
 		creator.title = title;
-		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null, 4);// new JProgressBar());
+		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null, 4, null);// new
+																										// JProgressBar());
 		creator.finalizeFile();
 
 	}

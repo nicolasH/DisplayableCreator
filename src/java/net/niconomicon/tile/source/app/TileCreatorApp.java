@@ -24,7 +24,7 @@ public class TileCreatorApp {
 	TilesetSharingPanel mapSharingPanel;
 	ImageTileSetViewer tileSetViewer;
 
-	public static int ThreadCount = 4;
+	public static int ThreadCount = 8;
 
 	public TileCreatorApp() {
 		init();

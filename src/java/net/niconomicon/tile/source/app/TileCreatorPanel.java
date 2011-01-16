@@ -1,9 +1,9 @@
 package net.niconomicon.tile.source.app;
 
-import java.awt.BorderLayout;
-import java.awt.FileDialog;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -11,16 +11,16 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
 import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
+import net.niconomicon.tile.source.app.tiling.Inhibitor;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
@@ -28,7 +28,7 @@ import net.niconomicon.tile.source.app.viewer.TilingPreview;
  * @author niko
  * 
  */
-public class TileCreatorPanel extends JPanel {
+public class TileCreatorPanel extends JLayeredPane {
 
 	public static final int TILE_SIZE = 192;
 	public static final String TILE_TYPE = "png";
@@ -61,11 +61,16 @@ public class TileCreatorPanel extends JPanel {
 
 	protected String currentSourcePath;
 
-	public TileCreatorPanel() {
+	JPanel input;
+	JPanel status;
 
+	// JLayeredPane content;
+	Inhibitor inhibitor;
+
+	public TileCreatorPanel() {
+		super();
 		creator = new SQliteTileCreatorMultithreaded();
-		JPanel content = new JPanel(new BorderLayout());
-		JPanel option = new JPanel(new GridBagLayout());
+		// content = new JLayeredPane();// new BorderLayout());
 
 		imageFilter = new ImageFileFilter();
 
@@ -76,7 +81,7 @@ public class TileCreatorPanel extends JPanel {
 		sourceChooser.setDialogTitle("Open Supported Images");
 		sourceChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME)));
 
-		preview = new TilingPreview();
+		// preview = new TilingPreview();
 
 		from = new JTextField("", 20);
 		from.setEditable(false);
@@ -89,47 +94,82 @@ public class TileCreatorPanel extends JPanel {
 		// tileSize.setSelectedIndex(0);
 
 		progressIndicator = new JProgressBar(0, 100);
+		inhibitor = new Inhibitor(progressIndicator);
 		// Replacing the FormLayout by a GridBagLayout
+
+		status = initStatusPanel();
+		input = initInputPanel();
+
+		this.setLayout(new GridLayout(0, 1));
+		this.add(input, new Integer(0));
+		this.setPreferredSize(new Dimension(300, 60));
+		// content.moveToFront(input);
+
+	}
+
+	public JPanel initInputPanel() {
+
+		JPanel input = new JPanel(new GridBagLayout());
+
 		GridBagConstraints c;
 		int y = 0;
 		int x = 0;
 
 		c = new GridBagConstraints();
-		c.gridy = y++;
+		c.gridy = y;
 		c.gridx = x;
 		c.anchor = c.LINE_END;
-		option.add(new JLabel("Source image :"), c);
+		input.add(new JLabel("Source image :"), c);
 
-		y = 0;
-		x = 1;
+		x++;
+		c = new GridBagConstraints();
+		c.gridy = y;
+		c.gridx = x;
+		c.weightx = 3;
+		c.anchor = c.LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		input.add(from, c);
+
+		x++;
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x;
 		c.anchor = c.LINE_START;
-		option.add(from, c);
+		input.add(browseInput, c);
 
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = x + 1;
-		c.anchor = c.LINE_START;
-		option.add(browseInput, c);
-
-		y++;
-		c = new GridBagConstraints();
-		c.gridy = y++;
-		c.gridx = 0;
-		c.gridwidth = 3;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = c.LINE_START;
-		option.add(progressIndicator, c);
-
-		content.add(option, BorderLayout.CENTER);
-		// content.add(new JLabel("Image goes here"), BorderLayout.CENTER);
-
-		this.setLayout(new BorderLayout());
-		this.add(content, BorderLayout.NORTH);
+		return input;
 	}
 
+	public JPanel initStatusPanel() {
+		JPanel status = new JPanel(new GridBagLayout());
+		GridBagConstraints c;
+		int y = 0;
+		int x = 0;
+
+		c = new GridBagConstraints();
+		c.gridx = x;
+		c.gridy = y;
+		c.gridwidth = 3;
+		c.weightx = 2;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = c.LINE_START;
+		status.add(progressIndicator, c);
+
+		x = 4;
+		c = new GridBagConstraints();
+		c.gridy = y;
+		c.gridx = x;
+		c.gridwidth = 1;
+		c.anchor = c.LINE_END;
+		JButton cancel = new JButton("Cancel");
+		cancel.addActionListener(inhibitor);
+		status.add(cancel, c);
+
+		return status;
+
+	}
+
+	// this will open and tile the image in a separate thread
 	public void preTile(String sourcePath) {
 		try {
 			// Create temp file.
@@ -138,9 +178,13 @@ public class TileCreatorPanel extends JPanel {
 			temp.deleteOnExit();// Apparently survives if renamed before exit.
 			currentSourcePath = sourcePath;
 
+			this.remove(input);
+			this.add(status, new Integer(0));
+
 			Thread t = new Thread() {
 				public void run() {
 					try {
+						progressIndicator.setIndeterminate(false);
 						progressIndicator.setValue(0);
 						progressIndicator.setEnabled(true);
 						progressIndicator.setStringPainted(true);
@@ -148,16 +192,23 @@ public class TileCreatorPanel extends JPanel {
 						progressIndicator.setValue(1);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
-						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator, 8);
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator, 8, inhibitor);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
-						// progressIndicator.setIndeterminate(false);
 						creator.finalizeFile();
-						progressIndicator.setValue(100);
-						progressIndicator.setString("Done");
-						sharingPanel.addTileSetToShare(temp.getAbsolutePath(), Ref.fileSansDot(currentSourcePath));
 						progressIndicator.setEnabled(false);
 						from.setText("");
+						if (inhibitor.hasRunInhibitionBeenRequested()) {
+							progressIndicator.setValue(0);
+							progressIndicator.setString("Cancelled");
+							temp.delete();
+						} else {
+							sharingPanel.addTileSetToShare(temp.getAbsolutePath(), Ref.fileSansDot(currentSourcePath));
+							progressIndicator.setValue(100);
+							progressIndicator.setString("Done");
+						}
+						TileCreatorPanel.this.remove(status);
+						TileCreatorPanel.this.add(input, new Integer(0));
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
@@ -176,7 +227,7 @@ public class TileCreatorPanel extends JPanel {
 	private class InputActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent arg0) {
-			String s = " some file";
+			String s = "Some file";
 			int returnVal = sourceChooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				System.out.println("You chose to open this file: " + sourceChooser.getSelectedFile().getName());
@@ -195,16 +246,5 @@ public class TileCreatorPanel extends JPanel {
 			}
 		}
 	}
-
-	private class OutputActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent arg0) {}
-	}
-
-	// /**
-	// * @param args
-	// */
-	// public static void main(String[] args) {
-	// TileCreatorPanel f = new TileCreatorPanel();
-	// }
 
 }

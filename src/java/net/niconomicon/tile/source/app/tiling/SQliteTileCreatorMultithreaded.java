@@ -167,7 +167,7 @@ public class SQliteTileCreatorMultithreaded {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static String getTitle(String currentLocation) throws SQLException {
 		Connection connection = null;
 		// create a database connection
@@ -182,7 +182,6 @@ public class SQliteTileCreatorMultithreaded {
 		connection.close();
 		return s;
 	}
-
 
 	public void addInfos(String name, String author, String source, String title, String description, int zindex, int width, int height, byte[] mini, byte[] thumb) {
 		long mapID = 0;
@@ -260,7 +259,7 @@ public class SQliteTileCreatorMultithreaded {
 
 	}
 
-	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, JProgressBar progressIndicator, int nThreads) throws Exception {
+	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, JProgressBar progressIndicator, int nThreads, Inhibitor inhibitor) throws Exception {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 		ExecutorService serialPool = Executors.newFixedThreadPool(nThreads);
@@ -273,7 +272,7 @@ public class SQliteTileCreatorMultithreaded {
 		initSource(destinationFile);
 
 		name = fileSansDot;
-		title =  fileSansDot;
+		title = fileSansDot;
 		description = (null == description ? "No Description" : description);
 
 		// /////////////////////////////////
@@ -283,8 +282,10 @@ public class SQliteTileCreatorMultithreaded {
 		long stop, start;
 		start = System.nanoTime();
 
+		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) { return; }
 		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
 		img = ImageIO.read(inStream);
+		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) { return; }
 		// //////////////////////////////
 
 		stop = System.nanoTime();
@@ -326,6 +327,11 @@ public class SQliteTileCreatorMultithreaded {
 
 		boolean miniatureCreated = false;
 		while (scaledWidth > 320 || scaledHeight > 320) {
+			if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
+				serialPool.shutdownNow();
+				plumberPool.shutdownNow();
+				return;
+			}
 			if (!miniatureCreated && (scaledWidth / 2 < 320 || scaledHeight / 2 < 430)) {
 				start = System.nanoTime();
 				mini = GenericTileCreator.getMiniatureBytes(img, 320, 430, tileType);
@@ -347,6 +353,12 @@ public class SQliteTileCreatorMultithreaded {
 			// System.out.println("fill x =" + fillX + " fill y=" + fillY);
 			for (int y = 0; y < nbY; y++) {
 				for (int x = 0; x < nbX; x++) {
+					if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
+						serialPool.shutdownNow();
+						plumberPool.shutdownNow();
+						return;
+					}
+
 					int copyX = x * tileSize;
 					int copyY = y * tileSize;
 					int copyWidth = tileSize;
@@ -396,6 +408,11 @@ public class SQliteTileCreatorMultithreaded {
 			System.out.println("old : nbX=" + oldNbX + " nbY=" + oldNbY + " new : +nbX" + nbX + " nbY=" + nbY);
 
 			zoom++;
+			if (inhibitor.hasRunInhibitionBeenRequested()) {
+				serialPool.shutdownNow();
+				plumberPool.shutdownNow();
+				return;
+			}
 
 			start = System.nanoTime();
 			xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
@@ -409,6 +426,12 @@ public class SQliteTileCreatorMultithreaded {
 
 			// System.out.println("zoom layer : " + zoom + " image size:" + img.getWidth() + "x" + img.getHeight());
 		}
+		if (inhibitor.hasRunInhibitionBeenRequested()) {
+			serialPool.shutdownNow();
+			plumberPool.shutdownNow();
+			return;
+		}
+
 		serialPool.shutdown();
 		serialPool.awaitTermination(15, TimeUnit.MINUTES);
 		start = System.nanoTime();
@@ -479,7 +502,7 @@ public class SQliteTileCreatorMultithreaded {
 				}
 				start = System.nanoTime();
 				System.out.println("Started : " + dstFile);
-				creator.calculateTiles(dstFile, src + file, 192, "png", new JProgressBar(), nThreads);
+				creator.calculateTiles(dstFile, src + file, 192, "png", new JProgressBar(), nThreads, null);
 				creator.finalizeFile();
 				stop = System.nanoTime();
 				System.out.println("## => total_time: " + ((double) (stop - start) / 1000000) + " ms nThreads = " + nThreads + " + 1 mains + 1 writer");
