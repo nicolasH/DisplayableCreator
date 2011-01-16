@@ -104,7 +104,7 @@ public class ImageToTiles {
 			System.out.println("Processing " + title);
 			start = System.nanoTime();
 
-			creator.calculateTiles(fWrite.getAbsolutePath(), fopen.getAbsolutePath(), 192, "png", null, nThreads);
+			creator.calculateTiles(fWrite.getAbsolutePath(), fopen.getAbsolutePath(), 192, "png", null, nThreads, null);
 			creator.finalizeFile();
 			stop = System.nanoTime();
 			System.out.println("total_time: " + ((double) (stop - start) / 1000000) + " ms");
