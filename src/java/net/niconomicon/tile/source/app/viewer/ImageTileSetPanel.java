@@ -7,27 +7,29 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.TileCreatorApp;
-import net.niconomicon.tile.source.app.tiling.FastClipper;
+import net.niconomicon.tile.source.app.viewer.actions.FlipAndAddAction;
+import net.niconomicon.tile.source.app.viewer.actions.TileLoader;
 
 /**
  * @author niko
@@ -42,29 +44,38 @@ public class ImageTileSetPanel extends JPanel {
 	PreparedStatement tilesInRange;
 
 	// public Map<String, byte[]> cache;
-	public Map<String, BufferedImage> cache;
+	public ConcurrentHashMap<String, BufferedImage> cache;
 	int maxX = 0;
 	int maxY = 0;
 	int zoom = 0;
 
 	ExecutorService exe;
+	ExecutorService eye;
+	JToolBar toolBar;
 
 	public ImageTileSetPanel() {
 		super();
-		cache = new HashMap<String, BufferedImage>();
+		cache = new ConcurrentHashMap<String, BufferedImage>();
 		try {
 			Class.forName("org.sqlite.JDBC");
-			// System.out.println("Loaded the sqliteJDBC Driver class ?");
-			// mapDB = DriverManager.getConnection("jdbc:sqlite:memory");
-			// mapDB.close();
-			// this.setDoubleBuffered(false);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		exe = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount);
+		eye = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount / 2);
+		toolBar = new JToolBar("Zoom", JToolBar.HORIZONTAL);
+
+		JButton zP = new JButton("+");
+		zP.addActionListener(new ZoomAction());
+		toolBar.add(zP);
+		JButton zM = new JButton("-");
+		zM.addActionListener(new ZoomAction());
+		toolBar.add(zM);
+
 	}
 
 	public void setTileSource(String tileSourcePath) {
+		// this.getParent().add(toolBar);
 		if (cache != null) {
 			cache.clear();
 		}
@@ -72,9 +83,7 @@ public class ImageTileSetPanel extends JPanel {
 			System.out.println("trying to open the map : " + tileSourcePath);
 			mapDB = DriverManager.getConnection("jdbc:sqlite:" + tileSourcePath);
 			mapDB.setReadOnly(true);
-			tilesInRange = mapDB.prepareStatement(getTilesInRange);
-			tilesInRange.clearParameters();
-			// String infos0 = "select * from layers_infos where zoom = 0";
+
 			Statement statement = mapDB.createStatement();
 			zoom = 0;
 			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name + " where zoom=" + zoom);
@@ -89,8 +98,16 @@ public class ImageTileSetPanel extends JPanel {
 				this.setMinimumSize(new Dimension(width, height));
 				this.setPreferredSize(new Dimension(width, height));
 			}
-			// cache = new HashMap<String, byte[]>();
-			setupCacheForTiles(zoom);
+			System.out.println("caching ....");
+			for (int i = 0; i < maxY; i++) {
+				TileLoader loader = new TileLoader(mapDB, i, zoom, cache, eye);
+				exe.execute(loader);
+			}
+			exe.awaitTermination(2, TimeUnit.MINUTES);
+			revalidate();
+			eye.awaitTermination(2, TimeUnit.MINUTES);
+			System.out.println("fully cached !");
+			revalidate();
 		} catch (Exception ex) {
 			System.err.println("ex for map : " + tileSourcePath);
 			ex.printStackTrace();
@@ -104,6 +121,7 @@ public class ImageTileSetPanel extends JPanel {
 		tilesInRange.setInt(4, maxY + 1);
 		tilesInRange.setInt(5, zoom);
 		// BufferedInputStream
+
 		ResultSet rs = tilesInRange.executeQuery();
 		System.out.println("Caching ...");
 		while (rs.next()) {
@@ -113,7 +131,7 @@ public class ImageTileSetPanel extends JPanel {
 			// System.out.println("found a tile for " + x + " " + y + " " + z);
 			byte[] data = rs.getBytes(4);
 			String key = x + "_" + y + "_" + z;
-			exe.submit(new FlipAndAddAction(data, key));
+			exe.submit(new FlipAndAddAction(cache, data, key));
 		}
 		// exe.awaitTermination(1, TimeUnit.SECONDS);
 		// System.out.println("Caching done.");
@@ -176,27 +194,17 @@ public class ImageTileSetPanel extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	private class FlipAndAddAction implements Runnable {
-		byte[] tile;
-		String key;
+	public class ZoomAction implements ActionListener {
 
-		public FlipAndAddAction(byte[] tile, String key) {
-			this.tile = tile;
-			this.key = key;
-		}
-
-		/* (non-Javadoc)
-		 * @see java.lang.Runnable#run()
-		 */
-		public void run() {
-			try {
-				BufferedImage t = ImageIO.read(new ByteArrayInputStream(tile));
-				t = FastClipper.fastClip(t, new Rectangle(0, 0, t.getWidth(), t.getHeight()), true);
-				synchronized (cache) {
-					cache.put(key, t);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("Action command : " + e.getActionCommand());
+			if (e.getActionCommand().equals('+')) {
+				System.out.println("zoom +");
+				return;
+			}
+			if (e.getActionCommand().equals('-')) {
+				System.out.println("zoom -");
+				return;
 			}
 		}
 	}

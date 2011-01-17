@@ -13,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.SaveDialog;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
 
@@ -45,8 +46,8 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	}
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-//		lastRow = row;
-//		lastTable = table;
+		// lastRow = row;
+		// lastTable = table;
 
 		JButton b = ren;
 		if (value == null) {
@@ -83,16 +84,19 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		String fileLocation = "";
 		if (null != viewer) {
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
-			System.out.println("Saving : last row : "+lastRow + " file : "+fileLocation);
+			System.out.println("Saving : last row : " + lastRow + " file : " + fileLocation);
 			viewer.setTileSet(fileLocation);
 			return;
 		}
 		if (null != saveDialog) {
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
-			System.out.println("Saving : last row : "+lastRow + " file : "+fileLocation);
+			System.out.println("Saving : last row : " + lastRow + " file : " + fileLocation);
 			String newLocation = saveDialog.showDialog(lastTable, fileLocation);
 			if (newLocation != null) {
 				lastTable.setValueAt(newLocation, lastRow, -1);
+				if (!Ref.isInTmpLocation(newLocation)) {
+					this.fireEditingStopped();
+				}
 			}
 			return;
 		}

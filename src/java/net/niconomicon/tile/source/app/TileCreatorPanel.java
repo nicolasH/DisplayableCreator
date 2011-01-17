@@ -192,7 +192,7 @@ public class TileCreatorPanel extends JLayeredPane {
 						progressIndicator.setValue(1);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
-						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator, 8, inhibitor);
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator, TileCreatorApp.ThreadCount, inhibitor);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
 						creator.finalizeFile();

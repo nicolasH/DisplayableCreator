@@ -117,7 +117,7 @@ public class CheckBoxTileSetTable extends JTable {
 				case 2:
 					return "view";
 				case 3:
-					return Ref.isInTmpLocation(i.location) ? "save" : "edit";
+					return Ref.isInTmpLocation(i.location) ? "! save !" : "edit";
 				}
 			}
 			return null;
@@ -127,7 +127,7 @@ public class CheckBoxTileSetTable extends JTable {
 			if (column == -1 && aValue != null && row < backstore.size()) {
 				backstore.get(row).location = (String) aValue;
 				try {
-					backstore.get(row).title = SQliteTileCreatorMultithreaded.getTitle((String) aValue);
+					backstore.get(row).title = SQliteTileCreatorMultithreaded.getTitle(backstore.get(row).location);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				};
