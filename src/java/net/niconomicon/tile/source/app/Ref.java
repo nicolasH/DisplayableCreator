@@ -27,6 +27,7 @@ public final class Ref {
 	public static final String sharing_serviceName = "TiledImageSharingService";
 
 	public static final String sharing_xmlRef = "TiledImages.xml";
+	public static final String sharing_jsonRef = "TiledImages.json";
 	public static final String sharing_htmlRef = "TiledImages.html";
 
 	public static final String app_handle = "displayator-image:";
@@ -135,7 +136,7 @@ public final class Ref {
 		for (String key : maps.keySet()) {
 			String file = maps.get(key);
 			System.out.println("Extracting for Key : [" + key + "]");// + " value : "+ maps.get(key));
-			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_xmlRef) || key.endsWith(Ref.sharing_htmlRef)) {
+			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_xmlRef) || key.endsWith(Ref.sharing_htmlRef) || key.endsWith(Ref.sharing_jsonRef) ) {
 				continue;
 			}
 			System.out.println("Really trying to open (k=[" + key + "]) => " + file);
@@ -181,7 +182,7 @@ public final class Ref {
 	/**
 	 * Method to generate the map xml list.
 	 */
-	public static Map<String, String> generateIndexFromFileNames(Collection<String> maps) {
+	public static Map<String, String> generateXMLIndexFromFileNames(Collection<String> maps) {
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (Exception ex) {
@@ -227,7 +228,7 @@ public final class Ref {
 	 * @param urlToFile
 	 * @return an array of XML and HTML description of the file as String[]{XML,HTML}.
 	 */
-	public static String[] generateDescriptionsForConnection(Connection mapDB, long weight, String fileName, Map<String, String> urlToFile) {
+	public static String[] generateXML_HTMLDescriptionsForConnection(Connection mapDB, long weight, String fileName, Map<String, String> urlToFile) {
 		String ret = "";
 		String h = "";
 		try {
@@ -336,6 +337,133 @@ public final class Ref {
 		// /////////////////////////////
 
 		return ret;
+	}
+
+	// /////////////////////////////////////
+	// /////////////////////////////////////
+	// THIS! IS! JSON! //////////////////////
+	// /////////////////////////////////////
+	// /////////////////////////////////////
+	/**
+	 * Method to generate the map xml list.
+	 */
+	public static Map<String, String> generateIndexFromFileNames(Collection<String> maps) {
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		Map<String, String> urlToFile = new HashMap<String, String>();
+		StringBuffer json = new StringBuffer();
+		StringBuffer html = new StringBuffer();
+		json.append("[");
+		html.append("<html><body>");
+		for (String mapFileName : maps) {
+			try {
+				File f = new File(mapFileName);
+				long size = f.length();
+				System.out.println("trying to open the map :" + mapFileName + " To generate the XML.");
+				Connection connection = DriverManager.getConnection("jdbc:sqlite:" + mapFileName);
+				connection.setReadOnly(true);
+				String[] descriptions = generateDescriptionsForConnection(connection, size, mapFileName, urlToFile);
+				json.append(descriptions[0]);
+				html.append(descriptions[1]);
+				// html.append(generateHTMLForConnection(connection,size,mapFileName));
+				if (connection != null) connection.close();
+			} catch (Exception ex) {
+				System.out.println("failed to get infos for [" + mapFileName + "]");
+				ex.printStackTrace();
+			}
+		}
+		json.deleteCharAt(json.length()-1) ;
+		json.append("]");
+		System.out.println(json.toString());
+		urlToFile.put("/" + sharing_jsonRef, json.toString());
+
+		html.append("</body></html>");
+		urlToFile.put("/" + sharing_htmlRef, html.toString());
+		// System.out.println(html.toString());
+		return urlToFile;
+	}
+
+	/**
+	 * Generate the XML description for a given map, and add thumbnail and preview images to the list of available URLs
+	 * 
+	 * @param mapDB
+	 * @param weight
+	 * @param fileName
+	 * @param urlToFile
+	 * @return an array of XML and HTML description of the file as String[]{XML,HTML}.
+	 */
+	public static String[] generateDescriptionsForConnection(Connection mapDB, long weight, String fileName, Map<String, String> urlToFile) {
+		String ret = "";
+		String h = "";
+		try {
+			// create a database connection
+
+			Statement statement = mapDB.createStatement();
+			statement.setQueryTimeout(30); // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("select * from infos");
+			while (rs.next()) {
+				// read the result set
+				String name = fileName.contains(File.separator) ? "/" + fileName.substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
+				name = name.replace(' ', '_');
+				String mini = name + Ref.ext_mini;
+				String thumb = name + Ref.ext_thumb;
+				// name = name + Ref.ext_db;
+
+				urlToFile.put(name, fileName);
+				urlToFile.put(mini, fileName);
+				urlToFile.put(thumb, fileName);
+
+				String s = "{";
+				s += "\"title\":\"" + rs.getString(Ref.infos_title) + "\",";
+				s += "\"source\":\"" + name + "\",";
+				s += "\"thumb\":\"" + thumb + "\",";
+				s += "\"preview\":\"" + mini + "\",";
+				s += "\"weight\":" + weight + ",";
+				s += "\"width\":" + rs.getLong(Ref.infos_width) + ",";
+				s += "\"height\":" + rs.getLong(Ref.infos_height) + ",";
+				s += "\"description\":\"" + rs.getString(Ref.infos_description) + "\"";
+				s += "},";
+				ret += s;
+
+				String urlInfos = "title=" + rs.getString(Ref.infos_title);
+				urlInfos += "&updated=";
+				urlInfos += "&thumb=" + thumb;
+				urlInfos += "&preview=" + mini;
+				urlInfos += "&weight=" + weight;
+				urlInfos += "&width=" + rs.getLong(Ref.infos_width);
+				urlInfos += "&height=" + rs.getLong(Ref.infos_height);
+				urlInfos += "&description=" + rs.getString(Ref.infos_description);
+
+				String li = "\t\t\t<li>";
+				String li_ = "</li>\n";
+				String html = "<div><b>" + rs.getString(Ref.infos_title) + "</b><br/>";
+				html += "\n\t\t<a href=\"" + mini + "\">\n\t\t\t<img src=\"" + thumb + "\">\n\t\t</a>\n\t\t";
+				html += "Download <a href=\"" + app_handle + name + "?" + urlInfos + "\" >and view with displayator</a>\n\t\t";
+				html += "or <a href=\"" + name + "\" >as file</a>.";
+				html += "\n\t<ul>";
+				html += li + "Weight : " + ((double) weight) / 1000000 + " MB." + li_;
+				html += li + "Size : " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px." + li_;
+				String dsc = rs.getString(Ref.infos_description);
+				if (null != dsc && dsc.length() > 0) {
+					html += li + "description:" + dsc + li_;
+				}
+				html += "</ul>\n";
+				html += "</div>\n";
+				h += html;
+
+			}
+		} catch (SQLException e) {
+			// if the error message is "out of memory",
+			// it probably means no database file is found
+			System.err.println(e.getMessage());
+		}
+
+		// /////////////////////////////
+
+		return new String[] { ret, h };
 	}
 
 }

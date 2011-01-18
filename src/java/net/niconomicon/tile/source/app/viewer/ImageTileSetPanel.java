@@ -105,36 +105,15 @@ public class ImageTileSetPanel extends JPanel {
 			}
 			exe.awaitTermination(2, TimeUnit.MINUTES);
 			revalidate();
+			repaint();
 			eye.awaitTermination(2, TimeUnit.MINUTES);
 			System.out.println("fully cached !");
 			revalidate();
+			repaint();
 		} catch (Exception ex) {
 			System.err.println("ex for map : " + tileSourcePath);
 			ex.printStackTrace();
 		}
-	}
-
-	public void setupCacheForTiles(int zoom) throws Exception {
-		tilesInRange.setInt(1, 0);
-		tilesInRange.setInt(2, maxX);
-		tilesInRange.setInt(3, 0);
-		tilesInRange.setInt(4, maxY + 1);
-		tilesInRange.setInt(5, zoom);
-		// BufferedInputStream
-
-		ResultSet rs = tilesInRange.executeQuery();
-		System.out.println("Caching ...");
-		while (rs.next()) {
-			int x = rs.getInt(1);
-			int y = rs.getInt(2);
-			int z = rs.getInt(3);
-			// System.out.println("found a tile for " + x + " " + y + " " + z);
-			byte[] data = rs.getBytes(4);
-			String key = x + "_" + y + "_" + z;
-			exe.submit(new FlipAndAddAction(cache, data, key));
-		}
-		// exe.awaitTermination(1, TimeUnit.SECONDS);
-		// System.out.println("Caching done.");
 	}
 
 	@Override

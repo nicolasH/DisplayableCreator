@@ -69,6 +69,16 @@ public class JettyImageServerServlet extends HttpServlet {
 				return;
 			}
 		}
+		if (request.compareTo("/" + Ref.sharing_jsonRef) == 0) {
+			System.out.println("should be returning the tilesetFeed [" + imaginaryMap.get(request).length() + "]");
+			try {
+				sendString(imaginaryMap.get(request), resp);
+				return;
+			} catch (Exception ex) {
+				resp.sendError(500, "The server encountered an error while trying to send the requested content for request [" + request + "]");
+				return;
+			}
+		}
 		if (request.compareTo("/" + Ref.sharing_htmlRef) == 0) {
 			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
 			try {
