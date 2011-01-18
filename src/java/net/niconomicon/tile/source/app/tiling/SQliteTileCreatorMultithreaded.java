@@ -416,7 +416,7 @@ public class SQliteTileCreatorMultithreaded {
 
 			start = System.nanoTime();
 			xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
-			img = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
+			img = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
 			Graphics g0 = img.createGraphics();
 
 			g0.drawImage(xxx, 0, 0, scaledWidth, scaledHeight, 0, 0, scaledWidth, scaledHeight, null);
