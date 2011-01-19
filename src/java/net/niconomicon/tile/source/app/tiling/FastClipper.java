@@ -17,7 +17,6 @@ import java.awt.image.DataBufferUShort;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream.GetField;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -75,35 +74,35 @@ public class FastClipper {
 		 * Different type of image have different type of underlying buffer. Each type has a different number of cells
 		 * dedicated to a single pixel.
 		 */
+		if (buff instanceof DataBufferShort) {
+			srcbuf = ((DataBufferShort) buff).getData();
+			dstbuf = ((DataBufferShort) dst.getRaster().getDataBuffer()).getData();
+			factor = ((DataBufferShort) buff).getData().length / mpx;
+		}
 		if (buff instanceof DataBufferByte) {
 			srcbuf = ((DataBufferByte) buff).getData();
 			dstbuf = ((DataBufferByte) dst.getRaster().getDataBuffer()).getData();
 			factor = ((DataBufferByte) buff).getData().length / mpx;
 		}
-		if (buff instanceof DataBufferDouble) {
-			srcbuf = ((DataBufferDouble) buff).getData();
-			dstbuf = ((DataBufferDouble) dst.getRaster().getDataBuffer()).getData();
-			factor = ((DataBufferDouble) buff).getData().length / mpx;
-		}
-		if (buff instanceof DataBufferFloat) {
-			srcbuf = ((DataBufferFloat) buff).getData();
-			dstbuf = ((DataBufferFloat) dst.getRaster().getDataBuffer()).getData();
-			factor = ((DataBufferFloat) buff).getData().length / mpx;
+		if (buff instanceof DataBufferUShort) {
+			srcbuf = ((DataBufferUShort) buff).getData();
+			dstbuf = ((DataBufferUShort) dst.getRaster().getDataBuffer()).getData();
+			factor = ((DataBufferUShort) buff).getData().length / mpx;
 		}
 		if (buff instanceof DataBufferInt) {
 			srcbuf = ((DataBufferInt) buff).getData();
 			dstbuf = ((DataBufferInt) dst.getRaster().getDataBuffer()).getData();
 			factor = ((DataBufferInt) buff).getData().length / mpx;
 		}
-		if (buff instanceof DataBufferShort) {
-			srcbuf = ((DataBufferShort) buff).getData();
-			dstbuf = ((DataBufferShort) dst.getRaster().getDataBuffer()).getData();
-			factor = ((DataBufferShort) buff).getData().length / mpx;
+		if (buff instanceof DataBufferFloat) {
+			srcbuf = ((DataBufferFloat) buff).getData();
+			dstbuf = ((DataBufferFloat) dst.getRaster().getDataBuffer()).getData();
+			factor = ((DataBufferFloat) buff).getData().length / mpx;
 		}
-		if (buff instanceof DataBufferUShort) {
-			srcbuf = ((DataBufferUShort) buff).getData();
-			dstbuf = ((DataBufferUShort) dst.getRaster().getDataBuffer()).getData();
-			factor = ((DataBufferUShort) buff).getData().length / mpx;
+		if (buff instanceof DataBufferDouble) {
+			srcbuf = ((DataBufferDouble) buff).getData();
+			dstbuf = ((DataBufferDouble) dst.getRaster().getDataBuffer()).getData();
+			factor = ((DataBufferDouble) buff).getData().length / mpx;
 		}
 
 		int srcOffset, dstOffset = 0;
