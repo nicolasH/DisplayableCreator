@@ -28,7 +28,6 @@ import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.TileCreatorApp;
-import net.niconomicon.tile.source.app.viewer.actions.FlipAndAddAction;
 import net.niconomicon.tile.source.app.viewer.actions.TileLoader;
 
 /**
@@ -51,7 +50,6 @@ public class ImageTileSetPanel extends JPanel {
 
 	ExecutorService exe;
 	ExecutorService eye;
-	JToolBar toolBar;
 
 	public ImageTileSetPanel() {
 		super();
@@ -63,14 +61,6 @@ public class ImageTileSetPanel extends JPanel {
 		}
 		exe = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount);
 		eye = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount / 2);
-		toolBar = new JToolBar("Zoom", JToolBar.HORIZONTAL);
-
-		JButton zP = new JButton("+");
-		zP.addActionListener(new ZoomAction());
-		toolBar.add(zP);
-		JButton zM = new JButton("-");
-		zM.addActionListener(new ZoomAction());
-		toolBar.add(zM);
 
 	}
 
@@ -100,7 +90,7 @@ public class ImageTileSetPanel extends JPanel {
 			}
 			System.out.println("caching ....");
 			for (int i = 0; i < maxY; i++) {
-				TileLoader loader = new TileLoader(mapDB, i, zoom, cache, eye);
+				TileLoader loader = new TileLoader(mapDB, i, zoom, cache, this, eye);
 				exe.execute(loader);
 			}
 			exe.awaitTermination(2, TimeUnit.MINUTES);
@@ -173,18 +163,4 @@ public class ImageTileSetPanel extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	public class ZoomAction implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("Action command : " + e.getActionCommand());
-			if (e.getActionCommand().equals('+')) {
-				System.out.println("zoom +");
-				return;
-			}
-			if (e.getActionCommand().equals('-')) {
-				System.out.println("zoom -");
-				return;
-			}
-		}
-	}
 }

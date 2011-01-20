@@ -80,6 +80,10 @@ public final class Ref {
 		return fullPath.substring(0, fullPath.lastIndexOf(File.separator));
 	}
 
+	public static String getKey(long x, long y, long z) {
+		return x + "_" + y + "_" + z;
+	}
+
 	public static String getDefaultDir() {
 		return Preferences.userNodeForPackage(Ref.class).get(Ref.storingDirectoryKey, null);
 	}
@@ -136,7 +140,7 @@ public final class Ref {
 		for (String key : maps.keySet()) {
 			String file = maps.get(key);
 			System.out.println("Extracting for Key : [" + key + "]");// + " value : "+ maps.get(key));
-			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_xmlRef) || key.endsWith(Ref.sharing_htmlRef) || key.endsWith(Ref.sharing_jsonRef) ) {
+			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_xmlRef) || key.endsWith(Ref.sharing_htmlRef) || key.endsWith(Ref.sharing_jsonRef)) {
 				continue;
 			}
 			System.out.println("Really trying to open (k=[" + key + "]) => " + file);
@@ -375,7 +379,7 @@ public final class Ref {
 				ex.printStackTrace();
 			}
 		}
-		json.deleteCharAt(json.length()-1) ;
+		json.deleteCharAt(json.length() - 1);
 		json.append("]");
 		System.out.println(json.toString());
 		urlToFile.put("/" + sharing_jsonRef, json.toString());
