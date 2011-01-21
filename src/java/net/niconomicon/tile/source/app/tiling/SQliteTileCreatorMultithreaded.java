@@ -316,17 +316,18 @@ public class SQliteTileCreatorMultithreaded {
 		scaledWidth = width;
 		scaledHeight = height;
 
+		int minimumDimension = 320;
 		int aaMaxZoom = 0;
 		double aaX = scaledWidth;
 		double aaY = scaledHeight;
-		while (Math.min(aaX, aaY) > tileSize) {
+		while (Math.max(aaX, aaY) > minimumDimension) {
 			aaMaxZoom++;
 			aaX = aaX * ZOOM_FACTOR;
 			aaY = aaY * ZOOM_FACTOR;
 		}
-
+		System.out.println("Minimum size ");
 		boolean miniatureCreated = false;
-		while (scaledWidth > 320 || scaledHeight > 320) {
+		while (scaledWidth > minimumDimension || scaledHeight > minimumDimension) {
 			if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
 				serialPool.shutdownNow();
 				plumberPool.shutdownNow();
@@ -341,7 +342,8 @@ public class SQliteTileCreatorMultithreaded {
 			}
 			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
 			if (null != progressIndicator) {
-				progressIndicator.setValue(100 / (aaMaxZoom + 1));
+				double ratio = (float) zoom / (float) aaMaxZoom;
+				progressIndicator.setValue((int) (100 * ratio));
 				progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
 			}
 			int fillX = 0;
