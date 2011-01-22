@@ -237,12 +237,9 @@ public class SQliteTileCreatorMultithreaded {
 			e.printStackTrace();
 		}
 		stop = System.nanoTime();
-		// System.out.println("writing_tile: " + ((double) (stop - start) / 1000000) + " ms");
 	}
 
 	public void addLevelInfos(String name, long mapID, int zoom, int width, int height, int tiles_x, int tiles_y, int offsetX, int offsetY) {
-		long stop, start;
-		start = System.nanoTime();
 		String layerName = "no name";
 		long zindex = 0;
 		String stat = "INSERT INTO layers_infos VALUES(\"" + layerName + "\"," + mapID + "," + zindex + "," + zoom + "," + width + "," + height + "," + tiles_x + "," + tiles_y + "," + offsetX + "," + offsetY + ")";
@@ -254,9 +251,6 @@ public class SQliteTileCreatorMultithreaded {
 			System.err.println("Information insertion failed.");
 			e.printStackTrace();
 		}
-		stop = System.nanoTime();
-		// System.out.println("writing_level_info: " + ((double) (stop - start) / 1000000) + " ms");
-
 	}
 
 	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, JProgressBar progressIndicator, int nThreads, Inhibitor inhibitor) throws Exception {
@@ -342,9 +336,9 @@ public class SQliteTileCreatorMultithreaded {
 			}
 			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
 			if (null != progressIndicator) {
-				double ratio = (float) zoom / (float) aaMaxZoom;
+				double ratio = (float) (zoom + 1) / (float) aaMaxZoom;
 				progressIndicator.setValue((int) (100 * ratio));
-				progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom + 1));
+				progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom));
 			}
 			int fillX = 0;
 			int fillY = 0;
@@ -365,32 +359,22 @@ public class SQliteTileCreatorMultithreaded {
 					int copyY = y * tileSize;
 					int copyWidth = tileSize;
 					int copyHeight = tileSize;
-					int pasteWidth = tileSize;
-					int pasteHeight = tileSize;
-					int pasteX = 0;
-					int pasteY = 0;
 
 					// first column
 					if (x == 0) {
 						copyX = 0;
 						copyWidth = tileSize;
-						pasteX = 0;
-						pasteWidth = tileSize;
 					}
 					// last column
 					if (x == nbX - 1) {
 						copyX = x * tileSize;
 						copyWidth = tileSize - fillX;
-						pasteX = 0;
-						pasteWidth = copyWidth;// copyWidth;
 					}
 
 					// last line
 					if (y == nbY - 1) {
 						copyY = y * tileSize;
 						copyHeight = tileSize - fillY;
-						pasteY = 0;
-						pasteHeight = copyHeight;
 					}
 					Rectangle clip = new Rectangle(copyX, copyY, copyWidth, copyHeight);
 					otherBuffer = FastClipper.fastClip(img, clip, true);
