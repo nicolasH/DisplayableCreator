@@ -98,13 +98,15 @@ public class ImageTileSetViewer extends JPanel {
 	public class ZoomAction implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("Action command : " + e.getActionCommand());
-			if (e.getActionCommand().equals('+')) {
+			System.out.println("Action command : [" + e.getActionCommand()+"]");
+			if (e.getActionCommand().equals("+")) {
 				System.out.println("zoom +");
+				tileViewer.incrZ();
 				return;
 			}
-			if (e.getActionCommand().equals('-')) {
+			if (e.getActionCommand().equals("-")) {
 				System.out.println("zoom -");
+				tileViewer.decrZ();
 				return;
 			}
 		}

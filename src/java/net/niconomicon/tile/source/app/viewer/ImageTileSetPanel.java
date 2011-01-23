@@ -7,24 +7,22 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.TileCreatorApp;
@@ -42,14 +40,13 @@ public class ImageTileSetPanel extends JPanel {
 
 	PreparedStatement tilesInRange;
 
-	// public Map<String, byte[]> cache;
 	public ConcurrentHashMap<String, BufferedImage> cache;
-	int maxX = 0;
-	int maxY = 0;
-	int zoom = 0;
+	// int maxX = 0;
+	// int maxY = 0;
+	// int zoom = 0;
+	List<ZoomLevel> levels;
 
-	ExecutorService exe;
-	ExecutorService eye;
+	ZoomLevel currentLevel;
 
 	public ImageTileSetPanel() {
 		super();
@@ -59,9 +56,14 @@ public class ImageTileSetPanel extends JPanel {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		exe = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount);
-		eye = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount / 2);
+	}
 
+	public class ZoomLevel {
+		long width;
+		long height;
+		long tiles_x;
+		long tiles_y;
+		int z;
 	}
 
 	public void setTileSource(String tileSourcePath) {
@@ -69,37 +71,52 @@ public class ImageTileSetPanel extends JPanel {
 		if (cache != null) {
 			cache.clear();
 		}
+		levels = new ArrayList<ZoomLevel>();
+		ExecutorService exe = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount / 2);
+		ExecutorService eye = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount);
 		try {
 			System.out.println("trying to open the map : " + tileSourcePath);
 			mapDB = DriverManager.getConnection("jdbc:sqlite:" + tileSourcePath);
 			mapDB.setReadOnly(true);
 
 			Statement statement = mapDB.createStatement();
-			zoom = 0;
-			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name + " where zoom=" + zoom);
+			// zoom = 0;
+			int maxZoom = 0;
+			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name);
 
+			long stop, start;
+			start = System.currentTimeMillis();
 			while (rs.next()) {
-				int width = rs.getInt("width");
-				int height = rs.getInt("height");
-				maxX = rs.getInt("tiles_x");
-				maxY = rs.getInt("tiles_y");
+				ZoomLevel zl = new ZoomLevel();
+				zl.width = rs.getLong("width");
+				zl.height = rs.getLong("height");
+				zl.tiles_x = rs.getLong("tiles_x");
+				zl.tiles_y = rs.getLong("tiles_y");
+				zl.z = rs.getInt("zoom");
+				levels.add(zl.z, zl);
+			}
+			currentLevel = levels.get(levels.size() - 1);
+			System.out.println("Setting current level to " + currentLevel.z);
+			resetSizeEtc(currentLevel);
+			for (ZoomLevel zl : levels) {
+				System.out.println("-- zl : " + zl.z);
+				for (int i = 0; i < zl.tiles_x; i++) {
+					TileLoader loader = new TileLoader(mapDB, i, zl.z, cache, this, exe);
+					eye.execute(loader);
+				}
+			}
+			eye.shutdown();
+			boolean normalTY = eye.awaitTermination(5, TimeUnit.MINUTES);
+			exe.shutdown();
+			boolean normalTX = eye.awaitTermination(5, TimeUnit.MINUTES);
+			stop = System.currentTimeMillis();
+			// System.out.println("Caching took " + (stop - start) + " ms normal x " + normalTX + " normal y " +
+			// normalTY);
 
-				this.setSize(width, height);
-				this.setMinimumSize(new Dimension(width, height));
-				this.setPreferredSize(new Dimension(width, height));
-			}
-			System.out.println("caching ....");
-			for (int i = 0; i < maxY; i++) {
-				TileLoader loader = new TileLoader(mapDB, i, zoom, cache, this, eye);
-				exe.execute(loader);
-			}
-			exe.awaitTermination(2, TimeUnit.MINUTES);
-			revalidate();
-			repaint();
-			eye.awaitTermination(2, TimeUnit.MINUTES);
+			mapDB.close();
+
 			System.out.println("fully cached !");
-			revalidate();
-			repaint();
+			resetSizeEtc(currentLevel);
 		} catch (Exception ex) {
 			System.err.println("ex for map : " + tileSourcePath);
 			ex.printStackTrace();
@@ -119,14 +136,14 @@ public class ImageTileSetPanel extends JPanel {
 
 		// System.out.println("Painting between " + tileXa + "," + tileYa + "and " + tileXb + ", " + tileYb);
 		try {
-			int macYb = (maxY - 1 - tileYa);
-			int macYa = (maxY - 1 - tileYb);
+			int macYb = ((int) currentLevel.tiles_x - 1 - tileYa);
+			int macYa = ((int) currentLevel.tiles_y - 1 - tileYb);
 
 			macYa = tileYa;
 			macYb = tileYb;
 			for (int x = tileXa; x < tileXb; x++) {
 				for (int y = macYa; y < macYb + 1; y++) {
-					BufferedImage tile = cache.get(x + "_" + y + "_" + zoom);
+					BufferedImage tile = cache.get(x + "_" + y + "_" + currentLevel.z);
 					if (null != tile) {
 						g2.drawImage(tile, x * tileSize, (y) * tileSize, null);
 					}
@@ -136,6 +153,38 @@ public class ImageTileSetPanel extends JPanel {
 			ex.printStackTrace();
 		}
 		g2.dispose();
+	}
+
+	public void resetSizeEtc(ZoomLevel zl) {
+		System.out.println("Gonna invalidate to zoom level " + zl);
+		this.setSize((int) zl.width, (int) zl.height);
+		this.setMinimumSize(new Dimension((int) zl.width, (int) zl.height));
+		this.setPreferredSize(new Dimension((int) zl.width, (int) zl.height));
+
+		invalidate();
+		// revalidate();
+		repaint();
+
+	}
+
+	public void incrZ() {
+		if (currentLevel.z > 0) {
+			ZoomLevel zl = levels.get(currentLevel.z - 1);
+			currentLevel = zl;
+			resetSizeEtc(zl);
+		} else {
+			System.out.println("Already at max Zoom");
+		}
+	}
+
+	public void decrZ() {
+		if (currentLevel.z < levels.size() - 1) {
+			ZoomLevel zl = levels.get(currentLevel.z + 1);
+			currentLevel = zl;
+			resetSizeEtc(zl);
+		} else {
+			System.out.println("Already at min Zoom");
+		}
 	}
 
 	/**
