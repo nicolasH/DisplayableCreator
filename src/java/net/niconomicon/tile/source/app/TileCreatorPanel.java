@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -18,6 +19,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
+import net.niconomicon.tile.source.app.filter.FileDropHandler;
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
 import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
 import net.niconomicon.tile.source.app.tiling.Inhibitor;
@@ -115,11 +117,12 @@ public class TileCreatorPanel extends JLayeredPane {
 		int y = 0;
 		int x = 0;
 
+		JLabel l = new JLabel("Source image :");
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x;
 		c.anchor = c.LINE_END;
-		input.add(new JLabel("Source image :"), c);
+		input.add(l, c);
 
 		x++;
 		c = new GridBagConstraints();
@@ -136,6 +139,13 @@ public class TileCreatorPanel extends JLayeredPane {
 		c.gridx = x;
 		c.anchor = c.LINE_START;
 		input.add(browseInput, c);
+
+		FileDropHandler handler = new FileDropHandler(this);
+
+		l.setTransferHandler(handler);
+		from.setTransferHandler(handler);
+		browseInput.setTransferHandler(handler);
+		input.setTransferHandler(handler);
 
 		return input;
 	}
@@ -227,18 +237,11 @@ public class TileCreatorPanel extends JLayeredPane {
 	private class InputActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent arg0) {
-			String s = "Some file";
 			int returnVal = sourceChooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				System.out.println("You chose to open this file: " + sourceChooser.getSelectedFile().getName());
-				s = sourceChooser.getSelectedFile().getName();
 				try {
-					from.setText(sourceChooser.getSelectedFile().getCanonicalPath());
-					from.setToolTipText("Image Tile set is going to be created from " + sourceChooser.getSelectedFile().getCanonicalPath());
-					String fileName = sourceChooser.getSelectedFile().getName();
-					String fileSansDot = fileName.substring(0, fileName.lastIndexOf("."));
-					// title.setText(fileSansDot);
-					preTile(sourceChooser.getSelectedFile().getAbsolutePath());
+					setImageFileToTile(sourceChooser.getSelectedFile());
 				} catch (Exception e) {
 					from.setText("Sorry, cannot open the file");
 					e.printStackTrace();
@@ -247,4 +250,11 @@ public class TileCreatorPanel extends JLayeredPane {
 		}
 	}
 
+	public void setImageFileToTile(File imageFile) throws IOException {
+		from.setText(imageFile.getCanonicalPath());
+		from.setToolTipText("Image Tile set is going to be created from " + imageFile.getCanonicalPath());
+		sourceChooser.setSelectedFile(imageFile);
+		preTile(imageFile.getCanonicalPath());
+
+	}
 }
