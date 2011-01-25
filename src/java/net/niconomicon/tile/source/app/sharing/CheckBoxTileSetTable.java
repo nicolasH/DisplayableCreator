@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.SaveDialog;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
+import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
 
 /**
  * @author niko
@@ -30,7 +30,7 @@ public class CheckBoxTileSetTable extends JTable {
 	CustomTableModel model;
 	boolean sharingDefaut = true;
 
-	public CheckBoxTileSetTable(ImageTileSetViewer viewer) {
+	public CheckBoxTileSetTable(ImageTileSetViewerFrame viewer) {
 		super();
 		SaveDialog saveDialog = new SaveDialog();
 

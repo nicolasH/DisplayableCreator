@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
+import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
 
 /**
  * @author niko
@@ -22,7 +22,7 @@ public class TileCreatorApp {
 
 	TileCreatorPanel tileCreatorPanel;
 	TilesetSharingPanel mapSharingPanel;
-	ImageTileSetViewer tileSetViewer;
+	ImageTileSetViewerFrame tileSetViewer;
 
 	public static int ThreadCount = 8;
 
@@ -32,7 +32,7 @@ public class TileCreatorApp {
 
 	private void init() {
 		JFrame f = new JFrame("Image Cutter App");
-		tileSetViewer = ImageTileSetViewer.createInstance();
+		tileSetViewer = ImageTileSetViewerFrame.createInstance();
 		tileCreatorPanel = new TileCreatorPanel();
 		mapSharingPanel = new TilesetSharingPanel(tileSetViewer);
 

@@ -21,7 +21,7 @@ import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
  * @author Nicolas Hoibian
  * 
  */
-public class ImageTileSetViewer extends JPanel {
+public class ImageTileSetViewerFrame extends JPanel {
 
 	ImageTileSetPanel tileViewer;
 	String tileSetLocation;
@@ -29,11 +29,11 @@ public class ImageTileSetViewer extends JPanel {
 
 	JToolBar toolBar;
 
-	public static ImageTileSetViewer createInstance() {
-		return new ImageTileSetViewer(new ImageTileSetPanel());
+	public static ImageTileSetViewerFrame createInstance() {
+		return new ImageTileSetViewerFrame(new ImageTileSetPanel());
 	}
 
-	private ImageTileSetViewer(ImageTileSetPanel tileViewer) {
+	private ImageTileSetViewerFrame(ImageTileSetPanel tileViewer) {
 		super();
 		this.tileViewer = tileViewer;
 		init();
@@ -43,6 +43,7 @@ public class ImageTileSetViewer extends JPanel {
 		viewerFrame = new JFrame();
 		this.setLayout(new BorderLayout());
 		this.add(new JScrollPane(tileViewer), BorderLayout.CENTER);
+		
 		this.setMinimumSize(new Dimension(400, 400));
 		viewerFrame.setContentPane(this);
 		viewerFrame.setMinimumSize(new Dimension(400, 400));

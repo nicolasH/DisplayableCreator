@@ -15,7 +15,7 @@ import javax.swing.table.TableCellRenderer;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.SaveDialog;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
+import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
 
 /**
  * @author Nicolas Hoibian
@@ -23,7 +23,7 @@ import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
  */
 public class ButtonForTable extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, ActionListener {
 
-	ImageTileSetViewer viewer = null;
+	ImageTileSetViewerFrame viewer = null;
 	SaveDialog saveDialog = null;
 
 	String lastValue = null;
@@ -39,7 +39,7 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		ren = new JButton(text);
 	}
 
-	public ButtonForTable(ImageTileSetViewer viewer, String text) {
+	public ButtonForTable(ImageTileSetViewerFrame viewer, String text) {
 		defaultText = text;
 		ren = new JButton(text);
 		this.viewer = viewer;

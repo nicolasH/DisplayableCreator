@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp spec="1.0+" codebase="www.displayator.com/TileCreatorApp/jnlp">
+<jnlp spec="1.0+" codebase="http://www.displayator.com/TileCreatorApp/jnlp">
     <information>
         <title>Tile Creator App</title>
         <vendor>Nicolas Hoibian</vendor>
-        <description>This app is meant to create tilesets for the displayator iPhone / iPod touch app</description>
+        <description>This app is meant to create tilesets for the displayator iPad, iPhone & iPod touch app</description>
         <description kind="short">TileCreatorApp</description>
         <homepage href=""/>
         <offline-allowed/>

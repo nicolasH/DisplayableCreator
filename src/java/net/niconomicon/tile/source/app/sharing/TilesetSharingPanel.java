@@ -38,7 +38,7 @@ import javax.swing.event.TableModelListener;
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.filter.DirOrTilesetFilter;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetViewer;
+import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
 
 /**
  * @author niko
@@ -53,7 +53,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	JLabel sharingStatus;
 	String rootDir = "/Users/niko/Sites/testApp/mapRepository";
 
-	ImageTileSetViewer viewer;
+	ImageTileSetViewerFrame viewer;
 
 	/**
 	 * Stand alone main
@@ -76,7 +76,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		frame.setVisible(true);
 	}
 
-	public TilesetSharingPanel(ImageTileSetViewer viewer) {
+	public TilesetSharingPanel(ImageTileSetViewerFrame viewer) {
 		this.viewer = viewer;
 		init();
 	}
