@@ -24,13 +24,14 @@ import net.niconomicon.tile.source.app.filter.ImageFileFilter;
 import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
 import net.niconomicon.tile.source.app.tiling.Inhibitor;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
+import net.niconomicon.tile.source.app.tiling.TilingStatusReporter;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
 /**
  * @author niko
  * 
  */
-public class TileCreatorPanel extends JLayeredPane {
+public class TileCreatorPanel extends JLayeredPane implements TilingStatusReporter {
 
 	public static final int TILE_SIZE = 192;
 	public static final String TILE_TYPE = "png";
@@ -41,8 +42,6 @@ public class TileCreatorPanel extends JLayeredPane {
 	protected JTextField from;
 
 	protected JButton browseInput;
-
-	protected JLabel imageProperty;
 
 	JProgressBar progressIndicator;
 
@@ -66,7 +65,7 @@ public class TileCreatorPanel extends JLayeredPane {
 	JPanel input;
 	JPanel status;
 
-	// JLayeredPane content;
+	JLabel tilingStatus;
 	Inhibitor inhibitor;
 
 	public TileCreatorPanel() {
@@ -104,7 +103,7 @@ public class TileCreatorPanel extends JLayeredPane {
 
 		this.setLayout(new GridLayout(0, 1));
 		this.add(input, new Integer(0));
-		this.setPreferredSize(new Dimension(300, 60));
+		this.setPreferredSize(new Dimension(300, 90));
 		// content.moveToFront(input);
 
 	}
@@ -155,6 +154,7 @@ public class TileCreatorPanel extends JLayeredPane {
 		GridBagConstraints c;
 		int y = 0;
 		int x = 0;
+		tilingStatus = new JLabel();
 
 		c = new GridBagConstraints();
 		c.gridx = x;
@@ -163,7 +163,7 @@ public class TileCreatorPanel extends JLayeredPane {
 		c.weightx = 2;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = c.LINE_START;
-		status.add(progressIndicator, c);
+		status.add(tilingStatus, c);
 
 		x = 4;
 		c = new GridBagConstraints();
@@ -175,8 +175,32 @@ public class TileCreatorPanel extends JLayeredPane {
 		cancel.addActionListener(inhibitor);
 		status.add(cancel, c);
 
-		return status;
+		y++;
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = y;
+		c.gridwidth = 4;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = c.LINE_START;
+		status.add(progressIndicator, c);
 
+		return status;
+	}
+
+	public void resetTilingStatus() {
+		tilingStatus.setText("");
+		progressIndicator.setEnabled(false);
+	}
+
+	public void setTilingStatus(String text, double percent) {
+		progressIndicator.setEnabled(true);
+		tilingStatus.setText(text);
+		if (percent > 0.99 || percent < 0.1) {
+			progressIndicator.setIndeterminate(true);
+		} else {
+			progressIndicator.setIndeterminate(false);
+			progressIndicator.setValue((int) (percent * 100));
+		}
 	}
 
 	// this will open and tile the image in a separate thread
@@ -194,28 +218,25 @@ public class TileCreatorPanel extends JLayeredPane {
 			Thread t = new Thread() {
 				public void run() {
 					try {
-						progressIndicator.setIndeterminate(false);
-						progressIndicator.setValue(0);
-						progressIndicator.setEnabled(true);
-						progressIndicator.setStringPainted(true);
-						progressIndicator.setString("Opening file ...");
-						progressIndicator.setValue(1);
+
+						setTilingStatus("Opening file ...", 0.009);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
-						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, progressIndicator, TileCreatorApp.ThreadCount, inhibitor);
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, TileCreatorPanel.this, TileCreatorApp.ThreadCount, inhibitor);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
+						setTilingStatus("Finishing to write the temporary file ...", 0.9999);
 						creator.finalizeFile();
 						progressIndicator.setEnabled(false);
 						from.setText("");
 						if (inhibitor.hasRunInhibitionBeenRequested()) {
-							progressIndicator.setValue(0);
-							progressIndicator.setString("Cancelled");
+							setTilingStatus("Finishing to write the temporary file ...", 0.9999);
 							temp.delete();
+							resetTilingStatus();
 						} else {
+							setTilingStatus("Adding it to the list of shareable TileSets ...", 0.9999);
 							sharingPanel.addTileSetToShare(temp.getAbsolutePath(), Ref.fileSansDot(currentSourcePath));
-							progressIndicator.setValue(100);
-							progressIndicator.setString("Done");
+							resetTilingStatus();
 						}
 						TileCreatorPanel.this.remove(status);
 						TileCreatorPanel.this.add(input, new Integer(0));

@@ -253,7 +253,7 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
-	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, JProgressBar progressIndicator, int nThreads, Inhibitor inhibitor) throws Exception {
+	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, TilingStatusReporter progressIndicator, int nThreads, Inhibitor inhibitor) throws Exception {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 		ExecutorService serialPool = Executors.newFixedThreadPool(nThreads);
@@ -337,8 +337,7 @@ public class SQliteTileCreatorMultithreaded {
 			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
 			if (null != progressIndicator) {
 				double ratio = (float) (zoom + 1) / (float) aaMaxZoom;
-				progressIndicator.setValue((int) (100 * ratio));
-				progressIndicator.setString("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom));
+				progressIndicator.setTilingStatus("Creating zoom level " + (zoom + 1) + " / " + (aaMaxZoom), ratio);
 			}
 			int fillX = 0;
 			int fillY = 0;
@@ -488,7 +487,7 @@ public class SQliteTileCreatorMultithreaded {
 				}
 				start = System.nanoTime();
 				System.out.println("Started : " + dstFile);
-				creator.calculateTiles(dstFile, src + file, 192, "png", new JProgressBar(), nThreads, null);
+				creator.calculateTiles(dstFile, src + file, 192, "png", null, nThreads, null);
 				creator.finalizeFile();
 				stop = System.nanoTime();
 				System.out.println("## => total_time: " + ((double) (stop - start) / 1000000) + " ms nThreads = " + nThreads + " + 1 mains + 1 writer");
