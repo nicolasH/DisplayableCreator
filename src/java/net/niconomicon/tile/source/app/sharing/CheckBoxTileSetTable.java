@@ -3,6 +3,8 @@
  */
 package net.niconomicon.tile.source.app.sharing;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +16,9 @@ import java.util.Map.Entry;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.StyledEditorKit.ForegroundAction;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.SaveDialog;
@@ -39,6 +43,9 @@ public class CheckBoxTileSetTable extends JTable {
 		this.getColumnModel().getColumn(0).setPreferredWidth(30);
 		this.getColumnModel().getColumn(1).setPreferredWidth(200);
 		this.setMinimumSize(new Dimension(330, 100));
+
+		ColoredCellRenderer a = new ColoredCellRenderer();
+		this.getColumnModel().getColumn(1).setCellRenderer(a);
 
 		ButtonForTable b = new ButtonForTable(viewer, "view");
 		this.getColumnModel().getColumn(2).setCellEditor(b);
@@ -123,6 +130,14 @@ public class CheckBoxTileSetTable extends JTable {
 			return null;
 		}
 
+		public boolean needsSaving(int row) {
+			if (null != backstore && row < backstore.size()) {
+				TileSetInfos i = backstore.get(row);
+				return Ref.isInTmpLocation(i.location);
+			}
+			return false;
+		}
+
 		public void setValueAt(Object aValue, int row, int column) {
 			if (column == -1 && aValue != null && row < backstore.size()) {
 				backstore.get(row).location = (String) aValue;
@@ -191,6 +206,43 @@ public class CheckBoxTileSetTable extends JTable {
 			if (columnIndex == 2) { return String.class; }
 			if (columnIndex == 3) { return String.class; }
 			return super.getColumnClass(columnIndex);
+		}
+	}
+
+	public class ColoredCellRenderer extends DefaultTableCellRenderer {
+		Color defaultForegroundColor;
+		Color defaultForegroundColorSelected;
+		Color defaultBackgroundColor;
+		Color defaultBackgroundColorSelected;
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+			Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			if (isSelected) {
+				if (defaultBackgroundColorSelected == null) {
+					defaultBackgroundColorSelected = c.getBackground();
+				}
+				if (defaultForegroundColorSelected == null) {
+					defaultForegroundColorSelected = c.getForeground();
+				}
+			} else {
+				if (defaultBackgroundColor == null) {
+					defaultBackgroundColor = c.getBackground();
+				}
+				if (defaultForegroundColor == null) {
+					defaultForegroundColor = c.getForeground();
+				}
+			}
+			if (((CustomTableModel) table.getModel()).needsSaving(row)) {
+				c.setBackground(Color.orange);
+			} else {
+				if (isSelected) {
+					c.setBackground(defaultBackgroundColorSelected);
+				} else {
+					c.setBackground(defaultBackgroundColor);
+				}
+			}
+			return c;
 		}
 	}
 
