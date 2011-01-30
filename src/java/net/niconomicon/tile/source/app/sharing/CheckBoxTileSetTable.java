@@ -34,26 +34,31 @@ public class CheckBoxTileSetTable extends JTable {
 	CustomTableModel model;
 	boolean sharingDefaut = true;
 
+	public static final int colCheckBox=0;
+	public static final int colTitle = 1;
+	public static final	int colEdit = 2;
+	public static final 	int colView=3;
+	
 	public CheckBoxTileSetTable(ImageTileSetViewerFrame viewer) {
 		super();
 		SaveDialog saveDialog = new SaveDialog();
 
 		model = new CustomTableModel();
 		this.setModel(model);
-		this.getColumnModel().getColumn(0).setPreferredWidth(30);
-		this.getColumnModel().getColumn(1).setPreferredWidth(200);
+		this.getColumnModel().getColumn(colCheckBox).setPreferredWidth(30);
+		this.getColumnModel().getColumn(colTitle).setPreferredWidth(200);
 		this.setMinimumSize(new Dimension(330, 100));
 
 		ColoredCellRenderer a = new ColoredCellRenderer();
-		this.getColumnModel().getColumn(1).setCellRenderer(a);
+		this.getColumnModel().getColumn(colTitle).setCellRenderer(a);
 
 		ButtonForTable b = new ButtonForTable(viewer, "view");
-		this.getColumnModel().getColumn(2).setCellEditor(b);
-		this.getColumnModel().getColumn(2).setCellRenderer(b);
+		this.getColumnModel().getColumn(colView).setCellEditor(b);
+		this.getColumnModel().getColumn(colView).setCellRenderer(b);
 
 		ButtonForTable b1 = new ButtonForTable(saveDialog, "edit");
-		this.getColumnModel().getColumn(3).setCellEditor(b1);
-		this.getColumnModel().getColumn(3).setCellRenderer(b1);
+		this.getColumnModel().getColumn(colEdit).setCellEditor(b1);
+		this.getColumnModel().getColumn(colEdit).setCellRenderer(b1);
 		// Add the scroll pane to this panel.
 		// this.add(scrollPane,BorderLayout.CENTER);
 	}
@@ -117,13 +122,13 @@ public class CheckBoxTileSetTable extends JTable {
 				switch (column) {
 				case -1:
 					return i.location;
-				case 0:
+				case colCheckBox:
 					return i.shouldShare;
-				case 1:
+				case colTitle:
 					return i.title;
-				case 2:
+				case colView:
 					return "view";
-				case 3:
+				case colEdit:
 					return Ref.isInTmpLocation(i.location) ? "! save !" : "edit";
 				}
 			}
