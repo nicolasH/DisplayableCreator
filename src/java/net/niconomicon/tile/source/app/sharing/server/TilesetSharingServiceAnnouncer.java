@@ -51,7 +51,7 @@ public class TilesetSharingServiceAnnouncer {
 			System.out.println("Opened JmDNS. Registering the service...");
 
 			try {
-				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 0, 0,  "type=xml;path="+Ref.sharing_xmlRef );
+				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 0, 0,  "type=json;path="+Ref.sharing_jsonRef );
 				jmdns.registerService(info);
 				System.out.println("\nRegistered Service as " + info);
 				if (shouldUnregister) {

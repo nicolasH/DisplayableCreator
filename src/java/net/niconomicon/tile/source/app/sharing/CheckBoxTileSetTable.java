@@ -34,11 +34,11 @@ public class CheckBoxTileSetTable extends JTable {
 	CustomTableModel model;
 	boolean sharingDefaut = true;
 
-	public static final int colCheckBox=0;
+	public static final int colCheckBox = 0;
 	public static final int colTitle = 1;
-	public static final	int colEdit = 2;
-	public static final 	int colView=3;
-	
+	public static final int colEdit = 2;
+	public static final int colView = 3;
+
 	public CheckBoxTileSetTable(ImageTileSetViewerFrame viewer) {
 		super();
 		SaveDialog saveDialog = new SaveDialog();

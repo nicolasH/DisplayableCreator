@@ -26,7 +26,7 @@ public final class Ref {
 	public static final String storingDirectoryKey = "TileSetStoringDirectoryKey";
 	public static final String sharing_serviceName = "TiledImageSharingService";
 
-	public static final String sharing_xmlRef = "TiledImages.xml";
+//	public static final String sharing_xmlRef = "TiledImages.xml";
 	public static final String sharing_jsonRef = "TiledImages.json";
 	public static final String sharing_htmlRef = "TiledImages.html";
 
@@ -140,7 +140,7 @@ public final class Ref {
 		for (String key : maps.keySet()) {
 			String file = maps.get(key);
 			System.out.println("Extracting for Key : [" + key + "]");// + " value : "+ maps.get(key));
-			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_xmlRef) || key.endsWith(Ref.sharing_htmlRef) || key.endsWith(Ref.sharing_jsonRef)) {
+			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_htmlRef) || key.endsWith(Ref.sharing_jsonRef)) { // key.endsWith(Ref.sharing_xmlRef) ||
 				continue;
 			}
 			System.out.println("Really trying to open (k=[" + key + "]) => " + file);
