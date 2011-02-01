@@ -50,25 +50,7 @@ public class JettyImageServerServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String request = req.getRequestURI();
 		System.out.println("URI : " + request);
-//		if (request.compareTo("/") == 0) {
-//			request = "/" + Ref.sharing_xmlRef;
-//		}
-		if (null == imaginaryMap || !imaginaryMap.containsKey(request) || imaginaryMap.get(request) == null) {
-			resp.sendError(404, "The server could not find or get access to [" + request + "]");
-			return;
-		}
-		String string = imaginaryMap.get(request);
 
-//		if (request.compareTo("/" + Ref.sharing_xmlRef) == 0) {
-//			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
-//			try {
-//				sendString(imaginaryMap.get(request), resp);
-//				return;
-//			} catch (Exception ex) {
-//				resp.sendError(500, "The server encountered an error while trying to send the requested content for request [" + request + "]");
-//				return;
-//			}
-//		}
 		if (request.compareTo("/" + Ref.sharing_jsonRef) == 0) {
 			System.out.println("should be returning the tilesetFeed [" + imaginaryMap.get(request).length() + "]");
 			try {
@@ -79,10 +61,12 @@ public class JettyImageServerServlet extends HttpServlet {
 				return;
 			}
 		}
-		if (request.compareTo("/" + Ref.sharing_htmlRef) == 0) {
+		if (request.equals("/") || request.equals(Ref.URI_htmlRef)) {
+			request = Ref.URI_htmlRef;
 			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
 			try {
 				String resolvedAddress = Ref.app_handle + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
+				System.out.println("resolved Address : " + resolvedAddress);
 				String htmlListing = imaginaryMap.get(request).replaceAll(Ref.app_handle, resolvedAddress);
 				sendString(htmlListing, resp);
 				return;
@@ -91,6 +75,12 @@ public class JettyImageServerServlet extends HttpServlet {
 				return;
 			}
 		}
+		if (null == imaginaryMap || !imaginaryMap.containsKey(request) || imaginaryMap.get(request) == null) {
+			resp.sendError(404, "The server could not find or get access to [" + request + "]");
+			return;
+		}
+		String string = imaginaryMap.get(request);
+
 		System.out.println("String from the imaginary map : [" + string + "]");
 		File f = new File(string);
 		if (f.exists()) {
