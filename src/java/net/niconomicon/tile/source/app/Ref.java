@@ -53,6 +53,12 @@ public final class Ref {
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
 
+	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" +
+			"<style>.item {border-top:1px,black}" +
+			"item {border-top:2px,black}" +
+			"div {border-top:3px,black}" +
+			".div {border-top:4px,black}</style>";
+
 	public static File tmpFile;
 	static {
 		try {
@@ -205,7 +211,7 @@ public final class Ref {
 		StringBuffer json = new StringBuffer();
 		StringBuffer html = new StringBuffer();
 		json.append("[");
-		html.append("<html><body>");
+		html.append("<html>" + head + "<body>");
 		for (String mapFileName : maps) {
 			try {
 				File f = new File(mapFileName);
@@ -264,8 +270,9 @@ public final class Ref {
 				urlToFile.put(mini, fileName);
 				urlToFile.put(thumb, fileName);
 
+				String title = rs.getString(Ref.infos_title);
 				String s = "{";
-				s += "\"title\":\"" + rs.getString(Ref.infos_title) + "\",";
+				s += "\"title\":\"" +title+ "\",";
 				s += "\"source\":\"" + name + "\",";
 				s += "\"thumb\":\"" + thumb + "\",";
 				s += "\"preview\":\"" + mini + "\",";
@@ -276,7 +283,7 @@ public final class Ref {
 				s += "},";
 				ret += s;
 
-				String urlInfos = "title=" + rs.getString(Ref.infos_title);
+				String urlInfos = "title=" + title;
 				urlInfos += "&updated=";
 				urlInfos += "&thumb=" + thumb;
 				urlInfos += "&preview=" + mini;
@@ -287,15 +294,16 @@ public final class Ref {
 
 				String li = "\t\t\t<li>";
 				String li_ = "</li>\n";
-				String html = "<div><b>" + rs.getString(Ref.infos_title) + "</b><br/>";
-				html += "\n\t\t<a href=\"" + mini + "\">\n\t\t\t<img src=\"" + thumb + "\">\n\t\t</a>\n\t\t";
-				html += "Download <a href=\"" + app_handle + name + "?" + urlInfos + "\" >and view with displayator</a>\n\t\t";
-				html += "or <a href=\"" + name + "\" >as file</a>.";
-				html += "\n\t<ul>";
-				html += li + "Weight : " + ((double) weight) / 1000000 + " MB." + li_;
+				String html = "<div class=\"item\"><a href=\"" + mini + "\"><img src=\"" + thumb + "\" align=\"right\"/></a><b>" +title+ "</b>";
+				//	html += "\n\t\t<a href=\"" + mini + "\"><img src=\"" + thumb + "\"></a>\n\t\t";
+				html +="<br><a href=\"" + mini + "\">See the miniature</a>";
+				html += "<br/>Download and view <a href=\"" + app_handle + name + "?" + urlInfos + "\" >original size with displayator</a>";
+				html += "  or download <a href=\"" + name + "\" >as a file</a>.<br/>";
+				html += "\n\t<ul>\n";
+				html += li + "Weight : " + ((float)Math.round(((double) weight) / 10000)) / 100 + " MB." + li_;
 				html += li + "Size : " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px." + li_;
 				String dsc = rs.getString(Ref.infos_description);
-				if (null != dsc && dsc.length() > 0) {
+				if (null != dsc && dsc.length() > 0 && !dsc.equalsIgnoreCase("no description")) {
 					html += li + "description:" + dsc + li_;
 				}
 				html += "</ul>\n";
