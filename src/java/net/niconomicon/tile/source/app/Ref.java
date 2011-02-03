@@ -54,7 +54,9 @@ public final class Ref {
 	public static final String infos_thumb = "thumb";
 
 	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" +
-			"<style>.item {border-top:1px,black}" +
+			"<style>" +
+			"body {font-family: Helvetica,Arial,Georgia,'Sans Serif'" +
+			".item {border-top:1px,black}" +
 			"item {border-top:2px,black}" +
 			"div {border-top:3px,black}" +
 			".div {border-top:4px,black}</style>";
