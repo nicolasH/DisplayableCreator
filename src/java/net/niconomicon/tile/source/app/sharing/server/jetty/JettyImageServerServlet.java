@@ -3,6 +3,7 @@
  */
 package net.niconomicon.tile.source.app.sharing.server.jetty;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,8 +30,16 @@ public class JettyImageServerServlet extends HttpServlet {
 	Map<String, String> imaginaryMap;
 	Set<String> knownImages;
 
+	File css;
+
 	public JettyImageServerServlet() {
 		knownImages = new HashSet<String>();
+		css = new File("classpath:index.css");
+		if (css.exists()) {
+			System.out.println("CSS exists !");
+		}else{
+			System.out.println("CSS doesn't exist.");
+		}
 	}
 
 	public void addImages(Collection<String> documents) {
@@ -75,12 +84,12 @@ public class JettyImageServerServlet extends HttpServlet {
 				return;
 			}
 		}
+
 		if (null == imaginaryMap || !imaginaryMap.containsKey(request) || imaginaryMap.get(request) == null) {
 			resp.sendError(404, "The server could not find or get access to [" + request + "]");
 			return;
 		}
 		String string = imaginaryMap.get(request);
-
 		System.out.println("String from the imaginary map : [" + string + "]");
 		File f = new File(string);
 		if (f.exists()) {

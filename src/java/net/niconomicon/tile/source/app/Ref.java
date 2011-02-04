@@ -26,7 +26,6 @@ public final class Ref {
 	public static final String storingDirectoryKey = "TileSetStoringDirectoryKey";
 	public static final String sharing_serviceName = "TiledImageSharingService";
 
-	// public static final String sharing_xmlRef = "TiledImages.xml";
 	public static final String sharing_jsonRef = "TiledImages.json";
 	public static final String sharing_htmlRef = "TiledImages.html";
 
@@ -53,13 +52,7 @@ public final class Ref {
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
 
-	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" +
-			"<style>" +
-			"body {font-family: Helvetica,Arial,Georgia,'Sans Serif'" +
-			".item {border-top:1px,black}" +
-			"item {border-top:2px,black}" +
-			"div {border-top:3px,black}" +
-			".div {border-top:4px,black}</style>";
+	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" + "<style>" + "body {font-family: Helvetica,Arial,Georgia,'Sans Serif'" + ".item {border-top:1px,black}" + "item {border-top:2px,black}" + "div {border-top:3px,black}" + ".div {border-top:4px,black}</style>";
 
 	public static File tmpFile;
 	static {
@@ -151,8 +144,7 @@ public final class Ref {
 		for (String key : maps.keySet()) {
 			String file = maps.get(key);
 			System.out.println("Extracting for Key : [" + key + "]");// + " value : "+ maps.get(key));
-			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_htmlRef) || key.endsWith(Ref.sharing_jsonRef)) { // key.endsWith(Ref.sharing_xmlRef)
-																														// ||
+			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_htmlRef) || key.endsWith(Ref.sharing_jsonRef)) {
 				continue;
 			}
 			System.out.println("Really trying to open (k=[" + key + "]) => " + file);
@@ -201,7 +193,7 @@ public final class Ref {
 	// /////////////////////////////////////
 	// /////////////////////////////////////
 	/**
-	 * Method to generate the map xml list.
+	 * Method to generate the tileset list.
 	 */
 	public static Map<String, String> generateIndexFromFileNames(Collection<String> maps) {
 		try {
@@ -218,7 +210,7 @@ public final class Ref {
 			try {
 				File f = new File(mapFileName);
 				long size = f.length();
-				System.out.println("trying to open the map :" + mapFileName + " To generate the XML.");
+				System.out.println("trying to open the map :" + mapFileName + " To generate the json and html.");
 				Connection connection = DriverManager.getConnection("jdbc:sqlite:" + mapFileName);
 				connection.setReadOnly(true);
 				String[] descriptions = generateDescriptionsForConnection(connection, size, mapFileName, urlToFile);
@@ -243,13 +235,13 @@ public final class Ref {
 	}
 
 	/**
-	 * Generate the XML description for a given map, and add thumbnail and preview images to the list of available URLs
+	 * Generate the description for a given tileset, and add thumbnail and preview images to the list of available URLs
 	 * 
 	 * @param mapDB
 	 * @param weight
 	 * @param fileName
 	 * @param urlToFile
-	 * @return an array of XML and HTML description of the file as String[]{XML,HTML}.
+	 * @return an array of JSON and HTML description of the file as String[]{JSON,HTML}.
 	 */
 	public static String[] generateDescriptionsForConnection(Connection mapDB, long weight, String fileName, Map<String, String> urlToFile) {
 		String ret = "";
@@ -274,7 +266,7 @@ public final class Ref {
 
 				String title = rs.getString(Ref.infos_title);
 				String s = "{";
-				s += "\"title\":\"" +title+ "\",";
+				s += "\"title\":\"" + title + "\",";
 				s += "\"source\":\"" + name + "\",";
 				s += "\"thumb\":\"" + thumb + "\",";
 				s += "\"preview\":\"" + mini + "\",";
@@ -296,13 +288,13 @@ public final class Ref {
 
 				String li = "\t\t\t<li>";
 				String li_ = "</li>\n";
-				String html = "<div class=\"item\"><a href=\"" + mini + "\"><img src=\"" + thumb + "\" align=\"right\"/></a><b>" +title+ "</b>";
-				//	html += "\n\t\t<a href=\"" + mini + "\"><img src=\"" + thumb + "\"></a>\n\t\t";
-				html +="<br><a href=\"" + mini + "\">See the miniature</a>";
+				String html = "<div class=\"item\"><a href=\"" + mini + "\"><img src=\"" + thumb + "\" align=\"right\"/></a><b>" + title + "</b>";
+				// html += "\n\t\t<a href=\"" + mini + "\"><img src=\"" + thumb + "\"></a>\n\t\t";
+				html += "<br><a href=\"" + mini + "\">See the miniature</a>";
 				html += "<br/>Download and view <a href=\"" + app_handle + name + "?" + urlInfos + "\" >original size with displayator</a>";
 				html += "  or download <a href=\"" + name + "\" >as a file</a>.<br/>";
 				html += "\n\t<ul>\n";
-				html += li + "Weight : " + ((float)Math.round(((double) weight) / 10000)) / 100 + " MB." + li_;
+				html += li + "Weight : " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB." + li_;
 				html += li + "Size : " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px." + li_;
 				String dsc = rs.getString(Ref.infos_description);
 				if (null != dsc && dsc.length() > 0 && !dsc.equalsIgnoreCase("no description")) {
