@@ -34,7 +34,7 @@ public class JettyImageServerServlet extends HttpServlet {
 
 	public JettyImageServerServlet() {
 		knownImages = new HashSet<String>();
-		css = new File("classpath:index.css");
+		css = new File("index.css");
 		if (css.exists()) {
 			System.out.println("CSS exists !");
 		}else{
@@ -74,9 +74,9 @@ public class JettyImageServerServlet extends HttpServlet {
 			request = Ref.URI_htmlRef;
 			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
 			try {
-				String resolvedAddress = Ref.app_handle + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
+				String resolvedAddress = Ref.app_handle_item + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
 				System.out.println("resolved Address : " + resolvedAddress);
-				String htmlListing = imaginaryMap.get(request).replaceAll(Ref.app_handle, resolvedAddress);
+				String htmlListing = imaginaryMap.get(request).replaceAll(Ref.app_handle_item, resolvedAddress);
 				sendString(htmlListing, resp);
 				return;
 			} catch (Exception ex) {

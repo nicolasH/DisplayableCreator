@@ -32,7 +32,8 @@ public final class Ref {
 	public static final String URI_jsonRef = "/TiledImages.json";
 	public static final String URI_htmlRef = "/TiledImages.html";
 
-	public static final String app_handle = "displayator-image:";
+	public static final String app_handle_item = "displayator-image:";
+	public static final String app_handle_list = "displayator-list:";
 
 	public static final String ext_db = ".mdb";
 	public static final String ext_thumb = ".thumb";
@@ -206,6 +207,7 @@ public final class Ref {
 		StringBuffer html = new StringBuffer();
 		json.append("[");
 		html.append("<html>" + head + "<body>");
+		html.append("<div class=\"\"><a href=\""+app_handle_list+URI_jsonRef+"\">Open this list with the Displayator app</a></div>");
 		for (String mapFileName : maps) {
 			try {
 				File f = new File(mapFileName);
@@ -291,7 +293,7 @@ public final class Ref {
 				String html = "<div class=\"item\"><a href=\"" + mini + "\"><img src=\"" + thumb + "\" align=\"right\"/></a><b>" + title + "</b>";
 				// html += "\n\t\t<a href=\"" + mini + "\"><img src=\"" + thumb + "\"></a>\n\t\t";
 				html += "<br><a href=\"" + mini + "\">See the miniature</a>";
-				html += "<br/>Download and view <a href=\"" + app_handle + name + "?" + urlInfos + "\" >original size with displayator</a>";
+				html += "<br/>Download and view <a href=\"" + app_handle_item + name + "?" + urlInfos + "\" >original size with displayator</a>";
 				html += "  or download <a href=\"" + name + "\" >as a file</a>.<br/>";
 				html += "\n\t<ul>\n";
 				html += li + "Weight : " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB." + li_;
