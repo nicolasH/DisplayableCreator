@@ -3,7 +3,6 @@
  */
 package net.niconomicon.tile.source.app.sharing.server.jetty;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,7 +36,7 @@ public class JettyImageServerServlet extends HttpServlet {
 		css = new File("index.css");
 		if (css.exists()) {
 			System.out.println("CSS exists !");
-		}else{
+		} else {
 			System.out.println("CSS doesn't exist.");
 		}
 	}
@@ -74,9 +73,12 @@ public class JettyImageServerServlet extends HttpServlet {
 			request = Ref.URI_htmlRef;
 			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
 			try {
-				String resolvedAddress = Ref.app_handle_item + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
-				System.out.println("resolved Address : " + resolvedAddress);
-				String htmlListing = imaginaryMap.get(request).replaceAll(Ref.app_handle_item, resolvedAddress);
+				String resolvedAddressItem = Ref.app_handle_item + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
+				String resolvedAddressList = Ref.app_handle_list + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
+				System.out.println("resolved Address item : " + resolvedAddressItem);
+				System.out.println("resolved Address list : " + resolvedAddressList);
+				String htmlListing = imaginaryMap.get(request).replaceAll(Ref.app_handle_item, resolvedAddressItem);
+				htmlListing = htmlListing.replaceAll(Ref.app_handle_list, resolvedAddressList);
 				sendString(htmlListing, resp);
 				return;
 			} catch (Exception ex) {

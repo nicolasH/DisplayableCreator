@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -55,6 +56,8 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 
 	ImageTileSetViewerFrame viewer;
 
+	InetAddress localaddr;
+
 	/**
 	 * Stand alone main
 	 * 
@@ -97,7 +100,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	public JPanel getDirSelectionPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
-		p.add(new JLabel("Import TileSets : "),BorderLayout.WEST);
+		p.add(new JLabel("Import TileSets : "), BorderLayout.WEST);
 		JButton b = new JButton("Choose TileSets or TileSet directory");
 		b.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -112,11 +115,20 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 				}
 			}
 		});
-		p.add(b,BorderLayout.EAST);
+		p.add(b, BorderLayout.EAST);
 		return p;
 	}
 
 	public void init() {
+		try {
+			localaddr = InetAddress.getLocalHost();
+
+			System.out.println("Local IP Address : " + localaddr);
+			System.out.println("Local hostname   : " + localaddr.getHostName());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		sharingManager = new SharingManager();
 		mapList = new CheckBoxTileSetTable(viewer);
 
@@ -147,12 +159,16 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 				JButton b = (JButton) e.getSource();
 				if (currentlySharing) {
 					sharingStatus.setText("Image TileSet Sharing status : [starting ...]");
+					sharingStatus.revalidate();
 					startSharing();
 					sharingStatus.setText("Image TileSet Sharing status : [running]");
+					sharingStatus.setToolTipText("If the items do not appear quickly in the list, try accessing http://" + localaddr.getHostName() + ":" + sharingManager.port + "/ in your browser");
 					b.setText("Stop Image TileSet sharing");
 				} else {
 					sharingStatus.setText("Image TileSet Sharing status : [stopping ...]");
+					sharingStatus.revalidate();
 					stopSharing();
+					sharingStatus.setToolTipText("");
 					sharingStatus.setText("Image TileSet Sharing status : [not running]");
 					b.setText("Start Image TileSet sharing");
 				}
