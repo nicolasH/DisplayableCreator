@@ -4,6 +4,8 @@
 package net.niconomicon.tile.source.app.sharing.server;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
@@ -51,7 +53,10 @@ public class TilesetSharingServiceAnnouncer {
 			System.out.println("Opened JmDNS. Registering the service...");
 
 			try {
-				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 0, 0, "type=json;path=" + Ref.sharing_jsonRef);
+				Map<String,String> m = new HashMap<String, String>();
+				m.put("path","json");
+
+				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort,1,1,m);
 				jmdns.registerService(info);
 				System.out.println("\nRegistered Service as " + info);
 				if (shouldUnregister) {

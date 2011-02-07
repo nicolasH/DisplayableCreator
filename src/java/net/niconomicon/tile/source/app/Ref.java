@@ -26,7 +26,7 @@ public final class Ref {
 	public static final String storingDirectoryKey = "TileSetStoringDirectoryKey";
 	public static final String sharing_serviceName = "TiledImageSharingService";
 
-	public static final String sharing_jsonRef = "TiledImages.json";
+	public static final String sharing_jsonRef = "json";
 	public static final String sharing_htmlRef = "TiledImages.html";
 
 	public static final String URI_jsonRef = "/TiledImages.json";
