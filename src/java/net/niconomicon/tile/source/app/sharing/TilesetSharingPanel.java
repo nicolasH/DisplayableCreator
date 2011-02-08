@@ -120,14 +120,6 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	}
 
 	public void init() {
-		try {
-			localaddr = InetAddress.getLocalHost();
-
-			System.out.println("Local IP Address : " + localaddr);
-			System.out.println("Local hostname   : " + localaddr.getHostName());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 
 		sharingManager = new SharingManager();
 		mapList = new CheckBoxTileSetTable(viewer);
@@ -157,6 +149,11 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			public void actionPerformed(ActionEvent e) {
 				currentlySharing = !currentlySharing;
 				JButton b = (JButton) e.getSource();
+				try {
+					localaddr = InetAddress.getLocalHost();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 				if (currentlySharing) {
 					sharingStatus.setText("Image TileSet Sharing status : [starting ...]");
 					sharingStatus.revalidate();
