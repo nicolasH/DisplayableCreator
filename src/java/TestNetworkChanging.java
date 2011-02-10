@@ -35,16 +35,16 @@ public class TestNetworkChanging implements NetworkTopologyListener {
 	}
 
 	public void inetAddressAdded(NetworkTopologyEvent arg0) {
-		changeSharing();
+		reactivateSharing();
 		System.out.println("inetAddressAdded");
 	}
 
 	public void inetAddressRemoved(NetworkTopologyEvent arg0) {
 		System.out.println("inetAddressRemoved");
-		changeSharing();
+		reactivateSharing();
 	}
 
-	public void changeSharing() {
+	public void reactivateSharing() {
 		try {
 			System.out.println("Unregistering everything !");
 			jmmdns.unregisterAllServices();
@@ -75,7 +75,7 @@ public class TestNetworkChanging implements NetworkTopologyListener {
 				localHost = InetAddress.getLocalHost().getCanonicalHostName();
 				if (!hostname.equals(localHost)) {
 					hostname = localHost;
-					bla.changeSharing();
+					bla.reactivateSharing();
 				}
 				System.out.println("Gonna sleep");
 				Thread.sleep(10000);
