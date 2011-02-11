@@ -3,7 +3,7 @@
  */
 package net.niconomicon.tile.source.app.sharing.server;
 
-import java.io.IOException;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +26,7 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 	static TilesetSharingServiceAnnouncer service;
 	boolean shouldExit = false;
 	boolean shouldUnregister = false;
+	Thread lhc;
 
 	public static TilesetSharingServiceAnnouncer getInstance() {
 		synchronized (Ref.sharing_serviceName) {
@@ -36,8 +37,35 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 		return service;
 	}
 
+	public class LocalHostChecker implements Runnable {
+		String hostname = "bla";
+		String localHost = "notBla";
+
+		public void run() {
+			while (!shouldExit) {
+				if (!shouldUnregister) {
+					try {
+						localHost = InetAddress.getLocalHost().getCanonicalHostName();
+						System.out.println("Localhost : " + localHost);
+						if (!hostname.equals(localHost)) {
+							hostname = localHost;
+							service.reactivateSharing();
+						}
+						System.out.println("Gonna sleep");
+						Thread.sleep(10000);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
 	private TilesetSharingServiceAnnouncer() {
 		jmmdns = JmmDNS.Factory.getInstance();
+		lhc = new Thread(new LocalHostChecker());
+		lhc.start();
+
 	}
 
 	public void startSharing(int port) {
@@ -71,15 +99,6 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 			jmmdns.registerService(info);
 			jmmdns.addNetworkTopologyListener(this);
 			System.out.println("\nRegistered Service as " + info);
-			// if (shouldUnregister) {
-			// jmmdns.unregisterAllServices();
-			// jmmdns.close();
-			// }
-			// if (shouldExit) {
-			// jmmdns.unregisterAllServices();
-			// jmmdns.close();
-			// System.exit(0);
-			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
