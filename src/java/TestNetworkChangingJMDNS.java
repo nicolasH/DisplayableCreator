@@ -89,6 +89,9 @@ public class TestNetworkChangingJMDNS implements NetworkTopologyListener {
 
 	*/
 	/**
+	 * Problem: JmDNS pegs the CPU at 100 % when network topology changes. 
+	 * Problem: JmmDNS does not announce the service properly.
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
@@ -106,7 +109,7 @@ public class TestNetworkChangingJMDNS implements NetworkTopologyListener {
 					hostname = localHost;
 					try {
 						System.out.println("Unregistering everything !");
-						jmdns.unregisterAllServices();
+						// jmdns.unregisterAllServices();
 						jmdns.close();
 						jmdns = JmDNS.create();
 						System.out.println("Registering something !");

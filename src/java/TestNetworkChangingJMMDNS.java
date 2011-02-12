@@ -62,67 +62,67 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 	/**
 	 * @param args
 	 */
-	// public static void main(String[] args) throws Exception {
-	// String hostname = "bla";
-	// String localHost = "notBla";
-	//
-	// TestNetworkChangingJMMDNS bla = new TestNetworkChangingJMMDNS();
-	// while (true) {
-	//
-	// try {
-	// localHost = InetAddress.getLocalHost().getCanonicalHostName();
-	// System.out.println("Localhost : " + localHost);
-	// if (!hostname.equals(localHost)) {
-	// hostname = localHost;
-	// // System.out.println("localhost is different");
-	// bla.reactivateSharing();
-	// }
-	// // System.out.println("Gonna sleep");
-	// Thread.sleep(10000);
-	// } catch (Exception ex) {
-	// ex.printStackTrace();
-	// }
-	// }
-	// }
+	 public static void main(String[] args) throws Exception {
+	 String hostname = "bla";
+	 String localHost = "notBla";
+	
+	 TestNetworkChangingJMMDNS bla = new TestNetworkChangingJMMDNS();
+	 while (true) {
+	
+	 try {
+	 localHost = InetAddress.getLocalHost().getCanonicalHostName();
+	 System.out.println("Localhost : " + localHost);
+	 if (!hostname.equals(localHost)) {
+	 hostname = localHost;
+	 // System.out.println("localhost is different");
+	 bla.reactivateSharing();
+	 }
+	 // System.out.println("Gonna sleep");
+	 Thread.sleep(10000);
+	 } catch (Exception ex) {
+	 ex.printStackTrace();
+	 }
+	 }
+	 }
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) throws Exception {
-		String hostname = "bla";
-		String localHost = "notBla";
-		JmmDNS jmdns = JmmDNS.Factory.getInstance();
-
-		TestNetworkChangingJMMDNS bla = new TestNetworkChangingJMMDNS();
-		
-		try {
-			System.out.println("Unregistering everything !");
-			jmdns.unregisterAllServices();
-			jmdns.close();
-			jmdns = JmmDNS.Factory.getInstance();
-			System.out.println("Registering something !");
-			Map<String, String> m = new HashMap<String, String>();
-			m.put("path", "json");
-			ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, 8888, 0, 0, m);
-			jmdns.registerService(info);
-			System.out.println("Registered Service as " + info);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		while (true) {
-
-			try {
-//				localHost = InetAddress.getLocalHost().getCanonicalHostName();
-//				System.out.println("Localhost : " + localHost);
-//				if (!hostname.equals(localHost)) {
-//					hostname = localHost;
-//				} // System.out.println("Gonna sleep");
-				Thread.sleep(10000);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
+//	/**
+//	 * @param args
+//	 */
+//	public static void main(String[] args) throws Exception {
+//		String hostname = "bla";
+//		String localHost = "notBla";
+//		JmmDNS jmdns = JmmDNS.Factory.getInstance();
+//
+//		TestNetworkChangingJMMDNS bla = new TestNetworkChangingJMMDNS();
+//		
+//		try {
+//			System.out.println("Unregistering everything !");
+//			jmdns.unregisterAllServices();
+//			jmdns.close();
+//			jmdns = JmmDNS.Factory.getInstance();
+//			System.out.println("Registering something !");
+//			Map<String, String> m = new HashMap<String, String>();
+//			m.put("path", "json");
+//			ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, 8888, 0, 0, m);
+//			jmdns.registerService(info);
+//			System.out.println("Registered Service as " + info);
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//		}
+//
+//		while (true) {
+//
+//			try {
+////				localHost = InetAddress.getLocalHost().getCanonicalHostName();
+////				System.out.println("Localhost : " + localHost);
+////				if (!hostname.equals(localHost)) {
+////					hostname = localHost;
+////				} // System.out.println("Gonna sleep");
+//				Thread.sleep(10000);
+//			} catch (Exception ex) {
+//				ex.printStackTrace();
+//			}
+//		}
+//	}
 
 }
