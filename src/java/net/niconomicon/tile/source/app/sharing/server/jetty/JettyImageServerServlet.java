@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,12 +33,17 @@ public class JettyImageServerServlet extends HttpServlet {
 
 	public JettyImageServerServlet() {
 		knownImages = new HashSet<String>();
-		css = new File("index.css");
-		if (css.exists()) {
-			System.out.println("CSS exists !");
-		} else {
-			System.out.println("CSS doesn't exist.");
-		}
+//		css = new File("index.css");
+		URL url = this.getClass().getClassLoader().getResource("index.css");
+		System.out.println("url : "+url);
+//		css = new File(url.getFile());
+		// long len = f.length();
+
+//		if (css.exists()) {
+//			System.out.println("CSS exists !");
+//		} else {
+//			System.out.println("CSS doesn't exist.");
+//		}
 	}
 
 	public void addImages(Collection<String> documents) {
@@ -130,4 +135,23 @@ public class JettyImageServerServlet extends HttpServlet {
 		in.close();
 		response.getOutputStream().flush();
 	}
+
+	public void sendCSS(HttpServletResponse response) throws Exception {
+		URL url = this.getClass().getClassLoader().getResource("index.css");
+		File f = new File(url.getFile());
+		long len = f.length();
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentLength((int) len);
+		int bufferSize = response.getBufferSize();
+		byte[] buff = new byte[bufferSize];
+		InputStream in;
+		in = new FileInputStream(f);
+		int nread;
+		while ((nread = in.read(buff)) > 0) {
+			response.getOutputStream().write(buff, 0, nread);
+		}
+		in.close();
+		response.getOutputStream().flush();
+	}
+
 }
