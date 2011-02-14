@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.jmdns.JmDNS;
 import javax.jmdns.JmmDNS;
 import javax.jmdns.NetworkTopologyEvent;
 import javax.jmdns.NetworkTopologyListener;
@@ -21,7 +22,7 @@ import net.niconomicon.tile.source.app.Ref;
 public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 
 	private int servicePort;
-	JmmDNS jmmdns;
+	JmDNS jmmdns;
 
 	static TilesetSharingServiceAnnouncer service;
 	boolean shouldExit = false;
@@ -46,12 +47,12 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 				if (!shouldUnregister) {
 					try {
 						localHost = InetAddress.getLocalHost().getCanonicalHostName();
-						System.out.println("Localhost : " + localHost);
+						// System.out.println("Localhost : " + localHost);
 						if (!hostname.equals(localHost)) {
 							hostname = localHost;
 							service.reactivateSharing();
 						}
-						System.out.println("Gonna sleep");
+						// System.out.println("Gonna sleep");
 						Thread.sleep(10000);
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -62,10 +63,13 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 	}
 
 	private TilesetSharingServiceAnnouncer() {
-		jmmdns = JmmDNS.Factory.getInstance();
-		lhc = new Thread(new LocalHostChecker());
-		lhc.start();
-
+		try {
+			jmmdns = JmDNS.create();
+			lhc = new Thread(new LocalHostChecker());
+			lhc.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public void startSharing(int port) {
@@ -89,7 +93,7 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 			jmmdns.unregisterAllServices();
 			jmmdns.close();
 			System.out.println("Opening JmDNS");
-			jmmdns = JmmDNS.Factory.getInstance();
+			jmmdns = JmDNS.create();
 
 			System.out.println("Opened JmDNS. Registering the service...");
 			Map<String, String> m = new HashMap<String, String>();
@@ -97,7 +101,7 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 
 			ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
 			jmmdns.registerService(info);
-			jmmdns.addNetworkTopologyListener(this);
+			// jmmdns.addNetworkTopologyListener(this);
 			System.out.println("\nRegistered Service as " + info);
 		} catch (Exception e) {
 			e.printStackTrace();

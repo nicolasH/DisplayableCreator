@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,17 +34,83 @@ public class JettyImageServerServlet extends HttpServlet {
 
 	public JettyImageServerServlet() {
 		knownImages = new HashSet<String>();
-//		css = new File("index.css");
-		URL url = this.getClass().getClassLoader().getResource("index.css");
-		System.out.println("url : "+url);
-//		css = new File(url.getFile());
+		// css = new File("index.css");
+		// net/niconomicon/tile/source/app/sharing/server/jetty/
+		String s;
+		URL url = null;
+		try {
+			s = "/index.css";
+			url = ClassLoader.getSystemClassLoader().getResource(s);
+			System.out.println("s = " + s + " url : " + url);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		try {
+			s = "index.css";
+			url = ClassLoader.getSystemClassLoader().getSystemResource(s);
+			System.out.println("s = " + s + " url : " + url);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
+			s = "src/java/index.css";
+			url = ClassLoader.getSystemClassLoader().getResource(s);
+			System.out.println("s  = " + s + " url : " + url);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		try {
+			s = "/src/java/index.css";
+			url = ClassLoader.getSystemClassLoader().getResource(s);
+			System.out.println("s  = " + s + " url : " + url);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		try {
+			s = "net/niconomicon/tile/source/app/index.css";
+			url = ClassLoader.getSystemClassLoader().getResource(s);
+			System.out.println("s = " + s + " url : " + url);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
+			s = "/net/niconomicon/tile/source/app/index.css";
+			url = ClassLoader.getSystemClassLoader().getResource(s);
+			System.out.println("s = " + s + " url : " + url);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		try {
+			s = "index.css";
+			InputStream str = ClassLoader.getSystemClassLoader().getResourceAsStream(s);
+			System.out.println("s = " + s + " url : " + str.read(new byte[1024]));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
+			s = "index.css";
+			System.out.println("getRessources  " + s);
+			Enumeration<URL> urls = ClassLoader.getSystemResources(s);
+			while (urls.hasMoreElements()) {
+				System.out.println("e  u : " + urls.nextElement());
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		// css = new File(url.getFile());
 		// long len = f.length();
 
-//		if (css.exists()) {
-//			System.out.println("CSS exists !");
-//		} else {
-//			System.out.println("CSS doesn't exist.");
-//		}
+		// if (css.exists()) {
+		// System.out.println("CSS exists !");
+		// } else {
+		// System.out.println("CSS doesn't exist.");
+		// }
 	}
 
 	public void addImages(Collection<String> documents) {
