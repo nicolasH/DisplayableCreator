@@ -31,6 +31,11 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 	public TestNetworkChangingJMMDNS() throws Exception {
 		servicePort = 8888;
 		jmmdns = JmmDNS.Factory.getInstance();
+
+		Map<String, String> m = new HashMap<String, String>();
+		m.put("path", "json");
+		info = ServiceInfo.create("_http._tcp.local.", "TiledImageSharingService", servicePort, 0, 0, m);
+
 	}
 
 	public void inetAddressAdded(NetworkTopologyEvent arg0) {
@@ -51,19 +56,39 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 		}
 	}
 
+	/**
+	 * This methods takes 7 seconds to work.
+	 */
 	public void reactivateSharing() {
 		try {
 			System.out.println("Unregistering everything !");
 			jmmdns.unregisterAllServices();
 			jmmdns.close();
 			jmmdns = JmmDNS.Factory.getInstance();
+			// useless :
 			jmmdns.addNetworkTopologyListener(this);
 			// System.out.println("Registering something !");
-			Map<String, String> m = new HashMap<String, String>();
-			m.put("path", "json");
-			info = ServiceInfo.create("_http._tcp.local.", "TiledImageSharingService", servicePort, 0, 0, m);
 			jmmdns.registerService(info);
 			System.out.println("Registered Service as " + info);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	/**
+	 * This methods takes 710 seconds to work.
+	 */
+	public void reallyActivateSharing() {
+		try {
+			System.out.println("Unregistering " + info);
+			jmmdns.unregisterService(info);
+			Thread.sleep(3000);
+//			jmmdns.close();
+			jmmdns = JmmDNS.Factory.getInstance();
+			Thread.sleep(3000);
+			jmmdns.registerService(info);
+			
+			System.out.println("Registered " + info);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -77,11 +102,8 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 		String localHost = "notBla";
 
 		TestNetworkChangingJMMDNS bla = new TestNetworkChangingJMMDNS();
-		bla.reactivateSharing();
-		Thread.sleep(5000);
-		bla.jmmdns.unregisterService(bla.info);
-		Thread.sleep(5000);
-		bla.jmmdns.registerService(bla.info);
+		bla.reallyActivateSharing();
+		Thread.sleep(7000);
 		while (true) {
 
 			try {
@@ -90,11 +112,14 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 
 				if (!hostname.equals(localHost)) {
 					hostname = localHost;
-					bla.jmmdns.unregisterService(bla.info);
-					Thread.sleep(5000);
-					bla.jmmdns.registerService(bla.info);
-					// System.out.println("localhost is different");
-					// bla.reactivateSharing();
+					bla.reallyActivateSharing();
+					// bla.jmmdns.unregisterService(bla.info);
+					// bla.jmmdns.close();
+					// bla.jmmdns = JmmDNS.Factory.getInstance();
+					// Thread.sleep(5000);
+					// bla.jmmdns.registerService(bla.info);
+					// // System.out.println("localhost is different");
+					// // bla.reactivateSharing();
 				}
 				// System.out.println("Gonna sleep");
 				Thread.sleep(10000);
