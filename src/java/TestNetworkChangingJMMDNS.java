@@ -76,18 +76,19 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 	}
 
 	/**
-	 * This methods takes 710 seconds to work.
+	 * This methods takes 9 seconds to work.
 	 */
 	public void reallyActivateSharing() {
 		try {
-			System.out.println("Unregistering " + info);
-			jmmdns.unregisterService(info);
-			Thread.sleep(3000);
+//			System.out.println("Unregistering " + info);
+//			jmmdns.unregisterService(info);
+//			Thread.sleep(3000);
 //			jmmdns.close();
+//			Thread.sleep(3000);
 			jmmdns = JmmDNS.Factory.getInstance();
 			Thread.sleep(3000);
 			jmmdns.registerService(info);
-			
+
 			System.out.println("Registered " + info);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -102,8 +103,8 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 		String localHost = "notBla";
 
 		TestNetworkChangingJMMDNS bla = new TestNetworkChangingJMMDNS();
-		bla.reallyActivateSharing();
-		Thread.sleep(7000);
+		bla.jmmdns.unregisterAllServices();
+		// bla.reallyActivateSharing();
 		while (true) {
 
 			try {
@@ -128,45 +129,4 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 			}
 		}
 	}
-
-	// /**
-	// * @param args
-	// */
-	// public static void main(String[] args) throws Exception {
-	// String hostname = "bla";
-	// String localHost = "notBla";
-	// JmmDNS jmdns = JmmDNS.Factory.getInstance();
-	//
-	// TestNetworkChangingJMMDNS bla = new TestNetworkChangingJMMDNS();
-	//
-	// try {
-	// System.out.println("Unregistering everything !");
-	// jmdns.unregisterAllServices();
-	// jmdns.close();
-	// jmdns = JmmDNS.Factory.getInstance();
-	// System.out.println("Registering something !");
-	// Map<String, String> m = new HashMap<String, String>();
-	// m.put("path", "json");
-	// ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, 8888, 0, 0, m);
-	// jmdns.registerService(info);
-	// System.out.println("Registered Service as " + info);
-	// } catch (Exception ex) {
-	// ex.printStackTrace();
-	// }
-	//
-	// while (true) {
-	//
-	// try {
-	// // localHost = InetAddress.getLocalHost().getCanonicalHostName();
-	// // System.out.println("Localhost : " + localHost);
-	// // if (!hostname.equals(localHost)) {
-	// // hostname = localHost;
-	// // } // System.out.println("Gonna sleep");
-	// Thread.sleep(10000);
-	// } catch (Exception ex) {
-	// ex.printStackTrace();
-	// }
-	// }
-	// }
-
 }
