@@ -19,14 +19,14 @@ import net.niconomicon.tile.source.app.Ref;
  * @author niko
  * 
  */
-public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
+public class TilesetSharingServiceAnnouncer {
 
 	private int servicePort;
-	JmDNS jmmdns;
+	JmDNS jmdns;
 
 	static TilesetSharingServiceAnnouncer service;
 	boolean shouldExit = false;
-	boolean shouldUnregister = false;
+	Boolean shouldUnregister = true;
 	Thread lhc;
 
 	public static TilesetSharingServiceAnnouncer getInstance() {
@@ -44,27 +44,46 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 
 		public void run() {
 			while (!shouldExit) {
-				if (!shouldUnregister) {
-					try {
-						localHost = InetAddress.getLocalHost().getCanonicalHostName();
-						// System.out.println("Localhost : " + localHost);
-						if (!hostname.equals(localHost)) {
-							hostname = localHost;
-							service.reactivateSharing();
-						}
-						// System.out.println("Gonna sleep");
-						Thread.sleep(10000);
-					} catch (Exception ex) {
-						ex.printStackTrace();
+
+				try {
+					synchronized (shouldUnregister) {
+						if (!shouldUnregister) {
+							localHost = InetAddress.getLocalHost().getCanonicalHostName();
+							// System.out.println("Localhost : " + localHost);
+							if (!hostname.equals(localHost)) {
+								hostname = localHost;
+								try {
+									if (jmdns != null) {// assuming the
+										jmdns.unregisterAllServices();
+										jmdns.close();
+									}
+									System.out.println("Opening JmDNS");
+									jmdns = JmDNS.create();
+									System.out.println("Opened JmDNS. Registering the service...");
+									Map<String, String> m = new HashMap<String, String>();
+									// m.put("path", "");
+									m.put("data_path", Ref.sharing_jsonRef);
+									ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
+									jmdns.registerService(info);
+									System.out.println("\nRegistered Service as " + info);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						} // System.out.println("Gonna sleep");
 					}
+					Thread.sleep(10000);
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
+
 			}
 		}
 	}
 
 	private TilesetSharingServiceAnnouncer() {
 		try {
-			jmmdns = JmDNS.create();
+			jmdns = JmDNS.create();
 			lhc = new Thread(new LocalHostChecker());
 			lhc.start();
 		} catch (Exception ex) {
@@ -73,40 +92,31 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 	}
 
 	public void startSharing(int port) {
-		shouldUnregister = false;
-		servicePort = port;
-		reactivateSharing();
-	}
-
-	public void inetAddressAdded(NetworkTopologyEvent arg0) {
-		reactivateSharing();
-		System.out.println("inetAddressAdded");
-	}
-
-	public void inetAddressRemoved(NetworkTopologyEvent arg0) {
-		System.out.println("inetAddressRemoved");
+		synchronized (shouldUnregister) {
+			shouldUnregister = false;
+			servicePort = port;
+		}
 		reactivateSharing();
 	}
 
 	public void reactivateSharing() {
-		try {
-			jmmdns.unregisterAllServices();
-			jmmdns.close();
-			System.out.println("Opening JmDNS");
-			jmmdns = JmDNS.create();
-
-			System.out.println("Opened JmDNS. Registering the service...");
-			Map<String, String> m = new HashMap<String, String>();
-			m.put("path", "json");
-
-			ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
-			jmmdns.registerService(info);
-			// jmmdns.addNetworkTopologyListener(this);
-			System.out.println("\nRegistered Service as " + info);
-		} catch (Exception e) {
-			e.printStackTrace();
+		synchronized (shouldUnregister) {
+			try {
+				// jmdns.unregisterAllServices();
+				// jmdns.close();
+				System.out.println("Opening JmDNS");
+				jmdns = JmDNS.create();
+				System.out.println("Opened JmDNS. Registering the service...");
+				Map<String, String> m = new HashMap<String, String>();
+				// m.put("path", "");
+				m.put("data_path", Ref.sharing_jsonRef);
+				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
+				jmdns.registerService(info);
+				System.out.println("\nRegistered Service as " + info);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-
 	}
 
 	public void stopSharing() {
@@ -114,20 +124,23 @@ public class TilesetSharingServiceAnnouncer implements NetworkTopologyListener {
 	}
 
 	public void stopService() {
-		shouldUnregister = true;
-		if (null != jmmdns) {
-			try {
-				System.out.println("unregistering services");
-				jmmdns.unregisterAllServices();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			try {
-				System.out.println("closing the jmdns service");
-				jmmdns.close();
-				System.out.println("closed the jmdns service");
-			} catch (Exception ex) {
-				ex.printStackTrace();
+		synchronized (shouldUnregister) {
+			shouldUnregister = true;
+			if (null != jmdns) {
+				try {
+					System.out.println("unregistering services");
+					jmdns.unregisterAllServices();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				try {
+					System.out.println("closing the jmdns service");
+					jmdns.close();
+					jmdns = null;
+					System.out.println("closed the jmdns service");
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}

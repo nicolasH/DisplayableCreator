@@ -80,11 +80,11 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 	 */
 	public void reallyActivateSharing() {
 		try {
-//			System.out.println("Unregistering " + info);
-//			jmmdns.unregisterService(info);
-//			Thread.sleep(3000);
-//			jmmdns.close();
-//			Thread.sleep(3000);
+			// System.out.println("Unregistering " + info);
+			// jmmdns.unregisterService(info);
+			// Thread.sleep(3000);
+			// jmmdns.close();
+			// Thread.sleep(3000);
 			jmmdns = JmmDNS.Factory.getInstance();
 			Thread.sleep(3000);
 			jmmdns.registerService(info);
@@ -128,5 +128,5 @@ public class TestNetworkChangingJMMDNS implements NetworkTopologyListener {
 				ex.printStackTrace();
 			}
 		}
-	}
+	}	
 }
