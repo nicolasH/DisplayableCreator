@@ -34,83 +34,9 @@ public class JettyImageServerServlet extends HttpServlet {
 
 	public JettyImageServerServlet() {
 		knownImages = new HashSet<String>();
-		// css = new File("index.css");
-		// net/niconomicon/tile/source/app/sharing/server/jetty/
-		String s;
-		URL url = null;
-		try {
-			s = "/index.css";
-			url = ClassLoader.getSystemClassLoader().getResource(s);
-			System.out.println("s = " + s + " url : " + url);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		try {
-			s = "index.css";
-			url = ClassLoader.getSystemClassLoader().getSystemResource(s);
-			System.out.println("s = " + s + " url : " + url);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			s = "src/java/index.css";
-			url = ClassLoader.getSystemClassLoader().getResource(s);
-			System.out.println("s  = " + s + " url : " + url);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		try {
-			s = "/src/java/index.css";
-			url = ClassLoader.getSystemClassLoader().getResource(s);
-			System.out.println("s  = " + s + " url : " + url);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		try {
-			s = "net/niconomicon/tile/source/app/index.css";
-			url = ClassLoader.getSystemClassLoader().getResource(s);
-			System.out.println("s = " + s + " url : " + url);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			s = "/net/niconomicon/tile/source/app/index.css";
-			url = ClassLoader.getSystemClassLoader().getResource(s);
-			System.out.println("s = " + s + " url : " + url);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		try {
-			s = "index.css";
-			InputStream str = ClassLoader.getSystemClassLoader().getResourceAsStream(s);
-			System.out.println("s = " + s + " url : " + str.read(new byte[1024]));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			s = "index.css";
-			System.out.println("getRessources  " + s);
-			Enumeration<URL> urls = ClassLoader.getSystemResources(s);
-			while (urls.hasMoreElements()) {
-				System.out.println("e  u : " + urls.nextElement());
-			}
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		// css = new File(url.getFile());
-		// long len = f.length();
-
-		// if (css.exists()) {
-		// System.out.println("CSS exists !");
-		// } else {
-		// System.out.println("CSS doesn't exist.");
-		// }
+		String cssLocation = "net/niconomicon/tile/source/app/sharing/server/jetty/index.css";
+		URL url = this.getClass().getClassLoader().getResource(cssLocation);
+		css = new File(url.getFile());
 	}
 
 	public void addImages(Collection<String> documents) {
@@ -141,6 +67,17 @@ public class JettyImageServerServlet extends HttpServlet {
 				return;
 			}
 		}
+		if (request.compareTo("/index.css") == 0) {
+			System.out.println("should be returning the css.");
+			try {
+				sendCSS(resp);
+				return;
+			} catch (Exception ex) {
+				resp.sendError(500, "The server encountered an error while trying to send the requested content for request [" + request + "]");
+				return;
+			}
+		}
+
 		if (request.equals("/") || request.equals(Ref.URI_htmlRef)) {
 			request = Ref.URI_htmlRef;
 			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
@@ -204,15 +141,14 @@ public class JettyImageServerServlet extends HttpServlet {
 	}
 
 	public void sendCSS(HttpServletResponse response) throws Exception {
-		URL url = this.getClass().getClassLoader().getResource("index.css");
-		File f = new File(url.getFile());
-		long len = f.length();
+
+		long len = css.length();
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentLength((int) len);
 		int bufferSize = response.getBufferSize();
 		byte[] buff = new byte[bufferSize];
 		InputStream in;
-		in = new FileInputStream(f);
+		in = new FileInputStream(css);
 		int nread;
 		while ((nread = in.read(buff)) > 0) {
 			response.getOutputStream().write(buff, 0, nread);
