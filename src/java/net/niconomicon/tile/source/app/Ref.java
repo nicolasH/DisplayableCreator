@@ -53,7 +53,8 @@ public final class Ref {
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
 
-	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" + "<style>" + "body {font-family: Helvetica,Arial,Georgia,'Sans Serif'" + ".item {border-top:1px,black}" + "item {border-top:2px,black}" + "div {border-top:3px,black}" + ".div {border-top:4px,black}</style>";
+	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" + 
+	"<link rel=\"stylesheet\" href=\"/index.css\"/ type=\"text/css\" />";
 
 	public static File tmpFile;
 	static {
@@ -207,7 +208,7 @@ public final class Ref {
 		StringBuffer html = new StringBuffer();
 		json.append("[");
 		html.append("<html>" + head + "<body>");
-		html.append("<div class=\"\"><a href=\""+app_handle_list+URI_jsonRef+"\">Open this list with the Displayator app</a></div>");
+		html.append("<div class=\"\"><a href=\"" + app_handle_list + URI_jsonRef + "\">Open this list with the Displayator app</a></div>");
 		for (String mapFileName : maps) {
 			try {
 				File f = new File(mapFileName);

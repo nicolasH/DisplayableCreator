@@ -1,3 +1,5 @@
+/* @override http://127.0.0.1:8889/index.css */
+
 body {
 	margin: -0px;
 	padding: -0px;
@@ -5,5 +7,18 @@ body {
 	font-size: 0.8em;
 }
 .item{
-	border-top: 1px,black;
+	border-top: 1px solid #8a8a8a;
+}
+img{
+	float:right;
+	padding: 10px;
+}
+b{
+	text-align: left;
+	font-weight: bold;
+	font-variant: small-caps;
+}
+ul{
+	padding-left: 25px;
+	margin:4px;	
 }
