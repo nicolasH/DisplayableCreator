@@ -34,7 +34,7 @@ public class GenericTileCreator {
 
 		System.out.println("Processing " + creator.title);
 		creator.title = title;
-		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null, 4, null);
+		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null, 4, true,null);
 		creator.finalizeFile();
 
 	}

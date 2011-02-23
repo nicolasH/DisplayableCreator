@@ -119,7 +119,7 @@ public class SQliteTileCreatorMultithreaded {
 			statement.executeUpdate("drop table if exists level_infos");
 			statement.executeUpdate("drop table if exists tiles_" + tilesetKey);
 			//
-			statement.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB)");
+			statement.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB, flippedVertically BOOL)");
 			statement.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
 			// currently the layer name should be the same as the map name, as only one layer is supported
 			statement.executeUpdate("CREATE TABLE layers_infos (" + "layerName STRING, mapKey LONG, zindex LONG, zoom  LONG, width LONG,height LONG, tiles_x LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
@@ -253,7 +253,7 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
-	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, TilingStatusReporter progressIndicator, int nThreads, Inhibitor inhibitor) throws Exception {
+	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, TilingStatusReporter progressIndicator, int nThreads, boolean flipVertically,Inhibitor inhibitor) throws Exception {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 		ExecutorService serialPool = Executors.newFixedThreadPool(nThreads);
@@ -376,7 +376,7 @@ public class SQliteTileCreatorMultithreaded {
 						copyHeight = tileSize - fillY;
 					}
 					Rectangle clip = new Rectangle(copyX, copyY, copyWidth, copyHeight);
-					otherBuffer = FastClipper.fastClip(img, clip, true);
+					otherBuffer = FastClipper.fastClip(img, clip, flipVertically);
 
 					// //////////////////////////////////////
 					// Saving the tile
@@ -424,7 +424,7 @@ public class SQliteTileCreatorMultithreaded {
 		plumberPool.shutdown();
 		plumberPool.awaitTermination(15, TimeUnit.MINUTES);
 		System.out.println(" ... setting tile info");
-		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null);
+		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null,flipVertically);
 		System.out.println(" ... creating index ...");
 		createIndexOnTileTable(connection, tilesetKey, layerKey);
 		System.out.println("tiles created");
@@ -443,15 +443,15 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
-	public void setTileInfo(long mapID, String tileType, long tileWidth, long tileHeight, InputStream emptyTile) {
+	public void setTileInfo(long mapID, String tileType, long tileWidth, long tileHeight, InputStream emptyTile, boolean verticallyFlipped) {
 		try {
-			PreparedStatement st = connection.prepareStatement("insert into tile_info values (?, ?, ?, ?, ?)");
-			// (mapKey, tileExt, tileWidth , tileHeight, emptyTile ):
+			PreparedStatement st = connection.prepareStatement("insert into tile_info values (?, ?, ?, ?, ?, ?)");
 			st.setLong(1, mapID);
 			st.setString(2, tileType);
 			st.setLong(3, tileWidth);
 			st.setLong(4, tileHeight);
-			// st.setBlob(5, emptyTile);
+			// st.setBlob(5, emptyTile.);
+			st.setBoolean(6, verticallyFlipped);
 			st.execute();
 		} catch (SQLException e) {
 			System.err.println("Information insertion failed.");
@@ -487,7 +487,7 @@ public class SQliteTileCreatorMultithreaded {
 				}
 				start = System.nanoTime();
 				System.out.println("Started : " + dstFile);
-				creator.calculateTiles(dstFile, src + file, 192, "png", null, nThreads, null);
+				creator.calculateTiles(dstFile, src + file, 192, "png", null, nThreads, true,null);
 				creator.finalizeFile();
 				stop = System.nanoTime();
 				System.out.println("## => total_time: " + ((double) (stop - start) / 1000000) + " ms nThreads = " + nThreads + " + 1 mains + 1 writer");

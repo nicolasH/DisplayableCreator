@@ -222,7 +222,7 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 						setTilingStatus("Opening file ...", 0.009);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
-						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, TileCreatorPanel.this, TileCreatorApp.ThreadCount, inhibitor);
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, TileCreatorPanel.this, TileCreatorApp.ThreadCount, true, inhibitor);
 						long end = System.currentTimeMillis();
 						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
 						setTilingStatus("Finishing to write the temporary file ...", 0.9999);
