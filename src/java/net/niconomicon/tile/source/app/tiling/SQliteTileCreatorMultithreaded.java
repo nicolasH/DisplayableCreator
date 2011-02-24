@@ -343,9 +343,6 @@ public class SQliteTileCreatorMultithreaded {
 			int fillY = 0;
 			fillX = ((nbX * tileSize) - scaledWidth);
 			fillY = ((nbY * tileSize) - scaledHeight);
-			// System.out.println("fill x =" + fillX + " fill y=" + fillY + " nbX=" + nbX + " nbY=" + nbY + " w=" +
-			// scaledWidth + " h=" + scaledHeight);
-			// System.out.println("fill x =" + fillX + " fill y=" + fillY);
 			for (int y = 0; y < nbY; y++) {
 				for (int x = 0; x < nbX; x++) {
 					if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
@@ -385,12 +382,8 @@ public class SQliteTileCreatorMultithreaded {
 			}
 			scaledWidth = (int) Math.ceil(scaledWidth * ZOOM_FACTOR);
 			scaledHeight = (int) Math.ceil(scaledHeight * ZOOM_FACTOR);
-			// System.out.println("scaled width " + scaledWidth + " height " + scaledHeight);
-			oldNbX = (scaledWidth / tileSize) + 1;
-			oldNbY = (scaledHeight / tileSize) + 1;
 			nbX = (int) Math.ceil((double) scaledWidth / tileSize);
 			nbY = (int) Math.ceil((double) scaledHeight / tileSize);
-			System.out.println("old : nbX=" + oldNbX + " nbY=" + oldNbY + " new : +nbX" + nbX + " nbY=" + nbY);
 
 			zoom++;
 			if (inhibitor.hasRunInhibitionBeenRequested()) {
@@ -408,8 +401,6 @@ public class SQliteTileCreatorMultithreaded {
 			g0.dispose();
 			stop = System.nanoTime();
 			System.out.println("scaled_image_" + zoom + ": " + ((double) (stop - start) / 1000000) + " ms");
-
-			// System.out.println("zoom layer : " + zoom + " image size:" + img.getWidth() + "x" + img.getHeight());
 		}
 		if (inhibitor.hasRunInhibitionBeenRequested()) {
 			serialPool.shutdownNow();
@@ -420,7 +411,7 @@ public class SQliteTileCreatorMultithreaded {
 		serialPool.shutdown();
 		serialPool.awaitTermination(15, TimeUnit.MINUTES);
 		start = System.nanoTime();
-
+		
 		plumberPool.shutdown();
 		plumberPool.awaitTermination(15, TimeUnit.MINUTES);
 		System.out.println(" ... setting tile info");
