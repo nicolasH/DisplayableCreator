@@ -296,8 +296,6 @@ public class SQliteTileCreatorMultithreaded {
 		int nbX = (int) Math.ceil((double) width / tileSize);
 		int nbY = (int) Math.ceil((double) height / tileSize);
 
-		// System.out.println("old : nbX=" + oldNbX + " nbY=" + oldNbY + " new : +nbX" + nbX + " nbY=" + nbY);
-
 		int scaledWidth = width;
 		int scaledHeight = height;
 		int zoom = 0;
