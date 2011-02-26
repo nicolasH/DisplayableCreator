@@ -233,7 +233,7 @@ public class SQliteTileCreatorMultithreaded {
 			insertTile.setBytes(4, data);
 			insertTile.executeUpdate();
 		} catch (SQLException e) {
-			System.err.println("Export failed !");
+			System.err.println("Tile Export failed !");
 			e.printStackTrace();
 		}
 		stop = System.nanoTime();
@@ -242,18 +242,31 @@ public class SQliteTileCreatorMultithreaded {
 	public void addLevelInfos(String name, long mapID, int zoom, int width, int height, int tiles_x, int tiles_y, int offsetX, int offsetY) {
 		String layerName = "no name";
 		long zindex = 0;
-		String stat = "INSERT INTO layers_infos VALUES(\"" + layerName + "\"," + mapID + "," + zindex + "," + zoom + "," + width + "," + height + "," + tiles_x + "," + tiles_y + "," + offsetX + "," + offsetY + ")";
-		System.out.println("stat = " + stat);
+		String stat = "INSERT INTO layers_infos VALUES(?,?,?,?,?,?,?,?,?,?)";
+		// String stat = "INSERT INTO layers_infos VALUES(\"" + layerName + "\"," + mapID + "," + zindex + "," + zoom +
+		// "," + width + "," + height + "," + tiles_x + "," + tiles_y + "," + offsetX + "," + offsetY + ")";
 		try {
-			Statement statement = connection.createStatement();
-			statement.executeUpdate(stat);
+			System.out.println("stat = " + stat);
+			PreparedStatement ps = connection.prepareStatement(stat);
+			int i = 1;
+			ps.setString(i++, layerName);
+			ps.setLong(i++, mapID);
+			ps.setLong(i++, zindex);
+			ps.setInt(i++, zoom);
+			ps.setInt(i++, width);
+			ps.setInt(i++, height);
+			ps.setInt(i++, tiles_x);
+			ps.setInt(i++, tiles_y);
+			ps.setInt(i++, offsetX);
+			ps.setInt(i++, offsetY);
+			ps.executeUpdate();
 		} catch (SQLException e) {
-			System.err.println("Information insertion failed.");
+			System.err.println("Level Information insertion failed.");
 			e.printStackTrace();
 		}
 	}
 
-	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, TilingStatusReporter progressIndicator, int nThreads, boolean flipVertically,Inhibitor inhibitor) throws Exception {
+	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, TilingStatusReporter progressIndicator, int nThreads, boolean flipVertically, Inhibitor inhibitor) throws Exception {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 		ExecutorService serialPool = Executors.newFixedThreadPool(nThreads);
@@ -291,8 +304,6 @@ public class SQliteTileCreatorMultithreaded {
 		sourceWidth = width;
 		sourceHeigth = height;
 
-		int oldNbX = (width / tileSize) + 1;
-		int oldNbY = (height / tileSize) + 1;
 		int nbX = (int) Math.ceil((double) width / tileSize);
 		int nbY = (int) Math.ceil((double) height / tileSize);
 
@@ -303,7 +314,6 @@ public class SQliteTileCreatorMultithreaded {
 		Image xxx = null;
 		// //////////////////////////
 		// Creating Tiles.
-		BufferedImage buffer = null;
 		BufferedImage otherBuffer = null;
 		scaledWidth = width;
 		scaledHeight = height;
@@ -409,11 +419,11 @@ public class SQliteTileCreatorMultithreaded {
 		serialPool.shutdown();
 		serialPool.awaitTermination(15, TimeUnit.MINUTES);
 		start = System.nanoTime();
-		
+
 		plumberPool.shutdown();
 		plumberPool.awaitTermination(15, TimeUnit.MINUTES);
 		System.out.println(" ... setting tile info");
-		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null,flipVertically);
+		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null, flipVertically);
 		System.out.println(" ... creating index ...");
 		createIndexOnTileTable(connection, tilesetKey, layerKey);
 		System.out.println("tiles created");
@@ -476,7 +486,7 @@ public class SQliteTileCreatorMultithreaded {
 				}
 				start = System.nanoTime();
 				System.out.println("Started : " + dstFile);
-				creator.calculateTiles(dstFile, src + file, 192, "png", null, nThreads, true,null);
+				creator.calculateTiles(dstFile, src + file, 192, "png", null, nThreads, true, null);
 				creator.finalizeFile();
 				stop = System.nanoTime();
 				System.out.println("## => total_time: " + ((double) (stop - start) / 1000000) + " ms nThreads = " + nThreads + " + 1 mains + 1 writer");
