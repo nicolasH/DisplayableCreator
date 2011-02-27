@@ -243,8 +243,6 @@ public class SQliteTileCreatorMultithreaded {
 		String layerName = "no name";
 		long zindex = 0;
 		String stat = "INSERT INTO layers_infos VALUES(?,?,?,?,?,?,?,?,?,?)";
-		// String stat = "INSERT INTO layers_infos VALUES(\"" + layerName + "\"," + mapID + "," + zindex + "," + zoom +
-		// "," + width + "," + height + "," + tiles_x + "," + tiles_y + "," + offsetX + "," + offsetY + ")";
 		try {
 			System.out.println("stat = " + stat);
 			PreparedStatement ps = connection.prepareStatement(stat);

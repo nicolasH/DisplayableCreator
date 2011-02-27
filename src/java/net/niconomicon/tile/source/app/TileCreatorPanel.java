@@ -9,11 +9,13 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.IIOException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
@@ -232,17 +234,21 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 						if (inhibitor.hasRunInhibitionBeenRequested()) {
 							setTilingStatus("Finishing to write the temporary file ...", 0.9999);
 							temp.delete();
-							resetTilingStatus();
 						} else {
 							setTilingStatus("Adding it to the list of shareable TileSets ...", 0.9999);
 							sharingPanel.addTileSetToShare(temp.getAbsolutePath(), Ref.fileSansDot(currentSourcePath));
-							resetTilingStatus();
 						}
-						TileCreatorPanel.this.remove(status);
-						TileCreatorPanel.this.add(input, new Integer(0));
 					} catch (Exception ex) {
+						if (ex instanceof IIOException) {
+							JOptionPane.showConfirmDialog(TileCreatorPanel.this, "Could not open the image. Reason : " + ex.getMessage(), "Error opening the image", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
+						} else {
+							JOptionPane.showConfirmDialog(TileCreatorPanel.this, "Error creating the tile set  : " + ex.getMessage(), "Error creating the tile set", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);							
+						}
 						ex.printStackTrace();
 					}
+					resetTilingStatus();
+					TileCreatorPanel.this.remove(status);
+					TileCreatorPanel.this.add(input, new Integer(0));
 				}
 			};
 			t.start();

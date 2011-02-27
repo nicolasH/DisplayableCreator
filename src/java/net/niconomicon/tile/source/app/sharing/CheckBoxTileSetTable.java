@@ -98,7 +98,7 @@ public class CheckBoxTileSetTable extends JTable {
 
 	private class CustomTableModel extends DefaultTableModel {
 
-		private final String[] columnsTitles = new String[] { "shared", "title", "view", "edit" };
+		private final String[] columnsTitles = new String[] { "Shared", "Title", "Edit", "View" };
 		List<TileSetInfos> backstore;
 
 		public CustomTableModel() {
@@ -129,7 +129,7 @@ public class CheckBoxTileSetTable extends JTable {
 				case colView:
 					return "view";
 				case colEdit:
-					return Ref.isInTmpLocation(i.location) ? "! save !" : "edit";
+					return Ref.isInTmpLocation(i.location) ? "! save me !" : "edit";
 				}
 			}
 			return null;
