@@ -145,7 +145,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		sharingStatus = new JLabel("Image TileSet Sharing status : [not running]");
 		options.add(sharingStatus);
 		JButton shareButton = new JButton("Start Image TileSet sharing");
-		shareButton.addActionListener(new ActionListener() {
+		ActionListener sharingActivator = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				currentlySharing = !currentlySharing;
 				JButton b = (JButton) e.getSource();
@@ -170,8 +170,13 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 					b.setText("Start Image TileSet sharing");
 				}
 			}
-		});
+		}
+		;
+
+		shareButton.addActionListener(sharingActivator);
+		sharingActivator.actionPerformed(new ActionEvent(shareButton,ActionEvent.ACTION_PERFORMED,"activate"));
 		options.add(shareButton);
+		shareButton.getActionListeners();
 		this.add(options, BorderLayout.SOUTH);
 	}
 
