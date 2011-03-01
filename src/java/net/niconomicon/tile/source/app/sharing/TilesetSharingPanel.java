@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -57,6 +59,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	ImageTileSetViewerFrame viewer;
 
 	InetAddress localaddr;
+	Timer timer;
 
 	/**
 	 * Stand alone main
@@ -77,6 +80,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			}
 		});
 		frame.setVisible(true);
+
 	}
 
 	public TilesetSharingPanel(ImageTileSetViewerFrame viewer) {
@@ -123,7 +127,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 
 		sharingManager = new SharingManager();
 		mapList = new CheckBoxTileSetTable(viewer);
-
+		timer = new Timer();
 		mapList.getModel().addTableModelListener(this);
 		mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		// mapList.getSelectionModel().addListSelectionListener(this);
@@ -159,7 +163,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 					sharingStatus.revalidate();
 					startSharing();
 					sharingStatus.setText("Image TileSet Sharing status : [running]");
-					sharingStatus.setToolTipText("If the items do not appear quickly in the list, try accessing http://" + localaddr.getHostName() + ":" + sharingManager.port + "/ in your browser");
+					setTooltipHostname(localaddr.getHostName());
 					b.setText("Stop Image TileSet sharing");
 				} else {
 					sharingStatus.setText("Image TileSet Sharing status : [stopping ...]");
@@ -170,14 +174,19 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 					b.setText("Start Image TileSet sharing");
 				}
 			}
-		}
-		;
-
+		};
+		long delta = 10000;
+		timer.scheduleAtFixedRate(new LocalHostChecker(), delta, delta);
 		shareButton.addActionListener(sharingActivator);
-		sharingActivator.actionPerformed(new ActionEvent(shareButton,ActionEvent.ACTION_PERFORMED,"activate"));
+		sharingActivator.actionPerformed(new ActionEvent(shareButton, ActionEvent.ACTION_PERFORMED, "activate"));
 		options.add(shareButton);
 		shareButton.getActionListeners();
 		this.add(options, BorderLayout.SOUTH);
+	}
+
+	public void setTooltipHostname(String host) {
+		int port = ((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue();
+		sharingStatus.setToolTipText("If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://" + host + ":" + port + "/ in your iPhone / iPod touch web browser");
 	}
 
 	public static List<String> getDBFilesInSubDirectory(File dir) {
@@ -287,5 +296,24 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			}
 		}
 		return fileToName;
+	}
+
+	public class LocalHostChecker extends TimerTask {
+		String hostname = "bla";
+		String localHost = "notBla";
+
+		public void run() {
+			try {
+				localHost = InetAddress.getLocalHost().getCanonicalHostName();
+				if (!hostname.equals(localHost)) {
+					hostname = localHost;
+					if (sharingManager.isSharing()) {
+						setTooltipHostname(hostname);
+					}
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 }
