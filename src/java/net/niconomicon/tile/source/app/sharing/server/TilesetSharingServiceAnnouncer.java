@@ -6,11 +6,10 @@ package net.niconomicon.tile.source.app.sharing.server;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.jmdns.JmDNS;
-import javax.jmdns.JmmDNS;
-import javax.jmdns.NetworkTopologyEvent;
-import javax.jmdns.NetworkTopologyListener;
 import javax.jmdns.ServiceInfo;
 
 import net.niconomicon.tile.source.app.Ref;
@@ -23,11 +22,10 @@ public class TilesetSharingServiceAnnouncer {
 
 	private int servicePort;
 	JmDNS jmdns;
-
 	static TilesetSharingServiceAnnouncer service;
 	boolean shouldExit = false;
 	Boolean shouldUnregister = true;
-	Thread lhc;
+	Timer lhc;
 
 	public static TilesetSharingServiceAnnouncer getInstance() {
 		synchronized (Ref.sharing_serviceName) {
@@ -38,45 +36,41 @@ public class TilesetSharingServiceAnnouncer {
 		return service;
 	}
 
-	public class LocalHostChecker implements Runnable {
+	public class LocalHostChecker extends TimerTask {
 		String hostname = "bla";
 		String localHost = "notBla";
 
 		public void run() {
-			while (!shouldExit) {
-
-				try {
-					synchronized (shouldUnregister) {
-						if (!shouldUnregister) {
-							localHost = InetAddress.getLocalHost().getCanonicalHostName();
-							// System.out.println("Localhost : " + localHost);
-							if (!hostname.equals(localHost)) {
-								hostname = localHost;
-								try {
-									if (jmdns != null) {// assuming the
-										jmdns.unregisterAllServices();
-										jmdns.close();
-									}
-									System.out.println("Opening JmDNS");
-									jmdns = JmDNS.create();
-									System.out.println("Opened JmDNS. Registering the service...");
-									Map<String, String> m = new HashMap<String, String>();
-									// m.put("path", "");
-									m.put("data_path", Ref.sharing_jsonRef);
-									ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
-									jmdns.registerService(info);
-									System.out.println("\nRegistered Service as " + info);
-								} catch (Exception e) {
-									e.printStackTrace();
+			if (shouldExit) { return; }
+			synchronized (shouldUnregister) {
+				if (!shouldUnregister) {
+					try {
+						localHost = InetAddress.getLocalHost().getCanonicalHostName();
+						// System.out.println("Localhost : " + localHost);
+						if (!hostname.equals(localHost)) {
+							hostname = localHost;
+							try {
+								if (jmdns != null) {// assuming the
+									jmdns.unregisterAllServices();
+									jmdns.close();
 								}
+								System.out.println("Opening JmDNS");
+								jmdns = JmDNS.create();
+								System.out.println("Opened JmDNS. Registering the service...");
+								Map<String, String> m = new HashMap<String, String>();
+								// m.put("path", "");
+								m.put("data_path", Ref.sharing_jsonRef);
+								ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
+								jmdns.registerService(info);
+								System.out.println("\nRegistered Service as " + info);
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
-						} // System.out.println("Gonna sleep");
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-					Thread.sleep(10000);
-				} catch (Exception ex) {
-					ex.printStackTrace();
 				}
-
 			}
 		}
 	}
@@ -84,8 +78,8 @@ public class TilesetSharingServiceAnnouncer {
 	private TilesetSharingServiceAnnouncer() {
 		try {
 			jmdns = JmDNS.create();
-			lhc = new Thread(new LocalHostChecker());
-			lhc.start();
+			lhc = new Timer();
+			lhc.scheduleAtFixedRate(new LocalHostChecker(), 10000, 10000);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
