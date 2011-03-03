@@ -96,13 +96,10 @@ public class TilesetSharingServiceAnnouncer {
 	public void reactivateSharing() {
 		synchronized (shouldUnregister) {
 			try {
-				// jmdns.unregisterAllServices();
-				// jmdns.close();
 				System.out.println("Opening JmDNS");
 				jmdns = JmDNS.create();
 				System.out.println("Opened JmDNS. Registering the service...");
 				Map<String, String> m = new HashMap<String, String>();
-				// m.put("path", "");
 				m.put("data_path", Ref.sharing_jsonRef);
 				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
 				jmdns.registerService(info);
