@@ -34,12 +34,16 @@
 	</scm>
 	<build>
 		<sourceDirectory>src/java/</sourceDirectory>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh-external</artifactId>
-			</extension>
-		</extensions>
+		<resources>
+			<resource>
+				<directory>src/java</directory>
+				<includes>
+					<include>**/*.css</include>
+				</includes>
+			</resource>
+		</resources>
+		<!-- extensions> <extension> <groupId>org.apache.maven.wagon</groupId> 
+			<artifactId>wagon-ssh-external</artifactId> </extension> </extensions -->
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -54,6 +58,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.2</version>
+
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -95,30 +100,22 @@
 						<mainClass>net.niconomicon.tile.source.app.TileCreatorApp</mainClass>
 					</jnlp>
 					<sign>
-						<keystore>/Users/niko/keystore_jnlp/ks</keystore>
-						<alias>edgar</alias>
-						<storepass>password</storepass>
-						<keypass>password</keypass>
+						<keystore>/Users/niko/keystore_jnlp/displayatorKS</keystore>
+						<alias>displayatorCreator</alias>
+						<storepass>!R4n!D0m!</storepass>
+						<keypass>!R4n!D0m!</keypass>
 						<!-- we need to override passwords easily from the command line. ${keypass} -->
 						<!--storetype>fillme</storetype -->
 						<!--validity>fillme</validity -->
-						<!-- only required for generating the keystore -->
-
-						<dnameCn>displayator.com</dnameCn>
-						<dnameOu>engineering</dnameOu>
-						<dnameO>displayator.com</dnameO>
-						<dnameL>Geneva</dnameL>
-						<dnameSt>Geneva</dnameSt>
-						<dnameC>Switzerland</dnameC>
-
+						<!-- only required for generating the keystore <dnameCn>displayator.com</dnameCn> 
+							<dnameOu>engineering</dnameOu> <dnameO>displayator.com</dnameO> <dnameL>Geneva</dnameL> 
+							<dnameSt>Geneva</dnameSt> <dnameC>Switzerland</dnameC> -->
 						<!-- verify that the signing operation succeeded -->
 						<verify>true</verify>
 						<!-- KEYSTORE MANAGEMENT -->
 						<!-- -->
-						<keystoreConfig>
-							<delete>true</delete> <!-- delete the keystore -->
-							<gen>true</gen> <!-- optional shortcut to generate the store. -->
-						</keystoreConfig>
+						<!-- <keystoreConfig> <delete>true</delete> < delete the keystore > 
+							<gen>true</gen> < optional shortcut to generate the store. > </keystoreConfig> -->
 					</sign>
 					<!-- BUILDING PROCESS -->
 

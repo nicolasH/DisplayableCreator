@@ -118,21 +118,21 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 		int y = 0;
 		int x = 0;
 
-		JLabel l = new JLabel("Source image :");
+		JLabel l = new JLabel("Drag and drop image or ");
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x;
 		c.anchor = c.LINE_END;
 		input.add(l, c);
 
-		x++;
-		c = new GridBagConstraints();
-		c.gridy = y;
-		c.gridx = x;
-		c.weightx = 3;
-		c.anchor = c.LINE_START;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		input.add(from, c);
+//		x++;
+//		c = new GridBagConstraints();
+//		c.gridy = y;
+//		c.gridx = x;
+//		c.weightx = 3;
+//		c.anchor = c.LINE_START;
+//		c.fill = GridBagConstraints.HORIZONTAL;
+//		input.add(from, c);
 
 		x++;
 		c = new GridBagConstraints();
@@ -224,9 +224,11 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 						setTilingStatus("Opening file ...", 0.009);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
-						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, TileCreatorPanel.this, TileCreatorApp.ThreadCount, true, inhibitor);
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE,
+								TileCreatorPanel.this, TileCreatorApp.ThreadCount, true, inhibitor);
 						long end = System.currentTimeMillis();
-						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
+						System.out
+								.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
 						setTilingStatus("Finishing to write the temporary file ...", 0.9999);
 						creator.finalizeFile();
 						progressIndicator.setEnabled(false);
@@ -240,9 +242,19 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 						}
 					} catch (Exception ex) {
 						if (ex instanceof IIOException) {
-							JOptionPane.showConfirmDialog(TileCreatorPanel.this, "Could not open the image. Reason : " + ex.getMessage(), "Error opening the image", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
+							JOptionPane
+									.showConfirmDialog(
+											TileCreatorPanel.this,
+											"<html><body>Could not open the image. <br/>Reason : <i>" + ex.getMessage() + "</i><br/>Possible workaround: <br/>Try saving the image as a PNG or a BMP in another program and then transform that file instead.</body></html>",
+											"Error opening the image", JOptionPane.DEFAULT_OPTION,
+											JOptionPane.ERROR_MESSAGE);
 						} else {
-							JOptionPane.showConfirmDialog(TileCreatorPanel.this, "Error creating the tile set  : " + ex.getMessage(), "Error creating the tile set", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);							
+							JOptionPane
+									.showConfirmDialog(
+											TileCreatorPanel.this,
+											"<html><body>Error creating the tile set  : <i>" + ex.getMessage() + "</i></body></html>",
+											"Error creating the tile set", JOptionPane.DEFAULT_OPTION,
+											JOptionPane.ERROR_MESSAGE);
 						}
 						ex.printStackTrace();
 					}

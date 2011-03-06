@@ -14,6 +14,7 @@ import java.awt.image.DataBufferFloat;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DataBufferShort;
 import java.awt.image.DataBufferUShort;
+import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import javax.swing.JSplitPane;
 
 /**
  * This class provides static methods to extract a rectangular part of a given image.
+ * 
  * @author Nicolas Hoibian
  * 
  */
@@ -46,20 +48,25 @@ public class FastClipper {
 	 * http://stackoverflow.com/questions/2825837/java-how-to-do-fast-copy-of-a-bufferedimages-pixels-unit-test-included
 	 * Does an arraycopy of the rasters .
 	 * 
-	 * @param src source image.
-	 * @param clip the part of the image that you want.
+	 * @param src
+	 *            source image.
+	 * @param clip
+	 *            the part of the image that you want.
 	 * @return an image which is identical to the part of the image of src in the area described by clip.
 	 */
 	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip) {
 		return fastClip(src, clip, false);
 	}
 
-
 	/**
-	 * @param src source image.
-	 * @param clip the part of the image that you want.
-	 * @param flipVertically should the image be flipped vertically ?
-	 * @return an independent copy of the part of the image described by clip, flipped vertically according to 'flipVertically'. 
+	 * @param src
+	 *            source image.
+	 * @param clip
+	 *            the part of the image that you want.
+	 * @param flipVertically
+	 *            should the image be flipped vertically ?
+	 * @return an independent copy of the part of the image described by clip, flipped vertically according to
+	 *         'flipVertically'.
 	 */
 	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip, boolean flipVertically) {
 		BufferedImage dst = new BufferedImage(clip.width, clip.height, src.getType());
@@ -70,6 +77,20 @@ public class FastClipper {
 		int mpx = src.getWidth() * src.getHeight();
 		int factor = 1;
 		DataBuffer buff = src.getRaster().getDataBuffer();
+		// don't forget to clip and flip this too.
+		// if (src.getAlphaRaster() != null) {
+		// DataBuffer transBuffer = src.getAlphaRaster().getDataBuffer();
+		// System.out.println("transBuffer type : " + transBuffer.getClass() +" - "+transBuffer+
+		// " original buffer "+buff.getClass() + " - "+buff);
+		// //the transparent buffer and the raster buffer seem to be the same buffer object in at least two png case.
+		// }
+		/**
+		 * Handles transparency correctly for some GIFs
+		 */
+		if (src.getColorModel() instanceof IndexColorModel) {
+			dst = new BufferedImage(clip.width, clip.height, src.getType(), (IndexColorModel) src.getColorModel());
+		}
+
 		/**
 		 * Different type of image have different type of underlying buffer. Each type has a different number of cells
 		 * dedicated to a single pixel.
