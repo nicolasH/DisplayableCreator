@@ -41,8 +41,6 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 	public static final String USER_HOME = "user.home";
 	protected JComboBox tileSize;
 
-	protected JTextField from;
-
 	protected JButton browseInput;
 
 	JProgressBar progressIndicator;
@@ -86,8 +84,6 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 
 		// preview = new TilingPreview();
 
-		from = new JTextField("", 20);
-		from.setEditable(false);
 		browseInput = new JButton("Choose image");
 		browseInput.addActionListener(new InputActionListener());
 
@@ -125,15 +121,6 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 		c.anchor = c.LINE_END;
 		input.add(l, c);
 
-//		x++;
-//		c = new GridBagConstraints();
-//		c.gridy = y;
-//		c.gridx = x;
-//		c.weightx = 3;
-//		c.anchor = c.LINE_START;
-//		c.fill = GridBagConstraints.HORIZONTAL;
-//		input.add(from, c);
-
 		x++;
 		c = new GridBagConstraints();
 		c.gridy = y;
@@ -144,7 +131,6 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 		FileDropHandler handler = new FileDropHandler(this);
 
 		l.setTransferHandler(handler);
-		from.setTransferHandler(handler);
 		browseInput.setTransferHandler(handler);
 		input.setTransferHandler(handler);
 
@@ -197,12 +183,13 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 	public void setTilingStatus(String text, double percent) {
 		progressIndicator.setEnabled(true);
 		tilingStatus.setText(text);
-		if (percent > 0.99 || percent < 0.1) {
+		progressIndicator.setIndeterminate(true);
+		/*if (percent > 0.99 || percent < 0.1) {
 			progressIndicator.setIndeterminate(true);
 		} else {
 			progressIndicator.setIndeterminate(false);
 			progressIndicator.setValue((int) (percent * 100));
-		}
+		}*/
 	}
 
 	// this will open and tile the image in a separate thread
@@ -220,8 +207,10 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 			Thread t = new Thread() {
 				public void run() {
 					try {
-
-						setTilingStatus("Opening file ...", 0.009);
+						setTilingStatus(
+								"Opening " + currentSourcePath
+										.substring(currentSourcePath.lastIndexOf(File.separator) + 1) + " ...",
+								0.009);
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
 						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE,
@@ -232,7 +221,6 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 						setTilingStatus("Finishing to write the temporary file ...", 0.9999);
 						creator.finalizeFile();
 						progressIndicator.setEnabled(false);
-						from.setText("");
 						if (inhibitor.hasRunInhibitionBeenRequested()) {
 							setTilingStatus("Finishing to write the temporary file ...", 0.9999);
 							temp.delete();
@@ -282,7 +270,7 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 				try {
 					setImageFileToTile(sourceChooser.getSelectedFile());
 				} catch (Exception e) {
-					from.setText("Sorry, cannot open the file");
+					// from.setText("Sorry, cannot open the file");
 					e.printStackTrace();
 				}
 			}
@@ -290,8 +278,8 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 	}
 
 	public void setImageFileToTile(File imageFile) throws IOException {
-		from.setText(imageFile.getCanonicalPath());
-		from.setToolTipText("Image Tile set is going to be created from " + imageFile.getCanonicalPath());
+		// from.setText(imageFile.getCanonicalPath());
+		// from.setToolTipText("Image Tile set is going to be created from " + imageFile.getCanonicalPath());
 		sourceChooser.setSelectedFile(imageFile);
 		preTile(imageFile.getCanonicalPath());
 

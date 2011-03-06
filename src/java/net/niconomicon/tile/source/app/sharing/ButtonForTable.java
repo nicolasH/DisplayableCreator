@@ -33,15 +33,18 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	int lastRow;
 	JTable lastTable;
 
-	public ButtonForTable(SaveDialog save, String text) {
-		saveDialog = save;
+	public ButtonForTable(String text) {
 		defaultText = text;
 		ren = new JButton(text);
 	}
 
+	public ButtonForTable(SaveDialog save, String text) {
+		this(text);
+		saveDialog = save;
+	}
+
 	public ButtonForTable(ImageTileSetViewerFrame viewer, String text) {
-		defaultText = text;
-		ren = new JButton(text);
+		this(text);
 		this.viewer = viewer;
 	}
 
@@ -62,7 +65,6 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	 * @see javax.swing.CellEditor#getCellEditorValue()
 	 */
 	public Object getCellEditorValue() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -82,6 +84,7 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	 */
 	public void actionPerformed(ActionEvent e) {
 		String fileLocation = "";
+		System.out.println("Action source : " + e.getActionCommand());
 		if (null != viewer) {
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
 			System.out.println("Saving : last row : " + lastRow + " file : " + fileLocation);
@@ -100,6 +103,8 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 			}
 			return;
 		}
+		((CheckBoxTileSetTable.CustomTableModel) lastTable.getModel()).removeTileSet(lastRow);
+
 		System.out.println("Action performed. Presumably for file " + fileLocation);
 		// setTileSet()
 	}

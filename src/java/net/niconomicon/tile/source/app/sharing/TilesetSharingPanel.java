@@ -223,7 +223,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 				ex.printStackTrace();
 			}
 		}
-		mapList.setData(fileToTitle);
+		mapList.addData(fileToTitle);
 		if (sharingManager.isSharing()) {
 			sharingManager.setSharingList(mapList.getSelectedTilesSetFiles());
 		}
