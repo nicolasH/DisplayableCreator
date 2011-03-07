@@ -30,6 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -39,6 +40,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.TileCreatorPanel;
 import net.niconomicon.tile.source.app.filter.DirOrTilesetFilter;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
@@ -161,18 +163,21 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 				if (currentlySharing) {
 					sharingStatus.setText("Image TileSet Sharing status : [starting ...]");
 					sharingStatus.revalidate();
-					startSharing();
-					sharingStatus.setText("Image TileSet Sharing status : [running]");
-					setTooltipHostname(localaddr.getHostName());
-					b.setText("Stop Image TileSet sharing");
-				} else {
-					sharingStatus.setText("Image TileSet Sharing status : [stopping ...]");
-					sharingStatus.revalidate();
-					stopSharing();
-					sharingStatus.setToolTipText("");
-					sharingStatus.setText("Image TileSet Sharing status : [not running]");
-					b.setText("Start Image TileSet sharing");
+					if (startSharing()) {
+						sharingStatus.setText("Image TileSet Sharing status : [running]");
+						setTooltipHostname(localaddr.getHostName());
+						b.setText("Stop Image TileSet sharing");
+						return;
+					}
 				}
+				//stopping sharing or start sharing failed.
+				sharingStatus.setText("Image TileSet Sharing status : [stopping ...]");
+				sharingStatus.revalidate();
+				stopSharing();
+				sharingStatus.setToolTipText("");
+				sharingStatus.setText("Image TileSet Sharing status : [not running]");
+				b.setText("Start Image TileSet sharing");
+
 			}
 		};
 		long delta = 10000;
@@ -186,7 +191,8 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 
 	public void setTooltipHostname(String host) {
 		int port = ((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue();
-		sharingStatus.setToolTipText("If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://" + host + ":" + port + "/ in your iPhone / iPod touch web browser");
+		sharingStatus
+				.setToolTipText("If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://" + host + ":" + port + "/ in your iPhone / iPod touch web browser");
 	}
 
 	public static List<String> getDBFilesInSubDirectory(File dir) {
@@ -229,7 +235,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		}
 	}
 
-	public void startSharing() {
+	public boolean startSharing() {
 		// HashSet<String> sharedDB = new HashSet<String>();
 		Collection<String> sharedMaps = mapList.getSelectedTilesSetFiles();
 		System.out.println("should start sharing the maps");
@@ -239,8 +245,22 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			sharingManager.setSharingList(sharedMaps);
 			sharingManager.startSharing();
 		} catch (Exception ex) {
+			try {
+				sharingManager.stopSharing();
+			} catch (Exception ex1) {
+				System.out.println("ex1 : ");
+				ex1.printStackTrace();
+			}
+			JOptionPane
+					.showConfirmDialog(
+							this,
+							"<html><body>Error while starting the sharing component  : <i>" + ex.getMessage() + "</i></body></html>",
+							"Error creating startng the sharing component", JOptionPane.DEFAULT_OPTION,
+							JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	public void stopSharing() {
