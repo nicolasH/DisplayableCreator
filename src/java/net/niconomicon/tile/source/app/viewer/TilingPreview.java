@@ -64,16 +64,11 @@ public class TilingPreview extends JPanel {
 	public void doingLevel(int level) {}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-	 */
 	protected void paintComponent(Graphics arg0) {
-		// TODO Auto-generated method stub
 		super.paintComponent(arg0);
 		Graphics2D g2d = (Graphics2D) arg0;
 		Dimension d = this.getSize();
 		
-	}
+	}*/
 
 }

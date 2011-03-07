@@ -98,9 +98,11 @@ public class ImageTileSetPanel extends JPanel {
 			currentLevel = levels.get(levels.size() - 1);
 			System.out.println("Setting current level to " + currentLevel.z);
 			resetSizeEtc(currentLevel);
-			for (ZoomLevel zl : levels) {
+
+			for (int z = currentLevel.z; z >= 0; z--) {
+				ZoomLevel zl = levels.get(z);
 				System.out.println("-- zl : " + zl.z);
-				for (int i = 0; i < zl.tiles_x; i++) {
+				for (int i = 0; i < zl.tiles_y; i++) {
 					TileLoader loader = new TileLoader(mapDB, i, zl.z, cache, this, exe);
 					eye.execute(loader);
 				}
@@ -110,8 +112,7 @@ public class ImageTileSetPanel extends JPanel {
 			exe.shutdown();
 			boolean normalTX = eye.awaitTermination(5, TimeUnit.MINUTES);
 			stop = System.currentTimeMillis();
-			// System.out.println("Caching took " + (stop - start) + " ms normal x " + normalTX + " normal y " +
-			// normalTY);
+			System.out.println("Caching took " + (stop - start) + " ms normal x " + normalTX + " normal y " + normalTY);
 
 			mapDB.close();
 
@@ -185,6 +186,14 @@ public class ImageTileSetPanel extends JPanel {
 		} else {
 			System.out.println("Already at min Zoom");
 		}
+	}
+
+	public int getMaxZ() {
+		return levels.size();
+	}
+
+	public ZoomLevel getMaxInfo() {
+		return levels.get(0);
 	}
 
 	/**

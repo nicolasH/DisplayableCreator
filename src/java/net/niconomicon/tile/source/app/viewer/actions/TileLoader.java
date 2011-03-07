@@ -48,7 +48,7 @@ public class TileLoader implements Runnable {
 			}
 
 			// exe.awaitTermination(2, TimeUnit.MINUTES);
-			System.out.println("Loading done for y = " + startY);
+			System.out.println("Loading done for z = " + z + " y = " + startY);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();

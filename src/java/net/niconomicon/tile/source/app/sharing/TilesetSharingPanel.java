@@ -240,8 +240,9 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		Collection<String> sharedMaps = mapList.getSelectedTilesSetFiles();
 		System.out.println("should start sharing the maps");
 		// generate the xml;
+		int port = ((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue();
 		try {
-			sharingManager.setPort(((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue());
+			sharingManager.setPort(port);
 			sharingManager.setSharingList(sharedMaps);
 			sharingManager.startSharing();
 		} catch (Exception ex) {
@@ -254,7 +255,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			JOptionPane
 					.showConfirmDialog(
 							this,
-							"<html><body>Error while starting the sharing component  : <i>" + ex.getMessage() + "</i></body></html>",
+							"<html><body>Error while starting the sharing component on port ["+port+"]: <br/><i>" + ex.getMessage() + "</i></body></html>",
 							"Error creating startng the sharing component", JOptionPane.DEFAULT_OPTION,
 							JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
