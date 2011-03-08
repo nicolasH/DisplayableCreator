@@ -17,7 +17,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
-import net.niconomicon.tile.source.app.TileCreatorPanel;
+import net.niconomicon.tile.source.app.DisplayableCreatorInputPanel;
 
 /**
  * @author Nicolas Hoibian
@@ -25,10 +25,10 @@ import net.niconomicon.tile.source.app.TileCreatorPanel;
  */
 public class FileDropHandler extends TransferHandler {
 
-	TileCreatorPanel panel;
+	DisplayableCreatorInputPanel panel;
 	ImageFileFilter filter;
 
-	public FileDropHandler(TileCreatorPanel p) {
+	public FileDropHandler(DisplayableCreatorInputPanel p) {
 		this.panel = p;
 		filter = new ImageFileFilter();
 	}

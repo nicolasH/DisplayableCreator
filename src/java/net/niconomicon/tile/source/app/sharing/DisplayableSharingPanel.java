@@ -40,25 +40,25 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.TileCreatorPanel;
-import net.niconomicon.tile.source.app.filter.DirOrTilesetFilter;
+import net.niconomicon.tile.source.app.DisplayableCreatorInputPanel;
+import net.niconomicon.tile.source.app.filter.DirOrDisplayableFilter;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
+import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
  * @author niko
  * 
  */
-public class TilesetSharingPanel extends JPanel implements TableModelListener {
+public class DisplayableSharingPanel extends JPanel implements TableModelListener {
 
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
-	CheckBoxTileSetTable mapList;
+	CheckBoxTable mapList;
 	JSpinner portNumber;
 	JLabel sharingStatus;
 	String rootDir = "/Users/niko/Sites/testApp/mapRepository";
 
-	ImageTileSetViewerFrame viewer;
+	DisplayableViewer viewer;
 
 	InetAddress localaddr;
 	Timer timer;
@@ -68,8 +68,8 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	 * 
 	 */
 	public static void main(String[] args) {
-		TilesetSharingPanel service = new TilesetSharingPanel(null);
-		JFrame frame = new JFrame("Tileset Sharing Service");
+		DisplayableSharingPanel service = new DisplayableSharingPanel(null);
+		JFrame frame = new JFrame("Sharing Service");
 		frame.setContentPane(service);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,7 +77,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				// TODO Auto-generated method stub
-				((TilesetSharingPanel) ((JFrame) e.getSource()).getContentPane()).stopSharing();
+				((DisplayableSharingPanel) ((JFrame) e.getSource()).getContentPane()).stopSharing();
 				super.windowClosing(e);
 			}
 		});
@@ -85,7 +85,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 
 	}
 
-	public TilesetSharingPanel(ImageTileSetViewerFrame viewer) {
+	public DisplayableSharingPanel(DisplayableViewer viewer) {
 		this.viewer = viewer;
 		init();
 	}
@@ -103,18 +103,18 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 		}
 	}
 
-	public JPanel getDirSelectionPanel() {
+	public JPanel createDirSelectionPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
-		p.add(new JLabel("Import TileSets : "), BorderLayout.WEST);
-		JButton b = new JButton("Choose TileSets or TileSet directory");
+		p.add(new JLabel("Import Displayables : "), BorderLayout.WEST);
+		JButton b = new JButton("Choose Displayables");
 		b.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fc = new JFileChooser();
 				fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				fc.setFileFilter(new DirOrTilesetFilter());
+				fc.setFileFilter(new DirOrDisplayableFilter());
 				fc.setMultiSelectionEnabled(true);
-				int res = fc.showOpenDialog(TilesetSharingPanel.this);
+				int res = fc.showOpenDialog(DisplayableSharingPanel.this);
 				if (JFileChooser.APPROVE_OPTION == res) {
 					File[] files = fc.getSelectedFiles();
 					setSelectedFiles(files);
@@ -128,29 +128,63 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	public void init() {
 
 		sharingManager = new SharingManager();
-		mapList = new CheckBoxTileSetTable(viewer);
+		mapList = new CheckBoxTable(viewer);
 		timer = new Timer();
 		mapList.getModel().addTableModelListener(this);
 		mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		// mapList.getSelectionModel().addListSelectionListener(this);
 		this.setLayout(new BorderLayout());
-		JPanel dirSelectorPanel = getDirSelectionPanel();
-		this.add(dirSelectorPanel, BorderLayout.NORTH);
+		this.add(createDirSelectionPanel(), BorderLayout.NORTH);
 		// shared files
 		// //////////////////////////////////////////
 		this.add(new JScrollPane(mapList), BorderLayout.CENTER);
 		JPanel options = new JPanel(new GridLayout(0, 1));
+		JPanel actionPanel = new JPanel(new GridLayout(0, 2));
+//		actionPanel.add(new JLabel("Remove selected Displayable from the list"));
+		JButton removeButton = new JButton("Remove selected Displayable");
+		removeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int item = mapList.getSelectedRow();
+				if (item < 0) {
+					JOptionPane.showMessageDialog(DisplayableSharingPanel.this, "Please select a displayable", "No Displayable selected",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				((CheckBoxTable.CustomTableModel) mapList.getModel()).removeDisplayable(item);
+			}
+		});
+		actionPanel.add(removeButton);
+		JButton viewButton = new JButton("View selected Displayable");
+		viewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int item = mapList.getSelectedRow();
+				if (item < 0) {
+					JOptionPane.showMessageDialog(DisplayableSharingPanel.this, "Please select a displayable", "No Displayable selected",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if (null != viewer) {
+					String fileLocation = (String) mapList.getValueAt(item, -1);
+					System.out.println("Viewing : last row : " + item + " file : " + fileLocation);
+					viewer.setDisplayable(fileLocation);
+					return;
+				}
+			}
+		});
+		actionPanel.add(viewButton);
+		options.add(actionPanel);
+
 		// //////////////////////////////////////////
 		// port number
-		JPanel p = new JPanel(new GridLayout(0, 2));
-		p.add(new JLabel("Image TileSet sharing port : "));
+		JPanel portPanel = new JPanel(new GridLayout(0, 2));
+		portPanel.add(new JLabel("Sharing port : "));
 		portNumber = new JSpinner(new SpinnerNumberModel(Ref.sharing_port, 1025, 65536, 1));
-		p.add(portNumber);
-		options.add(p);
+		portPanel.add(portNumber);
+		options.add(portPanel);
 		// start sharing
-		sharingStatus = new JLabel("Image TileSet Sharing status : [not running]");
+		sharingStatus = new JLabel("Sharing status : [not running]");
 		options.add(sharingStatus);
-		JButton shareButton = new JButton("Start Image TileSet sharing");
+		JButton shareButton = new JButton("Start sharing");
 		ActionListener sharingActivator = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				currentlySharing = !currentlySharing;
@@ -161,23 +195,22 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 					ex.printStackTrace();
 				}
 				if (currentlySharing) {
-					sharingStatus.setText("Image TileSet Sharing status : [starting ...]");
+					sharingStatus.setText("Sharing status : [starting ...]");
 					sharingStatus.revalidate();
 					if (startSharing()) {
-						sharingStatus.setText("Image TileSet Sharing status : [running]");
+						sharingStatus.setText("Sharing status : [running]");
 						setTooltipHostname(localaddr.getHostName());
-						b.setText("Stop Image TileSet sharing");
+						b.setText("Stop sharing");
 						return;
 					}
 				}
-				//stopping sharing or start sharing failed.
-				sharingStatus.setText("Image TileSet Sharing status : [stopping ...]");
+				// stopping sharing or start sharing failed.
+				sharingStatus.setText("Sharing status : [stopping ...]");
 				sharingStatus.revalidate();
 				stopSharing();
 				sharingStatus.setToolTipText("");
-				sharingStatus.setText("Image TileSet Sharing status : [not running]");
-				b.setText("Start Image TileSet sharing");
-
+				sharingStatus.setText("Sharing status : [not running]");
+				b.setText("Start sharing");
 			}
 		};
 		long delta = 10000;
@@ -219,8 +252,7 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			}
 		}
 		Collections.sort(dbFiles);
-		// String[] children = Ref.getDBFiles(rootDir);
-		Map<String, String> fileToTitle = new HashMap<String, String>();// getTilesetList(rootDir, children);
+		Map<String, String> fileToTitle = new HashMap<String, String>();
 		for (String path : dbFiles) {
 			try {
 				System.out.println("Going to get the title from " + path);
@@ -255,9 +287,8 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 			JOptionPane
 					.showConfirmDialog(
 							this,
-							"<html><body>Error while starting the sharing component on port ["+port+"]: <br/><i>" + ex.getMessage() + "</i></body></html>",
-							"Error creating startng the sharing component", JOptionPane.DEFAULT_OPTION,
-							JOptionPane.ERROR_MESSAGE);
+							"<html><body>Error while starting the sharing component on port [" + port + "]: <br/><i>" + ex.getMessage() + "</i></body></html>",
+							"Error creating startng the sharing component", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
 			return false;
 		}
@@ -277,21 +308,15 @@ public class TilesetSharingPanel extends JPanel implements TableModelListener {
 	 * @param fileLocation
 	 *            This can be a temporary file.
 	 */
-	public void addTileSetToShare(String fileLocation, String title) {
-		mapList.addTileSet(fileLocation, title);
+	public void addDisplayableToShare(String fileLocation, String title) {
+		mapList.addDisplayable(fileLocation, title);
 	}
 
-	public void updateTileSetLocation(String oldLocation, String newLocation) {
+	public void updateDisplayableLocation(String oldLocation, String newLocation) {
 		mapList.updateLocation(oldLocation, newLocation);
 	}
 
-	public Map<String, String> getTilesetList(String rootDir, String[] maps) {
-		// try {
-		// Class.forName("org.sqlite.JDBC");
-		// } catch (Exception ex) {
-		// ex.printStackTrace();
-		// }
-
+	public Map<String, String> getDisplayableList(String rootDir, String[] maps) {
 		Map<String, String> fileToName = new HashMap<String, String>();
 		if (!rootDir.endsWith(File.separator)) {
 			rootDir += File.separator;

@@ -8,7 +8,7 @@ import javax.jmdns.NetworkTopologyListener;
 import javax.jmdns.ServiceInfo;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.sharing.server.TilesetSharingServiceAnnouncer;
+import net.niconomicon.tile.source.app.sharing.server.DisplayableSharingServiceAnnouncer;
 
 /**
  * 

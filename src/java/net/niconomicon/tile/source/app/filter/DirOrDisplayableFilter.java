@@ -13,7 +13,7 @@ import net.niconomicon.tile.source.app.Ref;
  * @author Nicolas Hoibian
  * 
  */
-public class DirOrTilesetFilter extends FileFilter {
+public class DirOrDisplayableFilter extends FileFilter {
 
 	/* (non-Javadoc)
 	 * @see javax.swing.filechooser.FileFilter#accept(java.io.File)
@@ -30,6 +30,6 @@ public class DirOrTilesetFilter extends FileFilter {
 	 */
 	@Override
 	public String getDescription() {
-		return "TileSet or directory";
+		return "Displayable or directory containing some";
 	}
 }

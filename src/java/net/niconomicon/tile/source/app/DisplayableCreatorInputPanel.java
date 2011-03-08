@@ -23,7 +23,7 @@ import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.filter.FileDropHandler;
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
-import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
+import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
 import net.niconomicon.tile.source.app.tiling.Inhibitor;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.tiling.TilingStatusReporter;
@@ -33,7 +33,7 @@ import net.niconomicon.tile.source.app.viewer.TilingPreview;
  * @author niko
  * 
  */
-public class TileCreatorPanel extends JLayeredPane implements TilingStatusReporter {
+public class DisplayableCreatorInputPanel extends JLayeredPane implements TilingStatusReporter {
 
 	public static final int TILE_SIZE = 192;
 	public static final String TILE_TYPE = "png";
@@ -53,7 +53,7 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 	ImageFileFilter imageFilter;
 	FileFilter archiveFilter;
 
-	TilesetSharingPanel sharingPanel;
+	DisplayableSharingPanel sharingPanel;
 	TilingPreview preview;
 
 	SQliteTileCreatorMultithreaded creator;
@@ -68,7 +68,7 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 	JLabel tilingStatus;
 	Inhibitor inhibitor;
 
-	public TileCreatorPanel() {
+	public DisplayableCreatorInputPanel() {
 		super();
 		creator = new SQliteTileCreatorMultithreaded();
 		// content = new JLayeredPane();// new BorderLayout());
@@ -214,7 +214,7 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 						long start = System.currentTimeMillis();
 						Communicator comm = new Communicator(preview);
 						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE,
-								TileCreatorPanel.this, TileCreatorApp.ThreadCount, true, inhibitor);
+								DisplayableCreatorInputPanel.this, DisplayableCreatorApp.ThreadCount, true, inhibitor);
 						long end = System.currentTimeMillis();
 						System.out
 								.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60) + "min");
@@ -225,30 +225,30 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 							setTilingStatus("Finishing to write the temporary file ...", 0.9999);
 							temp.delete();
 						} else {
-							setTilingStatus("Adding it to the list of shareable TileSets ...", 0.9999);
-							sharingPanel.addTileSetToShare(temp.getAbsolutePath(), Ref.fileSansDot(currentSourcePath));
+							setTilingStatus("Adding it to the list of shareable Displayables ...", 0.9999);
+							sharingPanel.addDisplayableToShare(temp.getAbsolutePath(), Ref.fileSansDot(currentSourcePath));
 						}
 					} catch (Exception ex) {
 						if (ex instanceof IIOException) {
 							JOptionPane
 									.showConfirmDialog(
-											TileCreatorPanel.this,
+											DisplayableCreatorInputPanel.this,
 											"<html><body>Could not open the image. <br/>Reason : <i>" + ex.getMessage() + "</i><br/>Possible workaround: <br/>Try saving the image as a PNG or a BMP in another program and then transform that file instead.</body></html>",
 											"Error opening the image", JOptionPane.DEFAULT_OPTION,
 											JOptionPane.ERROR_MESSAGE);
 						} else {
 							JOptionPane
 									.showConfirmDialog(
-											TileCreatorPanel.this,
-											"<html><body>Error creating the tile set  : <i>" + ex.getMessage() + "</i></body></html>",
-											"Error creating the tile set", JOptionPane.DEFAULT_OPTION,
+											DisplayableCreatorInputPanel.this,
+											"<html><body>Error creating the Displayable : <i>" + ex.getMessage() + "</i></body></html>",
+											"Error creating the Displayable", JOptionPane.DEFAULT_OPTION,
 											JOptionPane.ERROR_MESSAGE);
 						}
 						ex.printStackTrace();
 					}
 					resetTilingStatus();
-					TileCreatorPanel.this.remove(status);
-					TileCreatorPanel.this.add(input, new Integer(0));
+					DisplayableCreatorInputPanel.this.remove(status);
+					DisplayableCreatorInputPanel.this.add(input, new Integer(0));
 				}
 			};
 			t.start();
@@ -257,7 +257,7 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 		}
 	}
 
-	public void setSharingService(TilesetSharingPanel sharingPanel) {
+	public void setSharingService(DisplayableSharingPanel sharingPanel) {
 		this.sharingPanel = sharingPanel;
 	}
 
@@ -279,7 +279,7 @@ public class TileCreatorPanel extends JLayeredPane implements TilingStatusReport
 
 	public void setImageFileToTile(File imageFile) throws IOException {
 		// from.setText(imageFile.getCanonicalPath());
-		// from.setToolTipText("Image Tile set is going to be created from " + imageFile.getCanonicalPath());
+		// from.setToolTipText("Displayable is going to be created from " + imageFile.getCanonicalPath());
 		sourceChooser.setSelectedFile(imageFile);
 		preTile(imageFile.getCanonicalPath());
 

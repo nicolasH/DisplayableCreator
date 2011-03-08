@@ -17,26 +17,26 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetPanel.ZoomLevel;
+import net.niconomicon.tile.source.app.viewer.DisplayableView.ZoomLevel;
 
 /**
  * @author Nicolas Hoibian
  * 
  */
-public class ImageTileSetViewerFrame extends JPanel {
+public class DisplayableViewer extends JPanel {
 
-	ImageTileSetPanel tileViewer;
-	String tileSetLocation;
+	DisplayableView tileViewer;
+	String displayableLocation;
 	JFrame viewerFrame;
 	JLabel currentZoom;
 	JLabel infos;
 	JToolBar toolBar;
 
-	public static ImageTileSetViewerFrame createInstance() {
-		return new ImageTileSetViewerFrame(new ImageTileSetPanel());
+	public static DisplayableViewer createInstance() {
+		return new DisplayableViewer(new DisplayableView());
 	}
 
-	private ImageTileSetViewerFrame(ImageTileSetPanel tileViewer) {
+	private DisplayableViewer(DisplayableView tileViewer) {
 		super();
 		this.tileViewer = tileViewer;
 		init();
@@ -69,13 +69,13 @@ public class ImageTileSetViewerFrame extends JPanel {
 		this.add(toolBar, BorderLayout.NORTH);
 	}
 
-	public void setTileSet(String tileSetLocation) {
+	public void setDisplayable(String displayableLocation) {
 		System.out.println("setting tile set");
 		infos.setText(" Size : ? px * ? px. ");
 		currentZoom.setText("Current zoom : ");
-		this.tileSetLocation = tileSetLocation;
+		this.displayableLocation = displayableLocation;
 		try {
-			String title = SQliteTileCreatorMultithreaded.getTitle(tileSetLocation);
+			String title = SQliteTileCreatorMultithreaded.getTitle(displayableLocation);
 			viewerFrame.setTitle(title);
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -84,7 +84,7 @@ public class ImageTileSetViewerFrame extends JPanel {
 		viewerFrame.pack();
 		viewerFrame.setVisible(true);
 
-		Thread t = new Thread(new TileSourceSetter(tileSetLocation));
+		Thread t = new Thread(new TileSourceSetter(displayableLocation));
 		t.start();
 	}
 
@@ -92,11 +92,11 @@ public class ImageTileSetViewerFrame extends JPanel {
 		String tileSourceLocation;
 
 		public TileSourceSetter(String location) {
-			tileSetLocation = location;
+			displayableLocation = location;
 		}
 
 		public void run() {
-			tileViewer.setTileSource(tileSetLocation);
+			tileViewer.setTileSource(displayableLocation);
 			currentZoom.setText("Current zoom : " + (tileViewer.getMaxZ() - tileViewer.currentLevel.z) + " / " + tileViewer.getMaxZ());
 			ZoomLevel zl = tileViewer.getMaxInfo();
 			infos.setText(" Size : " + zl.width + " px * " + zl.height + " px. ");

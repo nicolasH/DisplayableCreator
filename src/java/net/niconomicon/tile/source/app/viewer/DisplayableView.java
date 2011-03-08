@@ -25,14 +25,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.TileCreatorApp;
+import net.niconomicon.tile.source.app.DisplayableCreatorApp;
 import net.niconomicon.tile.source.app.viewer.actions.TileLoader;
 
 /**
  * @author niko
  * 
  */
-public class ImageTileSetPanel extends JPanel {
+public class DisplayableView extends JPanel {
 	Connection mapDB;
 	public static final int tileSize = 192;
 
@@ -48,7 +48,7 @@ public class ImageTileSetPanel extends JPanel {
 
 	ZoomLevel currentLevel;
 
-	public ImageTileSetPanel() {
+	public DisplayableView() {
 		super();
 		cache = new ConcurrentHashMap<String, BufferedImage>();
 		try {
@@ -72,8 +72,8 @@ public class ImageTileSetPanel extends JPanel {
 			cache.clear();
 		}
 		levels = new ArrayList<ZoomLevel>();
-		ExecutorService exe = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount / 2);
-		ExecutorService eye = Executors.newFixedThreadPool(TileCreatorApp.ThreadCount);
+		ExecutorService exe = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount / 2);
+		ExecutorService eye = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount);
 		try {
 			System.out.println("trying to open the map : " + tileSourcePath);
 			mapDB = DriverManager.getConnection("jdbc:sqlite:" + tileSourcePath);
@@ -209,7 +209,7 @@ public class ImageTileSetPanel extends JPanel {
 			dir = "";
 			file = args[0];
 		}
-		ImageTileSetPanel mV = new ImageTileSetPanel();
+		DisplayableView mV = new DisplayableView();
 		mV.setTileSource(dir + file);
 		JScrollPane p = new JScrollPane(mV);
 		JFrame frame = new JFrame("Map Viewer");

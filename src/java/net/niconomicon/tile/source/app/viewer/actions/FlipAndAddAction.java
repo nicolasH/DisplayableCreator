@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.tiling.FastClipper;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetPanel;
+import net.niconomicon.tile.source.app.viewer.DisplayableView;
 
 /**
  * @author Nicolas Hoibian
@@ -46,7 +46,7 @@ public class FlipAndAddAction implements Runnable {
 			t = FastClipper.fastClip(t, new Rectangle(0, 0, t.getWidth(), t.getHeight()), true);
 			// System.out.println("key : " + key + " data " + t + " cache " + cache);
 			cache.put(Ref.getKey(x, y, z), t);
-			int tileSize = ImageTileSetPanel.tileSize;
+			int tileSize = DisplayableView.tileSize;
 			toRepaint.repaint((int) x * tileSize, (int) y * tileSize, t.getWidth(), t.getHeight());
 		} catch (Exception ex) {
 			ex.printStackTrace();

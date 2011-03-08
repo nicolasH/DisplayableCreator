@@ -160,7 +160,7 @@ public class SaveDialog extends JPanel {
 		fillForm(currentLocation);
 		boolean resOk = false;
 		while (!resOk) {
-			int result = JOptionPane.showOptionDialog(parent, this, "Save Image Tileset", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+			int result = JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 			if (JOptionPane.YES_OPTION == result) {
 				resOk = save(currentLocation);
 			} else {
@@ -240,7 +240,7 @@ public class SaveDialog extends JPanel {
 					path = dir;
 				}
 				where.setText(path);
-				where.setToolTipText("Going to save the image tileSet in :" + path);
+				where.setToolTipText("Going to save the Displayable in :" + path);
 				// setRootDir(path);
 				return;
 			}

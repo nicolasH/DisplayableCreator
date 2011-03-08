@@ -23,15 +23,15 @@ import javax.swing.text.StyledEditorKit.ForegroundAction;
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.SaveDialog;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
+import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
  * @author niko
  * 
  */
-public class CheckBoxTileSetTable extends JTable {
+public class CheckBoxTable extends JTable {
 
-	private final String[] columnsTitles = new String[] { "Shared", "Title", "Edit", "View", "Remove" };
+	private final String[] columnsTitles = new String[] { "Shared", "Title", "Edit" };// , "View" };
 
 	CustomTableModel model;
 	boolean sharingDefaut = true;
@@ -39,10 +39,12 @@ public class CheckBoxTileSetTable extends JTable {
 	public static final int colCheckBox = 0;
 	public static final int colTitle = 1;
 	public static final int colEdit = 2;
-	public static final int colView = 3;
-	public static final int colRemove = 4;
 
-	public CheckBoxTileSetTable(ImageTileSetViewerFrame viewer) {
+	// public static final int colView = 3;
+
+	// public static final int colRemove = 4;
+
+	public CheckBoxTable(DisplayableViewer viewer) {
 		super();
 		SaveDialog saveDialog = new SaveDialog();
 
@@ -55,17 +57,17 @@ public class CheckBoxTileSetTable extends JTable {
 		ColoredCellRenderer a = new ColoredCellRenderer();
 		this.getColumnModel().getColumn(colTitle).setCellRenderer(a);
 
-		ButtonForTable b = new ButtonForTable(viewer, "view");
-		this.getColumnModel().getColumn(colView).setCellEditor(b);
-		this.getColumnModel().getColumn(colView).setCellRenderer(b);
+//		ButtonForTable b = new ButtonForTable(viewer, "view");
+//		this.getColumnModel().getColumn(colView).setCellEditor(b);
+//		this.getColumnModel().getColumn(colView).setCellRenderer(b);
 
 		ButtonForTable b1 = new ButtonForTable(saveDialog, "edit");
 		this.getColumnModel().getColumn(colEdit).setCellEditor(b1);
 		this.getColumnModel().getColumn(colEdit).setCellRenderer(b1);
 
-		ButtonForTable b2 = new ButtonForTable("remove");
-		this.getColumnModel().getColumn(colRemove).setCellEditor(b2);
-		this.getColumnModel().getColumn(colRemove).setCellRenderer(b2);
+		// ButtonForTable b2 = new ButtonForTable("remove");
+		// this.getColumnModel().getColumn(colRemove).setCellEditor(b2);
+		// this.getColumnModel().getColumn(colRemove).setCellRenderer(b2);
 		// Add the scroll pane to this panel.
 		// this.add(scrollPane,BorderLayout.CENTER);
 	}
@@ -74,9 +76,9 @@ public class CheckBoxTileSetTable extends JTable {
 		model.addData(pathToTitle);
 	}
 
-	public void addTileSet(String location, String title) {
-		TileSetInfos i = new TileSetInfos(location, title);
-		model.addTileSet(i);
+	public void addDisplayable(String location, String title) {
+		DisplayableInfos i = new DisplayableInfos(location, title);
+		model.addDisplayable(i);
 	}
 
 	public Collection<String> getSelectedTilesSetFiles() {
@@ -84,34 +86,34 @@ public class CheckBoxTileSetTable extends JTable {
 	}
 
 	public void updateLocation(String oldLocation, String newLocation) {
-		model.updateTileSetLocation(oldLocation, newLocation);
+		model.updateDisplayableLocation(oldLocation, newLocation);
 	}
 
-	private class TileSetInfos implements Comparable<TileSetInfos> {
+	private class DisplayableInfos implements Comparable<DisplayableInfos> {
 		String title;
 		String location;
 		boolean shouldShare;
 
-		public TileSetInfos(String path, String title) {
+		public DisplayableInfos(String path, String title) {
 			this.title = title;
 			this.location = path;
 			this.shouldShare = true;
 		}
 
-		public int compareTo(TileSetInfos o) {
+		public int compareTo(DisplayableInfos o) {
 			return title.compareTo(o.title);
 		}
 	}
 
 	class CustomTableModel extends DefaultTableModel {
 
-		List<TileSetInfos> backstore;
+		List<DisplayableInfos> backstore;
 
 		public CustomTableModel() {
 			super();
 			// new Object[0][3], new String[] { "shared", "map name", "view" });
 			setColumnIdentifiers(columnsTitles);
-			backstore = new ArrayList<CheckBoxTileSetTable.TileSetInfos>();
+			backstore = new ArrayList<CheckBoxTable.DisplayableInfos>();
 		}
 
 		public int getColumnCount() {
@@ -124,7 +126,7 @@ public class CheckBoxTileSetTable extends JTable {
 		@Override
 		public Object getValueAt(int row, int column) {
 			if (null != backstore && column < columnsTitles.length && row < backstore.size()) {
-				TileSetInfos i = backstore.get(row);
+				DisplayableInfos i = backstore.get(row);
 				switch (column) {
 				case -1:
 					return i.location;
@@ -132,12 +134,12 @@ public class CheckBoxTileSetTable extends JTable {
 					return i.shouldShare;
 				case colTitle:
 					return i.title;
-				case colView:
-					return "view";
+					// case colView:
+					// return "view";
 				case colEdit:
 					return Ref.isInTmpLocation(i.location) ? "! save me !" : "edit";
-				case colRemove:
-					return "remove";
+					// case colRemove:
+					// return "remove";
 				}
 			}
 			return null;
@@ -145,7 +147,7 @@ public class CheckBoxTileSetTable extends JTable {
 
 		public boolean needsSaving(int row) {
 			if (null != backstore && row < backstore.size()) {
-				TileSetInfos i = backstore.get(row);
+				DisplayableInfos i = backstore.get(row);
 				return Ref.isInTmpLocation(i.location);
 			}
 			return false;
@@ -174,30 +176,30 @@ public class CheckBoxTileSetTable extends JTable {
 		}
 
 		public void addData(Map<String, String> pathToTitle) {
-			//backstore.clear();
+			// backstore.clear();
 			for (Entry<String, String> elem : pathToTitle.entrySet()) {
-				TileSetInfos info = new TileSetInfos(elem.getKey(), elem.getValue());
+				DisplayableInfos info = new DisplayableInfos(elem.getKey(), elem.getValue());
 				backstore.add(info);
 			}
 			Collections.sort(backstore);
 			fireTableDataChanged();
 		}
 
-		public void addTileSet(TileSetInfos infos) {
+		public void addDisplayable(DisplayableInfos infos) {
 			backstore.add(infos);
 			Collections.sort(backstore);
 			fireTableDataChanged();
 		}
 
-		public void removeTileSet(int row) {
+		public void removeDisplayable(int row) {
 			backstore.remove(row);
 			// Collections.sort(backstore);
 			fireTableDataChanged();
 		}
 
-		public void updateTileSetLocation(String oldLocation, String newlocation) {
-			TileSetInfos i;
-			for (TileSetInfos info : backstore) {
+		public void updateDisplayableLocation(String oldLocation, String newlocation) {
+			DisplayableInfos i;
+			for (DisplayableInfos info : backstore) {
 				if (info.location.contentEquals(oldLocation)) {
 					info.location = newlocation;;
 				}
@@ -207,7 +209,7 @@ public class CheckBoxTileSetTable extends JTable {
 
 		public Collection<String> getSelectedItems() {
 			List<String> l = new ArrayList<String>();
-			for (TileSetInfos info : backstore) {
+			for (DisplayableInfos info : backstore) {
 				if (info.shouldShare) {
 					l.add(info.location);
 				}
@@ -272,7 +274,7 @@ public class CheckBoxTileSetTable extends JTable {
 		mapLost.put("france.mdb", "Map of france");
 		mapLost.put("faso.mdb", "Map of burkina Faso");
 		mapLost.put("uk.mdb", "Map of United kingdom of england and northern ireland");
-		CheckBoxTileSetTable list = new CheckBoxTileSetTable(null);
+		CheckBoxTable list = new CheckBoxTable(null);
 		f.setContentPane(list);
 		f.pack();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -282,8 +284,9 @@ public class CheckBoxTileSetTable extends JTable {
 				Thread.sleep(3000);
 				list.addData(mapLost);
 				for (int i = 0; i < list.model.getRowCount(); i++) {
-					System.out.println("Value for i = " + i + " :: " + list.model.getValueAt(i, 0) + "::" + list.model
-							.getValueAt(i, 1) + " :: " + list.model.getValueAt(i, 2));
+					System.out
+							.println("Value for i = " + i + " :: " + list.model.getValueAt(i, 0) + "::" + list.model.getValueAt(i, 1) + " :: " + list.model
+									.getValueAt(i, 2));
 				}
 				break;
 			} catch (Exception ex) {

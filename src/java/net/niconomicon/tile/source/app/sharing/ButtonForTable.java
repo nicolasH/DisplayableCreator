@@ -15,7 +15,7 @@ import javax.swing.table.TableCellRenderer;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.SaveDialog;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
+import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
  * @author Nicolas Hoibian
@@ -23,7 +23,7 @@ import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
  */
 public class ButtonForTable extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, ActionListener {
 
-	ImageTileSetViewerFrame viewer = null;
+	DisplayableViewer viewer = null;
 	SaveDialog saveDialog = null;
 
 	String lastValue = null;
@@ -43,7 +43,7 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		saveDialog = save;
 	}
 
-	public ButtonForTable(ImageTileSetViewerFrame viewer, String text) {
+	public ButtonForTable(DisplayableViewer viewer, String text) {
 		this(text);
 		this.viewer = viewer;
 	}
@@ -88,7 +88,7 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		if (null != viewer) {
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
 			System.out.println("Saving : last row : " + lastRow + " file : " + fileLocation);
-			viewer.setTileSet(fileLocation);
+			viewer.setDisplayable(fileLocation);
 			return;
 		}
 		if (null != saveDialog) {
@@ -103,10 +103,9 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 			}
 			return;
 		}
-		((CheckBoxTileSetTable.CustomTableModel) lastTable.getModel()).removeTileSet(lastRow);
+		((CheckBoxTable.CustomTableModel) lastTable.getModel()).removeDisplayable(lastRow);
 
 		System.out.println("Action performed. Presumably for file " + fileLocation);
-		// setTileSet()
 	}
 
 }

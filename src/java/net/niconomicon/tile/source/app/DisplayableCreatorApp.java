@@ -10,34 +10,34 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import net.niconomicon.tile.source.app.sharing.TilesetSharingPanel;
+import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.ImageTileSetViewerFrame;
+import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
  * @author niko
  * 
  */
-public class TileCreatorApp {
+public class DisplayableCreatorApp {
 
-	TileCreatorPanel tileCreatorPanel;
-	TilesetSharingPanel mapSharingPanel;
-	ImageTileSetViewerFrame tileSetViewer;
+	DisplayableCreatorInputPanel tileCreatorPanel;
+	DisplayableSharingPanel mapSharingPanel;
+	DisplayableViewer displayableViewer;
 
 	public static int ThreadCount = 8;
 
-	public TileCreatorApp() {
+	public DisplayableCreatorApp() {
 		init();
 	}
 
 	private void init() {
-		JFrame f = new JFrame("Image Cutter App");
-		tileSetViewer = ImageTileSetViewerFrame.createInstance();
-		tileCreatorPanel = new TileCreatorPanel();
-		mapSharingPanel = new TilesetSharingPanel(tileSetViewer);
+		JFrame f = new JFrame("Displayable Creator");
+		displayableViewer = DisplayableViewer.createInstance();
+		tileCreatorPanel = new DisplayableCreatorInputPanel();
+		mapSharingPanel = new DisplayableSharingPanel(displayableViewer);
 
-		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder("Create Tile Set"));
-		mapSharingPanel.setBorder(BorderFactory.createTitledBorder("Share Tile Sets"));
+		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder("Create a Displayable"));
+		mapSharingPanel.setBorder(BorderFactory.createTitledBorder("Share Displayables"));
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(tileCreatorPanel, BorderLayout.NORTH);
 		p.add(mapSharingPanel, BorderLayout.CENTER);
@@ -55,6 +55,6 @@ public class TileCreatorApp {
 	}
 
 	public static void main(String[] args) {
-		TileCreatorApp app = new TileCreatorApp();
+		DisplayableCreatorApp app = new DisplayableCreatorApp();
 	}
 }

@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.niconomicon</groupId>
-	<artifactId>tile-creator-app</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
-	<url>http://www.niconomicon.net/tests/maven/net/niconomicon/TileCreatorApp</url>
+	<artifactId>displayable-creator</artifactId>
+	<version>0.1.0</version>
+	<url>http://www.niconomicon.net/tests/maven/net/niconomicon/DisplayableCreator</url>
 	<dependencies>
 		<!-- <dependency> <groupId>org.mortbay.jetty</groupId> <artifactId>jetty</artifactId> 
 			<version>6.1.25</version> </dependency> -->
@@ -68,7 +68,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>ImageToTiles</mainClass>
+							<mainClass>ImageToDisplayable</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -96,8 +96,8 @@
 					<libPath>lib</libPath>
 					<!-- JNLP generation -->
 					<jnlp>
-						<outputFile>tile-creator-app.jnlp</outputFile> <!-- defaults to launch.jnlp -->
-						<mainClass>net.niconomicon.tile.source.app.TileCreatorApp</mainClass>
+						<outputFile>DisplayableCreator.jnlp</outputFile> <!-- defaults to launch.jnlp -->
+						<mainClass>net.niconomicon.tile.source.app.DisplayableCreatorApp</mainClass>
 					</jnlp>
 					<sign>
 						<keystore>/Users/niko/keystore_jnlp/displayatorKS</keystore>
@@ -130,7 +130,7 @@
 					<!--install>false</install --> <!-- not yet supported -->
 					<verbose>false</verbose>
 					<!-- deploy command : -->
-					<!-- scp -r target/jnlp/* nhoibian_displayator@ssh.phx.nearlyfreespeech.net:/home/public/TileCreatorApp/jnlp/ -->
+					<!-- scp -r target/jnlp/* nhoibian_displayator@ssh.phx.nearlyfreespeech.net:/home/public/DisplayableCreator/ -->
 				</configuration>
 			</plugin>
 		</plugins>

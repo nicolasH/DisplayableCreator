@@ -23,14 +23,14 @@ import java.util.prefs.Preferences;
 public final class Ref {
 
 	public static int sharing_port = 8889;
-	public static final String storingDirectoryKey = "TileSetStoringDirectoryKey";
-	public static final String sharing_serviceName = "TiledImageSharingService";
+	public static final String storingDirectoryKey = "DisplayableStoringDirectoryKey";
+	public static final String sharing_serviceName = "DisplayableSharingService";
 
 	public static final String sharing_jsonRef = "json";
-	public static final String sharing_htmlRef = "TiledImages.html";
+	public static final String sharing_htmlRef = "displayables.html";
 
-	public static final String URI_jsonRef = "/TiledImages.json";
-	public static final String URI_htmlRef = "/TiledImages.html";
+	public static final String URI_jsonRef = "/displayables.json";
+	public static final String URI_htmlRef = "/displayables.html";
 
 	public static final String app_handle_item = "displayator-image:";
 	public static final String app_handle_list = "displayator-list:";
@@ -195,7 +195,7 @@ public final class Ref {
 	// /////////////////////////////////////
 	// /////////////////////////////////////
 	/**
-	 * Method to generate the tileset list.
+	 * Method to generate the Displayable's list.
 	 */
 	public static Map<String, String> generateIndexFromFileNames(Collection<String> maps) {
 		try {
@@ -213,7 +213,7 @@ public final class Ref {
 			try {
 				File f = new File(mapFileName);
 				long size = f.length();
-				System.out.println("trying to open the map :" + mapFileName + " To generate the json and html.");
+				System.out.println("trying to open the file :" + mapFileName + " To generate the json and html.");
 				Connection connection = DriverManager.getConnection("jdbc:sqlite:" + mapFileName);
 				connection.setReadOnly(true);
 				String[] descriptions = generateDescriptionsForConnection(connection, size, mapFileName, urlToFile);
@@ -238,7 +238,7 @@ public final class Ref {
 	}
 
 	/**
-	 * Generate the description for a given tileset, and add thumbnail and preview images to the list of available URLs
+	 * Generate the description for a given Displayable, and add thumbnail and preview images to the list of available URLs
 	 * 
 	 * @param mapDB
 	 * @param weight

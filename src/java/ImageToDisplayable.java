@@ -13,7 +13,7 @@ import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
  * @author niko
  * 
  */
-public class ImageToTiles {
+public class ImageToDisplayable {
 
 	public static void printOptions() {
 		System.out.println("usage : tests [nThreads] [nIters] [srcimage] [destFile]");

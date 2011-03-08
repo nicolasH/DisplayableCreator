@@ -58,12 +58,12 @@ public class JettyImageServerServlet extends HttpServlet {
 		System.out.println("URI : " + request);
 
 		if (request.compareTo("/" + Ref.sharing_jsonRef) == 0) {
-			System.out.println("should be returning the tilesetFeed [" + imaginaryMap.get(request).length() + "]");
+			System.out.println("should be returning the Displayable Feed [" + imaginaryMap.get(request).length() + "]");
 			try {
 				sendString(imaginaryMap.get(request), resp);
 				return;
 			} catch (Exception ex) {
-				resp.sendError(500, "The server encountered an error while trying to send the requested content for request [" + request + "]");
+				resp.sendError(500, "The server encountered an error while trying to send the content for request [" + request + "]");
 				return;
 			}
 		}

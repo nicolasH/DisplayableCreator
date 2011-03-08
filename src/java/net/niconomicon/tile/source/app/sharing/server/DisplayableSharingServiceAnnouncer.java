@@ -18,19 +18,19 @@ import net.niconomicon.tile.source.app.Ref;
  * @author niko
  * 
  */
-public class TilesetSharingServiceAnnouncer {
+public class DisplayableSharingServiceAnnouncer {
 
 	private int servicePort;
 	JmDNS jmdns;
-	static TilesetSharingServiceAnnouncer service;
+	static DisplayableSharingServiceAnnouncer service;
 	boolean shouldExit = false;
 	Boolean shouldUnregister = true;
 	Timer lhc;
 
-	public static TilesetSharingServiceAnnouncer getInstance() {
+	public static DisplayableSharingServiceAnnouncer getInstance() {
 		synchronized (Ref.sharing_serviceName) {
 			if (service == null) {
-				service = new TilesetSharingServiceAnnouncer();
+				service = new DisplayableSharingServiceAnnouncer();
 			}
 		}
 		return service;
@@ -75,7 +75,7 @@ public class TilesetSharingServiceAnnouncer {
 		}
 	}
 
-	private TilesetSharingServiceAnnouncer() {
+	private DisplayableSharingServiceAnnouncer() {
 		try {
 			jmdns = JmDNS.create();
 			lhc = new Timer();
