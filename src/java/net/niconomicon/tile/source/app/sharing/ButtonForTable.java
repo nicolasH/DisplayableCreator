@@ -103,7 +103,7 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 			}
 			return;
 		}
-		((CheckBoxTable.CustomTableModel) lastTable.getModel()).removeDisplayable(lastRow);
+		((CheckBoxTable.CustomTableModel) lastTable.getModel()).removeDisplayable(new int[] { lastRow });
 
 		System.out.println("Action performed. Presumably for file " + fileLocation);
 	}

@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Map.Entry;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.StyledEditorKit.ForegroundAction;
@@ -31,7 +33,7 @@ import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
  */
 public class CheckBoxTable extends JTable {
 
-	private final String[] columnsTitles = new String[] { "Shared", "Title", "Edit" };// , "View" };
+	private final String[] columnsTitles = new String[] { "Shared", "Title", "Edit", "View" };
 
 	CustomTableModel model;
 	boolean sharingDefaut = true;
@@ -40,8 +42,11 @@ public class CheckBoxTable extends JTable {
 	public static final int colTitle = 1;
 	public static final int colEdit = 2;
 
-	// public static final int colView = 3;
+	 public static final int colView = 3;
 
+	 public static final int colWidthShare = 30;
+	 public static final int colWidthEdit = 50;
+	 public static final int colWidthView = 40;
 	// public static final int colRemove = 4;
 
 	public CheckBoxTable(DisplayableViewer viewer) {
@@ -49,17 +54,29 @@ public class CheckBoxTable extends JTable {
 		SaveDialog saveDialog = new SaveDialog();
 
 		model = new CustomTableModel();
-		this.setModel(model);
-		this.getColumnModel().getColumn(colCheckBox).setPreferredWidth(30);
-		this.getColumnModel().getColumn(colTitle).setPreferredWidth(200);
-		this.setMinimumSize(new Dimension(330, 100));
 
+		this.setModel(model);
+		this.getColumnModel().getColumn(colCheckBox).setPreferredWidth(colWidthShare);
+		this.getColumnModel().getColumn(colCheckBox).setMinWidth(colWidthShare);
+		this.getColumnModel().getColumn(colCheckBox).setMaxWidth(colWidthShare);
+		
+		this.getColumnModel().getColumn(colTitle).setPreferredWidth(200);
+
+		this.getColumnModel().getColumn(colEdit).setPreferredWidth(colWidthEdit);
+		this.getColumnModel().getColumn(colEdit).setMinWidth(colWidthEdit);
+		this.getColumnModel().getColumn(colEdit).setMaxWidth(colWidthEdit);
+		
+		this.getColumnModel().getColumn(colView).setPreferredWidth(colWidthView);
+		this.getColumnModel().getColumn(colView).setMinWidth(colWidthView);
+		this.getColumnModel().getColumn(colView).setMaxWidth(colWidthView);
+		
+		this.setMinimumSize(new Dimension(330, 100));
 		ColoredCellRenderer a = new ColoredCellRenderer();
 		this.getColumnModel().getColumn(colTitle).setCellRenderer(a);
 
-//		ButtonForTable b = new ButtonForTable(viewer, "view");
-//		this.getColumnModel().getColumn(colView).setCellEditor(b);
-//		this.getColumnModel().getColumn(colView).setCellRenderer(b);
+		ButtonForTable b = new ButtonForTable(viewer, "view");
+		this.getColumnModel().getColumn(colView).setCellEditor(b);
+		this.getColumnModel().getColumn(colView).setCellRenderer(b);
 
 		ButtonForTable b1 = new ButtonForTable(saveDialog, "edit");
 		this.getColumnModel().getColumn(colEdit).setCellEditor(b1);
@@ -70,6 +87,7 @@ public class CheckBoxTable extends JTable {
 		// this.getColumnModel().getColumn(colRemove).setCellRenderer(b2);
 		// Add the scroll pane to this panel.
 		// this.add(scrollPane,BorderLayout.CENTER);
+
 	}
 
 	public void addData(Map<String, String> pathToTitle) {
@@ -111,7 +129,6 @@ public class CheckBoxTable extends JTable {
 
 		public CustomTableModel() {
 			super();
-			// new Object[0][3], new String[] { "shared", "map name", "view" });
 			setColumnIdentifiers(columnsTitles);
 			backstore = new ArrayList<CheckBoxTable.DisplayableInfos>();
 		}
@@ -134,10 +151,10 @@ public class CheckBoxTable extends JTable {
 					return i.shouldShare;
 				case colTitle:
 					return i.title;
-					// case colView:
-					// return "view";
+				case colView:
+					return "view";
 				case colEdit:
-					return Ref.isInTmpLocation(i.location) ? "! save me !" : "edit";
+					return Ref.isInTmpLocation(i.location) ? "!save!" : "edit";
 					// case colRemove:
 					// return "remove";
 				}
@@ -191,8 +208,12 @@ public class CheckBoxTable extends JTable {
 			fireTableDataChanged();
 		}
 
-		public void removeDisplayable(int row) {
-			backstore.remove(row);
+		public void removeDisplayable(int[] rows) {
+			Arrays.sort(rows);
+			for (int i = rows.length - 1; i >= 0; i--) {
+				int k = rows[i];
+				System.out.println("Removed the selection : " + backstore.remove(k));
+			}
 			// Collections.sort(backstore);
 			fireTableDataChanged();
 		}

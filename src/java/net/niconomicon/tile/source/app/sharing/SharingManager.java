@@ -54,13 +54,13 @@ public class SharingManager {
 	public void startSharing() throws Exception {
 		System.out.println("supposedly starting to share on port :" + port);
 		
-		sharingAnnouncer.startSharing(port);
 		if (null != server && server.isRunning()) {
 			server.stop();
 		}
 		server = new Server(port);
 		server.setHandler(context);
 		server.start();
+		sharingAnnouncer.startSharing(port);
 	}
 
 	public void stopSharing() throws Exception {

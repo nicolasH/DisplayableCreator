@@ -131,7 +131,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		mapList = new CheckBoxTable(viewer);
 		timer = new Timer();
 		mapList.getModel().addTableModelListener(this);
-		mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		mapList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		// mapList.getSelectionModel().addListSelectionListener(this);
 		this.setLayout(new BorderLayout());
 		this.add(createDirSelectionPanel(), BorderLayout.NORTH);
@@ -139,9 +139,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		// //////////////////////////////////////////
 		this.add(new JScrollPane(mapList), BorderLayout.CENTER);
 		JPanel options = new JPanel(new GridLayout(0, 1));
-		JPanel actionPanel = new JPanel(new GridLayout(0, 2));
-//		actionPanel.add(new JLabel("Remove selected Displayable from the list"));
-		JButton removeButton = new JButton("Remove selected Displayable");
+		JButton removeButton = new JButton("Remove selected Displayable(s)");
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int item = mapList.getSelectedRow();
@@ -150,29 +148,11 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				((CheckBoxTable.CustomTableModel) mapList.getModel()).removeDisplayable(item);
+				((CheckBoxTable.CustomTableModel) mapList.getModel()).removeDisplayable(mapList.getSelectedRows());
 			}
 		});
-		actionPanel.add(removeButton);
-		JButton viewButton = new JButton("View selected Displayable");
-		viewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int item = mapList.getSelectedRow();
-				if (item < 0) {
-					JOptionPane.showMessageDialog(DisplayableSharingPanel.this, "Please select a displayable", "No Displayable selected",
-							JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				if (null != viewer) {
-					String fileLocation = (String) mapList.getValueAt(item, -1);
-					System.out.println("Viewing : last row : " + item + " file : " + fileLocation);
-					viewer.setDisplayable(fileLocation);
-					return;
-				}
-			}
-		});
-		actionPanel.add(viewButton);
-		options.add(actionPanel);
+		
+		options.add(removeButton);
 
 		// //////////////////////////////////////////
 		// port number
