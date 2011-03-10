@@ -106,7 +106,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	public JPanel createDirSelectionPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
-		p.add(new JLabel("Import Displayables : "), BorderLayout.WEST);
+		p.add(new JLabel("Locate Displayables for sharing : "), BorderLayout.WEST);
 		JButton b = new JButton("Choose Displayables");
 		b.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -235,7 +235,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		Map<String, String> fileToTitle = new HashMap<String, String>();
 		for (String path : dbFiles) {
 			try {
-				System.out.println("Going to get the title from " + path);
+//				System.out.println("Going to get the title from " + path);
 				fileToTitle.put(path, SQliteTileCreatorMultithreaded.getTitle(path));
 			} catch (SQLException ex) {
 				ex.printStackTrace();

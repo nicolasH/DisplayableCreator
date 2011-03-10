@@ -17,10 +17,8 @@ import java.util.Map.Entry;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.StyledEditorKit.ForegroundAction;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.SaveDialog;
@@ -33,7 +31,7 @@ import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
  */
 public class CheckBoxTable extends JTable {
 
-	private final String[] columnsTitles = new String[] { "Shared", "Title", "Edit", "View" };
+	private final String[] columnsTitles = new String[] { "Share", "Title", "Edit", "View" };
 
 	CustomTableModel model;
 	boolean sharingDefaut = true;
@@ -44,7 +42,7 @@ public class CheckBoxTable extends JTable {
 
 	 public static final int colView = 3;
 
-	 public static final int colWidthShare = 30;
+	 public static final int colWidthShare = 40;
 	 public static final int colWidthEdit = 50;
 	 public static final int colWidthView = 40;
 	// public static final int colRemove = 4;
