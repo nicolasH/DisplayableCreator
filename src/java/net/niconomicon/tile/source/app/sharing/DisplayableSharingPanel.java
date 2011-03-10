@@ -53,9 +53,11 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
+	JButton shareButton;
 	CheckBoxTable mapList;
 	JSpinner portNumber;
 	JLabel sharingStatus;
+	
 	String rootDir = "/Users/niko/Sites/testApp/mapRepository";
 
 	DisplayableViewer viewer;
@@ -151,7 +153,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 				((CheckBoxTable.CustomTableModel) mapList.getModel()).removeDisplayable(mapList.getSelectedRows());
 			}
 		});
-		
+
 		options.add(removeButton);
 
 		// //////////////////////////////////////////
@@ -164,39 +166,15 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		// start sharing
 		sharingStatus = new JLabel("Sharing status : [not running]");
 		options.add(sharingStatus);
-		JButton shareButton = new JButton("Start sharing");
-		ActionListener sharingActivator = new ActionListener() {
+		shareButton = new JButton("Start sharing");
+		shareButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentlySharing = !currentlySharing;
-				JButton b = (JButton) e.getSource();
-				try {
-					localaddr = InetAddress.getLocalHost();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				if (currentlySharing) {
-					sharingStatus.setText("Sharing status : [starting ...]");
-					sharingStatus.revalidate();
-					if (startSharing()) {
-						sharingStatus.setText("Sharing status : [running]");
-						setTooltipHostname(localaddr.getHostName());
-						b.setText("Stop sharing");
-						return;
-					}
-				}
-				// stopping sharing or start sharing failed.
-				sharingStatus.setText("Sharing status : [stopping ...]");
-				sharingStatus.revalidate();
-				stopSharing();
-				sharingStatus.setToolTipText("");
-				sharingStatus.setText("Sharing status : [not running]");
-				b.setText("Start sharing");
+				switchSharing(true);
 			}
-		};
+		});
 		long delta = 10000;
 		timer.scheduleAtFixedRate(new LocalHostChecker(), delta, delta);
-		shareButton.addActionListener(sharingActivator);
-		sharingActivator.actionPerformed(new ActionEvent(shareButton, ActionEvent.ACTION_PERFORMED, "activate"));
+		switchSharing(false);
 		options.add(shareButton);
 		shareButton.getActionListeners();
 		this.add(options, BorderLayout.SOUTH);
@@ -235,7 +213,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		Map<String, String> fileToTitle = new HashMap<String, String>();
 		for (String path : dbFiles) {
 			try {
-//				System.out.println("Going to get the title from " + path);
+				// System.out.println("Going to get the title from " + path);
 				fileToTitle.put(path, SQliteTileCreatorMultithreaded.getTitle(path));
 			} catch (SQLException ex) {
 				ex.printStackTrace();
@@ -247,7 +225,33 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		}
 	}
 
-	public boolean startSharing() {
+	public void switchSharing(boolean shouldPopup) {
+		currentlySharing = !currentlySharing;
+		try {
+			localaddr = InetAddress.getLocalHost();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		if (currentlySharing) {
+			sharingStatus.setText("Sharing status : [starting ...]");
+			sharingStatus.revalidate();
+			if (startSharing(shouldPopup)) {
+				sharingStatus.setText("Sharing status : [running]");
+				setTooltipHostname(localaddr.getHostName());
+				shareButton.setText("Stop sharing");
+				return;
+			}
+		}
+		// stopping sharing or start sharing failed.
+		sharingStatus.setText("Sharing status : [stopping ...]");
+		sharingStatus.revalidate();
+		stopSharing();
+		sharingStatus.setToolTipText("");
+		sharingStatus.setText("Sharing status : [not running]");
+		shareButton.setText("Start sharing");
+	}
+
+	public boolean startSharing(boolean shouldPopup) {
 		// HashSet<String> sharedDB = new HashSet<String>();
 		Collection<String> sharedMaps = mapList.getSelectedTilesSetFiles();
 		System.out.println("should start sharing the maps");
@@ -264,11 +268,13 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 				System.out.println("ex1 : ");
 				ex1.printStackTrace();
 			}
-			JOptionPane
-					.showConfirmDialog(
-							this,
-							"<html><body>Error while starting the sharing component on port [" + port + "]: <br/><i>" + ex.getMessage() + "</i></body></html>",
-							"Error creating startng the sharing component", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+			if (shouldPopup) {
+				JOptionPane
+						.showConfirmDialog(
+								this,
+								"<html><body>Error while starting the sharing component on port [" + port + "]: <br/><i>" + ex.getMessage() + "</i></body></html>",
+								"Error creating startng the sharing component", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+			}
 			ex.printStackTrace();
 			return false;
 		}
