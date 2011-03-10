@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
@@ -31,6 +32,11 @@ public class DisplayableViewer extends JPanel {
 	JLabel currentZoom;
 	JLabel infos;
 	JToolBar toolBar;
+	JLabel loadingLabel;
+	JProgressBar progress;
+
+	JButton zP;
+	JButton zM;
 
 	public static DisplayableViewer createInstance() {
 		return new DisplayableViewer(new DisplayableView());
@@ -58,14 +64,19 @@ public class DisplayableViewer extends JPanel {
 		currentZoom = new JLabel();
 		infos = new JLabel();
 
-		JButton zP = new JButton("+");
+		loadingLabel = new JLabel();
+		progress = new JProgressBar();
+
+		zP = new JButton("+");
 		zP.addActionListener(new ZoomAction());
 		toolBar.add(zP);
-		JButton zM = new JButton("-");
+		zM = new JButton("-");
 		zM.addActionListener(new ZoomAction());
 		toolBar.add(zM);
 		toolBar.add(infos);
 		toolBar.add(currentZoom);
+		toolBar.add(loadingLabel);
+		toolBar.add(progress);
 		this.add(toolBar, BorderLayout.NORTH);
 	}
 
@@ -96,7 +107,9 @@ public class DisplayableViewer extends JPanel {
 		}
 
 		public void run() {
-			tileViewer.setTileSource(displayableLocation);
+			loadingLabel.setText("Loading displayable ...");
+			progress.setIndeterminate(true);
+			tileViewer.setTileSource(displayableLocation, loadingLabel);
 			currentZoom.setText("Current zoom : " + (tileViewer.getMaxZ() - tileViewer.currentLevel.z) + " / " + tileViewer.getMaxZ());
 			ZoomLevel zl = tileViewer.getMaxInfo();
 			infos.setText(" Size : " + zl.width + " px * " + zl.height + " px. ");
@@ -104,6 +117,7 @@ public class DisplayableViewer extends JPanel {
 			revalidate();
 			viewerFrame.pack();
 			viewerFrame.setVisible(true);
+			progress.setIndeterminate(false);
 
 		}
 	}

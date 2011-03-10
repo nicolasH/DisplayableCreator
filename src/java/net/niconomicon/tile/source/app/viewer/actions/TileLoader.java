@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 
@@ -37,13 +36,14 @@ public class TileLoader implements Runnable {
 	public void run() {
 		try {
 			Statement statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("select * from tiles_0_0 where z=" + z + " and y=" + startY);
+			ResultSet rs = statement.executeQuery("select * from tiles_0_0 where z=" + z);// and y=" + startY);
 			while (rs.next()) {
 				long x = rs.getLong(1);
 				long y = rs.getLong(2);
 				long z = rs.getLong(3);
 				// System.out.println("found a tile for " + x + " " + y + " " + z);
 				byte[] data = rs.getBytes(4);
+				// cache.put(Ref.getKey(x, y, z), data);
 				exe.execute(new FlipAndAddAction(cache, data, toRefresh, x, y, z));
 			}
 

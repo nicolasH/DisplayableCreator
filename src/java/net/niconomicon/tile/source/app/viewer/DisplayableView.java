@@ -21,11 +21,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.DisplayableCreatorApp;
+import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.viewer.actions.TileLoader;
 
 /**
@@ -66,14 +67,12 @@ public class DisplayableView extends JPanel {
 		int z;
 	}
 
-	public void setTileSource(String tileSourcePath) {
+	public void setTileSource(String tileSourcePath, JLabel loadingLabel) {
 		// this.getParent().add(toolBar);
 		if (cache != null) {
 			cache.clear();
 		}
 		levels = new ArrayList<ZoomLevel>();
-		ExecutorService exe = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount / 2);
-		ExecutorService eye = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount);
 		try {
 			System.out.println("trying to open the map : " + tileSourcePath);
 			mapDB = DriverManager.getConnection("jdbc:sqlite:" + tileSourcePath);
@@ -85,7 +84,6 @@ public class DisplayableView extends JPanel {
 			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name);
 
 			long stop, start;
-			start = System.currentTimeMillis();
 			while (rs.next()) {
 				ZoomLevel zl = new ZoomLevel();
 				zl.width = rs.getLong("width");
@@ -100,19 +98,31 @@ public class DisplayableView extends JPanel {
 			resetSizeEtc(currentLevel);
 
 			for (int z = currentLevel.z; z >= 0; z--) {
+				if (null != loadingLabel) {
+					loadingLabel.setText("Loading level " + ((currentLevel.z - z)+1) + "/" + levels.size());
+				}
+				start = System.currentTimeMillis();
+				ExecutorService exe = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount / 2);
+				ExecutorService eye = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount);
 				ZoomLevel zl = levels.get(z);
 				System.out.println("-- zl : " + zl.z);
 				for (int i = 0; i < zl.tiles_y; i++) {
 					TileLoader loader = new TileLoader(mapDB, i, zl.z, cache, this, exe);
 					eye.execute(loader);
 				}
+				eye.shutdown();
+				boolean normalTY = eye.awaitTermination(5, TimeUnit.MINUTES);
+				exe.shutdown();
+				boolean normalTX = eye.awaitTermination(5, TimeUnit.MINUTES);
+				stop = System.currentTimeMillis();
+				System.out.println("Caching level" + z + " took " + (stop - start) + " ms normal x " + normalTX + " normal y " + normalTY);
 			}
+			/*
 			eye.shutdown();
 			boolean normalTY = eye.awaitTermination(5, TimeUnit.MINUTES);
 			exe.shutdown();
 			boolean normalTX = eye.awaitTermination(5, TimeUnit.MINUTES);
-			stop = System.currentTimeMillis();
-			System.out.println("Caching took " + (stop - start) + " ms normal x " + normalTX + " normal y " + normalTY);
+			*/
 
 			mapDB.close();
 
@@ -168,24 +178,38 @@ public class DisplayableView extends JPanel {
 
 	}
 
-	public void incrZ() {
+	/**
+	 * 
+	 * @return true if reached the max Zoom;
+	 */
+	public boolean incrZ() {
 		if (currentLevel.z > 0) {
 			ZoomLevel zl = levels.get(currentLevel.z - 1);
 			currentLevel = zl;
 			resetSizeEtc(zl);
+			if (zl.z == 0) { return true; }
 		} else {
 			System.out.println("Already at max Zoom");
+			return true;
 		}
+		return false;
 	}
 
-	public void decrZ() {
+	/**
+	 * 
+	 * @return true if reached the min zoom
+	 */
+	public boolean decrZ() {
 		if (currentLevel.z < levels.size() - 1) {
 			ZoomLevel zl = levels.get(currentLevel.z + 1);
 			currentLevel = zl;
 			resetSizeEtc(zl);
+			if (zl.z == levels.size() - 1) { return true; }
 		} else {
 			System.out.println("Already at min Zoom");
+			return true;
 		}
+		return false;
 	}
 
 	public int getMaxZ() {
@@ -210,7 +234,7 @@ public class DisplayableView extends JPanel {
 			file = args[0];
 		}
 		DisplayableView mV = new DisplayableView();
-		mV.setTileSource(dir + file);
+		mV.setTileSource(dir + file, null);
 		JScrollPane p = new JScrollPane(mV);
 		JFrame frame = new JFrame("Map Viewer");
 		frame.setContentPane(p);
