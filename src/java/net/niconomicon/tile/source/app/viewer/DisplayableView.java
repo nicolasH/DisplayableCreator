@@ -51,7 +51,7 @@ public class DisplayableView extends JPanel {
 
 	public DisplayableView() {
 		super();
-		cache = new ConcurrentHashMap<String, BufferedImage>();
+
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (Exception ex) {
@@ -84,6 +84,7 @@ public class DisplayableView extends JPanel {
 			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name);
 
 			long stop, start;
+			int totalTiles = 0;
 			while (rs.next()) {
 				ZoomLevel zl = new ZoomLevel();
 				zl.width = rs.getLong("width");
@@ -91,15 +92,18 @@ public class DisplayableView extends JPanel {
 				zl.tiles_x = rs.getLong("tiles_x");
 				zl.tiles_y = rs.getLong("tiles_y");
 				zl.z = rs.getInt("zoom");
+				System.out.println("Tiles for level " + zl.z + " : " + zl.tiles_x * zl.tiles_y);
+				totalTiles += zl.tiles_x * zl.tiles_y;
 				levels.add(zl.z, zl);
 			}
 			currentLevel = levels.get(levels.size() - 1);
-			System.out.println("Setting current level to " + currentLevel.z);
+			System.out.println("Setting current level to " + currentLevel.z + " total tiles : " + totalTiles);
+			cache = new ConcurrentHashMap<String, BufferedImage>(totalTiles, 1.0f);
 			resetSizeEtc(currentLevel);
 
 			for (int z = currentLevel.z; z >= 0; z--) {
 				if (null != loadingLabel) {
-					loadingLabel.setText("Loading level " + ((currentLevel.z - z)+1) + "/" + levels.size());
+					loadingLabel.setText("Loading level " + ((currentLevel.z - z) + 1) + "/" + levels.size());
 				}
 				start = System.currentTimeMillis();
 				ExecutorService exe = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount / 2);

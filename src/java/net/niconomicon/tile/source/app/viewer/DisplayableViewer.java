@@ -109,15 +109,19 @@ public class DisplayableViewer extends JPanel {
 		public void run() {
 			loadingLabel.setText("Loading displayable ...");
 			progress.setIndeterminate(true);
+			currentZoom.setText("Current zoom : ... ");
 			tileViewer.setTileSource(displayableLocation, loadingLabel);
 			currentZoom.setText("Current zoom : " + (tileViewer.getMaxZ() - tileViewer.currentLevel.z) + " / " + tileViewer.getMaxZ());
 			ZoomLevel zl = tileViewer.getMaxInfo();
-			infos.setText(" Size : " + zl.width + " px * " + zl.height + " px. ");
+			infos.setText("Maximum Size : " + zl.width + " px * " + zl.height + " px. ");
 			tileViewer.revalidate();
 			revalidate();
 			viewerFrame.pack();
 			viewerFrame.setVisible(true);
+
 			progress.setIndeterminate(false);
+			progress.setVisible(false);
+			loadingLabel.setVisible(false);
 
 		}
 	}
