@@ -129,14 +129,27 @@ public class DisplayableViewer extends JPanel {
 	public class ZoomAction implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
+			boolean reached;
 			System.out.println("Action command : [" + e.getActionCommand() + "]");
 			if (e.getActionCommand().equals("+")) {
 				System.out.println("zoom +");
-				tileViewer.incrZ();
+				reached = tileViewer.incrZ();
+				if (reached) {
+					zP.setEnabled(false);
+				} else {
+					zP.setEnabled(true);
+				}
+				zM.setEnabled(true);
 			}
 			if (e.getActionCommand().equals("-")) {
 				System.out.println("zoom -");
-				tileViewer.decrZ();
+				reached = tileViewer.decrZ();
+				if (reached) {
+					zM.setEnabled(false);
+				} else {
+					zM.setEnabled(true);
+				}
+				zP.setEnabled(true);
 			}
 			currentZoom.setText("Current zoom : " + (tileViewer.getMaxZ() - tileViewer.currentLevel.z) + "/" + tileViewer.getMaxZ());
 		}
