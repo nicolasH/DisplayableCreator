@@ -9,45 +9,26 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
-import net.niconomicon.tile.source.app.DisplayableCreatorApp;
-import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.viewer.actions.TileLoader;
+import net.niconomicon.tile.source.app.viewer.trivia.ZoomLevel;
 
 /**
  * @author niko
  * 
  */
 public class DisplayableView extends JPanel {
+
 	Connection mapDB;
 	public static final int tileSize = 192;
 
-	public static final String getTilesInRange = "select * from tiles_0_0 where x >= ? and x <= ? and y >=? and y <=? and z=?";
-
-	PreparedStatement tilesInRange;
-
-	public ConcurrentHashMap<String, BufferedImage> cache;
-	// int maxX = 0;
-	// int maxY = 0;
-	// int zoom = 0;
 	List<ZoomLevel> levels;
 
 	ZoomLevel currentLevel;
+
+	DisplayableSource displayableSource;
 
 	public DisplayableView() {
 		super();
@@ -59,83 +40,8 @@ public class DisplayableView extends JPanel {
 		}
 	}
 
-	public class ZoomLevel {
-		long width;
-		long height;
-		long tiles_x;
-		long tiles_y;
-		int z;
-	}
-
-	public void setTileSource(String tileSourcePath, JLabel loadingLabel) {
-		// this.getParent().add(toolBar);
-		if (cache != null) {
-			cache.clear();
-		}
-		levels = new ArrayList<ZoomLevel>();
-		try {
-			System.out.println("trying to open the map : " + tileSourcePath);
-			mapDB = DriverManager.getConnection("jdbc:sqlite:" + tileSourcePath);
-			mapDB.setReadOnly(true);
-
-			Statement statement = mapDB.createStatement();
-			// zoom = 0;
-			int maxZoom = 0;
-			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name);
-
-			long stop, start;
-			int totalTiles = 0;
-			while (rs.next()) {
-				ZoomLevel zl = new ZoomLevel();
-				zl.width = rs.getLong("width");
-				zl.height = rs.getLong("height");
-				zl.tiles_x = rs.getLong("tiles_x");
-				zl.tiles_y = rs.getLong("tiles_y");
-				zl.z = rs.getInt("zoom");
-				System.out.println("Tiles for level " + zl.z + " : " + zl.tiles_x * zl.tiles_y);
-				totalTiles += zl.tiles_x * zl.tiles_y;
-				levels.add(zl.z, zl);
-			}
-			currentLevel = levels.get(levels.size() - 1);
-			System.out.println("Setting current level to " + currentLevel.z + " total tiles : " + totalTiles);
-			cache = new ConcurrentHashMap<String, BufferedImage>(totalTiles, 1.0f);
-			resetSizeEtc(currentLevel);
-
-			for (int z = currentLevel.z; z >= 0; z--) {
-				if (null != loadingLabel) {
-					loadingLabel.setText("Loading level " + ((currentLevel.z - z) + 1) + "/" + levels.size());
-				}
-				start = System.currentTimeMillis();
-				ExecutorService exe = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount / 2);
-				ExecutorService eye = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount);
-				ZoomLevel zl = levels.get(z);
-				System.out.println("-- zl : " + zl.z);
-				for (int i = 0; i < zl.tiles_y; i++) {
-					TileLoader loader = new TileLoader(mapDB, i, zl.z, cache, this, exe);
-					eye.execute(loader);
-				}
-				eye.shutdown();
-				boolean normalTY = eye.awaitTermination(5, TimeUnit.MINUTES);
-				exe.shutdown();
-				boolean normalTX = eye.awaitTermination(5, TimeUnit.MINUTES);
-				stop = System.currentTimeMillis();
-				System.out.println("Caching level" + z + " took " + (stop - start) + " ms normal x " + normalTX + " normal y " + normalTY);
-			}
-			/*
-			eye.shutdown();
-			boolean normalTY = eye.awaitTermination(5, TimeUnit.MINUTES);
-			exe.shutdown();
-			boolean normalTX = eye.awaitTermination(5, TimeUnit.MINUTES);
-			*/
-
-			mapDB.close();
-
-			System.out.println("fully cached !");
-			resetSizeEtc(currentLevel);
-		} catch (Exception ex) {
-			System.err.println("ex for map : " + tileSourcePath);
-			ex.printStackTrace();
-		}
+	public void setDisplayable(DisplayableSource source) {
+		displayableSource = source;
 	}
 
 	@Override
@@ -158,7 +64,7 @@ public class DisplayableView extends JPanel {
 			macYb = tileYb;
 			for (int x = tileXa; x < tileXb; x++) {
 				for (int y = macYa; y < macYb + 1; y++) {
-					BufferedImage tile = cache.get(x + "_" + y + "_" + currentLevel.z);
+					BufferedImage tile = displayableSource.getImage(x, y, currentLevel.z);
 					if (null != tile) {
 						g2.drawImage(tile, x * tileSize, (y) * tileSize, null);
 					}
@@ -199,6 +105,12 @@ public class DisplayableView extends JPanel {
 		return false;
 	}
 
+	public void repaintTile(long x, long y, long z) {
+		if (currentLevel.z == z) {
+			repaint((int) x * tileSize, (int) y * tileSize, tileSize, tileSize);
+		}
+	}
+
 	/**
 	 * 
 	 * @return true if reached the min zoom
@@ -222,31 +134,6 @@ public class DisplayableView extends JPanel {
 
 	public ZoomLevel getMaxInfo() {
 		return levels.get(0);
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		String dir = "";// /Users/niko/tileSources/mapRepository/
-		String file = "test.mdb";
-		dir = "/Users/niko/tileSources/serving/";
-		file = "busRomaCenter.mdb";
-		if (args.length == 1) {
-			dir = "";
-			file = args[0];
-		}
-		DisplayableView mV = new DisplayableView();
-		mV.setTileSource(dir + file, null);
-		JScrollPane p = new JScrollPane(mV);
-		JFrame frame = new JFrame("Map Viewer");
-		frame.setContentPane(p);
-		// frame.setContentPane(new JPanel(new BorderLayout()));
-		// frame.getContentPane().add(mV, BorderLayout.CENTER);
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 }

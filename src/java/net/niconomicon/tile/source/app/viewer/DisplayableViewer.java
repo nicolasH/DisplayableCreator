@@ -18,7 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.DisplayableView.ZoomLevel;
+import net.niconomicon.tile.source.app.viewer.trivia.ZoomLevel;
 
 /**
  * @author Nicolas Hoibian
@@ -110,7 +110,7 @@ public class DisplayableViewer extends JPanel {
 			loadingLabel.setText("Loading displayable ...");
 			progress.setIndeterminate(true);
 			currentZoom.setText("Current zoom : ... ");
-			tileViewer.setTileSource(displayableLocation, loadingLabel);
+			tileViewer.setDisplayable(new DisplayableSource(displayableLocation, loadingLabel));
 			currentZoom.setText("Current zoom : " + (tileViewer.getMaxZ() - tileViewer.currentLevel.z) + " / " + tileViewer.getMaxZ());
 			ZoomLevel zl = tileViewer.getMaxInfo();
 			infos.setText("Maximum Size : " + zl.width + " px * " + zl.height + " px. ");
