@@ -32,16 +32,13 @@ public class DisplayableView extends JPanel {
 
 	public DisplayableView() {
 		super();
-
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 	}
 
 	public void setDisplayable(DisplayableSource source) {
 		displayableSource = source;
+		levels = source.getILevelInfos();
+		currentLevel = levels.get(levels.size() - 1);
+		revalidate();
 	}
 
 	@Override
@@ -77,7 +74,8 @@ public class DisplayableView extends JPanel {
 	}
 
 	public void resetSizeEtc(ZoomLevel zl) {
-		System.out.println("Gonna invalidate to zoom level " + zl);
+		System.out.println("Gonna invalidate to zoom level " + zl.z);
+		currentLevel = zl;
 		this.setSize((int) zl.width, (int) zl.height);
 		this.setMinimumSize(new Dimension((int) zl.width, (int) zl.height));
 		this.setPreferredSize(new Dimension((int) zl.width, (int) zl.height));
@@ -107,6 +105,7 @@ public class DisplayableView extends JPanel {
 
 	public void repaintTile(long x, long y, long z) {
 		if (currentLevel.z == z) {
+			System.out.println("repainting "+ x +" "+ y +" "+ z );
 			repaint((int) x * tileSize, (int) y * tileSize, tileSize, tileSize);
 		}
 	}
@@ -127,13 +126,4 @@ public class DisplayableView extends JPanel {
 		}
 		return false;
 	}
-
-	public int getMaxZ() {
-		return levels.size();
-	}
-
-	public ZoomLevel getMaxInfo() {
-		return levels.get(0);
-	}
-
 }

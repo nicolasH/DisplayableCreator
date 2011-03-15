@@ -27,6 +27,7 @@ import net.niconomicon.tile.source.app.viewer.trivia.ZoomLevel;
 public class DisplayableViewer extends JPanel {
 
 	DisplayableView tileViewer;
+	DisplayableSource currentSource;
 	String displayableLocation;
 	JFrame viewerFrame;
 	JLabel currentZoom;
@@ -81,6 +82,10 @@ public class DisplayableViewer extends JPanel {
 	}
 
 	public void setDisplayable(String displayableLocation) {
+
+		if (currentSource != null) {
+			currentSource.done();
+		}
 		System.out.println("setting tile set");
 		infos.setText(" Size : ? px * ? px. ");
 		currentZoom.setText("Current zoom : ");
@@ -110,9 +115,11 @@ public class DisplayableViewer extends JPanel {
 			loadingLabel.setText("Loading displayable ...");
 			progress.setIndeterminate(true);
 			currentZoom.setText("Current zoom : ... ");
-			tileViewer.setDisplayable(new DisplayableSource(displayableLocation, loadingLabel));
-			currentZoom.setText("Current zoom : " + (tileViewer.getMaxZ() - tileViewer.currentLevel.z) + " / " + tileViewer.getMaxZ());
-			ZoomLevel zl = tileViewer.getMaxInfo();
+			currentSource = new DisplayableSource(displayableLocation, loadingLabel,tileViewer);
+//			currentSource.registerView(tileViewer);
+			tileViewer.setDisplayable(currentSource);
+			currentZoom.setText("Current zoom : " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ());
+			ZoomLevel zl = currentSource.getMaxInfo();
 			infos.setText("Maximum Size : " + zl.width + " px * " + zl.height + " px. ");
 			tileViewer.revalidate();
 			revalidate();
@@ -151,7 +158,7 @@ public class DisplayableViewer extends JPanel {
 				}
 				zP.setEnabled(true);
 			}
-			currentZoom.setText("Current zoom : " + (tileViewer.getMaxZ() - tileViewer.currentLevel.z) + "/" + tileViewer.getMaxZ());
+			currentZoom.setText("Current zoom : " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + "/" + currentSource.getMaxZ());
 		}
 	}
 

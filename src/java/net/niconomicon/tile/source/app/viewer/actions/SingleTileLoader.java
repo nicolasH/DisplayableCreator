@@ -36,13 +36,14 @@ public class SingleTileLoader implements Runnable {
 
 	public void run() {
 		try {
+
 			Statement statement = displayable.createStatement();
 			ResultSet rs = statement.executeQuery("select * from tiles_0_0 where z=" + coord.z + " and y=" + coord.y + " and x=" + coord.x);
 			while (rs.next()) {
 				long x = rs.getLong(1);
 				long y = rs.getLong(2);
 				long z = rs.getLong(3);
-				// System.out.println("found a tile for " + x + " " + y + " " + z);
+				System.out.println("found a tile for " + x + " " + y + " " + z);
 				byte[] data = rs.getBytes(4);
 				// cache.put(Ref.getKey(x, y, z), data);
 				try {

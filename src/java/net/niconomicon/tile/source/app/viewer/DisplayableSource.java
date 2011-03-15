@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -46,22 +47,24 @@ public class DisplayableSource {
 
 	List<ZoomLevel> levels;
 	ExecutorService tileLoader;
-	Timer timer;
+	Timer loader;
 
-	public DisplayableSource(String tileSourcePath, JLabel loadingLabel) {
+	public DisplayableSource(String tileSourcePath, JLabel loadingLabel, DisplayableView view) {
 		tileLoader = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount / 2);
 		neededTiles = new ConcurrentLinkedQueue<TileCoord>();
+		this.view = view;
 		LinkedHashMap<String, BufferedImage> cacheImpl = new LinkedHashMap<String, BufferedImage>(200) {
 			protected boolean removeEldestEntry(java.util.Map.Entry<String, BufferedImage> eldest) {
 				return size() == 200;
 			}
 		};
+
 		cache = Collections.synchronizedMap(cacheImpl);
 		loadInfos(tileSourcePath, loadingLabel);
-	}
 
-	public void registerView(DisplayableView panel) {
-		this.view = panel;
+		loader = new Timer();
+		loader.schedule(new LiveCacheLoader(), 1000, 1000);
+
 	}
 
 	public BufferedImage getImage(int x, int y, int z) {
@@ -79,19 +82,19 @@ public class DisplayableSource {
 		view.repaintTile(x, y, z);
 	}
 
-	public class LiveCacheLoader implements Runnable {
+	public class LiveCacheLoader extends TimerTask {
 
 		public void run() {
 			TileCoord c = neededTiles.poll();
 			while (c != null) {
 				SingleTileLoader loader = new SingleTileLoader(mapDB, c, DisplayableSource.this);
 				tileLoader.submit(loader);
+				c = neededTiles.poll();
 			}
 		}
 	}
 
 	public void loadInfos(String tileSourcePath, JLabel loadingLabel) {
-		// this.getParent().add(toolBar);
 		if (cache != null) {
 			cache.clear();
 		}
@@ -106,10 +109,8 @@ public class DisplayableSource {
 
 			Statement statement = mapDB.createStatement();
 			// zoom = 0;
-			int maxZoom = 0;
 			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name);
 
-			long stop, start;
 			int totalTiles = 0;
 			while (rs.next()) {
 				ZoomLevel zl = new ZoomLevel();
@@ -125,43 +126,26 @@ public class DisplayableSource {
 			ZoomLevel currentLevel = levels.get(levels.size() - 1);
 			System.out.println("Setting current level to " + currentLevel.z + " total tiles : " + totalTiles);
 			cache = new ConcurrentHashMap<String, BufferedImage>(totalTiles, 1.0f);
-			view.resetSizeEtc(currentLevel);
-
-			// for (int z = currentLevel.z; z >= 0; z--) {
-			// if (null != loadingLabel) {
-			// loadingLabel.setText("Loading level " + ((currentLevel.z - z) + 1) + "/" + levels.size());
-			// }
-			// start = System.currentTimeMillis();
-			// // ExecutorService exe = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount / 2);
-			// // ExecutorService eye = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount);
-			// // ZoomLevel zl = levels.get(z);
-			// // System.out.println("-- zl : " + zl.z);
-			// // for (int i = 0; i < zl.tiles_y; i++) {
-			// // TileLoader loader = new TileLoader(mapDB, i, zl.z, cache, view, exe);
-			// // eye.execute(loader);
-			// // }
-			// // eye.shutdown();
-			// // boolean normalTY = eye.awaitTermination(5, TimeUnit.MINUTES);
-			// // exe.shutdown();
-			// // boolean normalTX = eye.awaitTermination(5, TimeUnit.MINUTES);
-			// // stop = System.currentTimeMillis();
-			// // System.out.println("Caching level" + z + " took " + (stop - start) + " ms normal x " + normalTX +
-			// // " normal y " + normalTY);
-			// }
-			/*
-			eye.shutdown();
-			boolean normalTY = eye.awaitTermination(5, TimeUnit.MINUTES);
-			exe.shutdown();
-			boolean normalTX = eye.awaitTermination(5, TimeUnit.MINUTES);
-			*/
-
-			// mapDB.close();
-
+			if (view != null) {
+				view.resetSizeEtc(currentLevel);
+			}
 			System.out.println("fully cached !");
 		} catch (Exception ex) {
 			System.err.println("ex for map : " + tileSourcePath);
 			ex.printStackTrace();
 		}
+	}
+
+	public List<ZoomLevel> getILevelInfos() {
+		return levels;
+	}
+
+	public int getMaxZ() {
+		return levels.size();
+	}
+
+	public ZoomLevel getMaxInfo() {
+		return levels.get(0);
 	}
 
 	public void done() {
