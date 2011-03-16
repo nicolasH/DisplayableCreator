@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.niconomicon.tile.source.app.viewer.trivia;
+package net.niconomicon.tile.source.app.viewer.structs;
 
 /**
  * @author Nicolas Hoibian

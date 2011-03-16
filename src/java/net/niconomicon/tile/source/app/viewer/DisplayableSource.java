@@ -26,8 +26,8 @@ import javax.swing.JLabel;
 import net.niconomicon.tile.source.app.DisplayableCreatorApp;
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.viewer.actions.SingleTileLoader;
-import net.niconomicon.tile.source.app.viewer.trivia.TileCoord;
-import net.niconomicon.tile.source.app.viewer.trivia.ZoomLevel;
+import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
+import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
  * @author Nicolas Hoibian Provides facilities to read a Displayable file.
@@ -55,7 +55,11 @@ public class DisplayableSource {
 		this.view = view;
 		LinkedHashMap<String, BufferedImage> cacheImpl = new LinkedHashMap<String, BufferedImage>(200) {
 			protected boolean removeEldestEntry(java.util.Map.Entry<String, BufferedImage> eldest) {
-				return size() == 200;
+				if (size() > 200) {
+					System.out.println("gonna remove " + eldest.getKey());
+					return true;
+				}
+				return false;
 			}
 		};
 
@@ -63,7 +67,7 @@ public class DisplayableSource {
 		loadInfos(tileSourcePath, loadingLabel);
 
 		loader = new Timer();
-		loader.schedule(new LiveCacheLoader(), 1000, 1000);
+		loader.schedule(new LiveCacheLoader(), 200, 50);
 
 	}
 
@@ -77,6 +81,10 @@ public class DisplayableSource {
 		}
 	}
 
+	public boolean hasImage(TileCoord coord) {
+		return cache.containsKey(Ref.getKey(coord));
+	}
+
 	public void setImage(long x, long y, long z, BufferedImage im) {
 		cache.put(Ref.getKey(x, y, z), im);
 		view.repaintTile(x, y, z);
@@ -86,11 +94,9 @@ public class DisplayableSource {
 
 		public void run() {
 			TileCoord c = neededTiles.poll();
-			while (c != null) {
-				SingleTileLoader loader = new SingleTileLoader(mapDB, c, DisplayableSource.this);
-				tileLoader.submit(loader);
-				c = neededTiles.poll();
-			}
+			if (c == null || cache.containsKey(Ref.getKey(c))) { return; }
+			SingleTileLoader loader = new SingleTileLoader(mapDB, c, DisplayableSource.this);
+			tileLoader.submit(loader);
 		}
 	}
 

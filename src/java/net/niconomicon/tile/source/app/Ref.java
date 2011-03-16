@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
+import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
+
 /**
  * @author niko
  * 
@@ -53,8 +55,7 @@ public final class Ref {
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
 
-	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" + 
-	"<link rel=\"stylesheet\" href=\"/index.css\"/ type=\"text/css\" />";
+	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" + "<link rel=\"stylesheet\" href=\"/index.css\"/ type=\"text/css\" />";
 
 	public static File tmpFile;
 	static {
@@ -88,6 +89,10 @@ public final class Ref {
 
 	public static String getKey(long x, long y, long z) {
 		return x + "_" + y + "_" + z;
+	}
+
+	public static String getKey(TileCoord coord) {
+		return getKey(coord.x, coord.y, coord.z);
 	}
 
 	public static String getDefaultDir() {
@@ -238,7 +243,8 @@ public final class Ref {
 	}
 
 	/**
-	 * Generate the description for a given Displayable, and add thumbnail and preview images to the list of available URLs
+	 * Generate the description for a given Displayable, and add thumbnail and preview images to the list of available
+	 * URLs
 	 * 
 	 * @param mapDB
 	 * @param weight

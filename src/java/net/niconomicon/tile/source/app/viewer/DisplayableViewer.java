@@ -18,7 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.trivia.ZoomLevel;
+import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
  * @author Nicolas Hoibian
