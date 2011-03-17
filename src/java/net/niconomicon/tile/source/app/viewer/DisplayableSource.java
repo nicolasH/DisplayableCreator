@@ -11,9 +11,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,6 +47,7 @@ public class DisplayableSource {
 	ConcurrentLinkedQueue<TileCoord> neededTiles;
 	Map<String, BufferedImage> cache;
 
+	Set<String> queued;
 	List<ZoomLevel> levels;
 	ExecutorService tileLoader;
 	Timer loader;
@@ -64,17 +67,26 @@ public class DisplayableSource {
 		};
 
 		cache = Collections.synchronizedMap(cacheImpl);
+		queued = Collections.synchronizedSet(new HashSet<String>());
 		loadInfos(tileSourcePath, loadingLabel);
 
 		loader = new Timer();
-		loader.schedule(new LiveCacheLoader(), 200, 50);
+		loader.schedule(new LiveCacheLoader(), 200, 2);
 
 	}
 
 	public BufferedImage getImage(int x, int y, int z) {
-		BufferedImage t = cache.get(Ref.getKey(x, y, z));
+		String k = Ref.getKey(x, y, z);
+		BufferedImage t = cache.get(k);
+		TileCoord c = new TileCoord(x, y, z);
+		// System.out.println("C : " + c + " T : " + t);
 		if (null == t) {
-			neededTiles.add(new TileCoord(x, y, z));
+			if (queued.contains(k)) {
+				return null;
+			} else {
+				queued.add(k);
+				neededTiles.add(c);
+			}
 			return null;
 		} else {
 			return t;
@@ -86,17 +98,26 @@ public class DisplayableSource {
 	}
 
 	public void setImage(long x, long y, long z, BufferedImage im) {
-		cache.put(Ref.getKey(x, y, z), im);
+		String k = Ref.getKey(x, y, z);
+		queued.remove(k);
+		cache.put(k, im);
+		// if (queued.size() == 0) {
+		// view.revalidate();
+		// } else {
 		view.repaintTile(x, y, z);
+		// }
 	}
 
 	public class LiveCacheLoader extends TimerTask {
 
 		public void run() {
 			TileCoord c = neededTiles.poll();
-			if (c == null || cache.containsKey(Ref.getKey(c))) { return; }
-			SingleTileLoader loader = new SingleTileLoader(mapDB, c, DisplayableSource.this);
-			tileLoader.submit(loader);
+			if (c == null || hasImage(c)) {
+				return;
+			} else {
+				SingleTileLoader loader = new SingleTileLoader(mapDB, c, DisplayableSource.this);
+				tileLoader.submit(loader);
+			}
 		}
 	}
 

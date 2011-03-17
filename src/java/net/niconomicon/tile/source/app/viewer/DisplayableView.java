@@ -59,6 +59,8 @@ public class DisplayableView extends JPanel {
 
 			macYa = tileYa;
 			macYb = tileYb;
+			macYb = Math.min(macYb, (int) currentLevel.tiles_y - 1);
+			tileXb = Math.min(tileXb, (int) currentLevel.tiles_x);
 			for (int x = tileXa; x < tileXb; x++) {
 				for (int y = macYa; y < macYb + 1; y++) {
 					BufferedImage tile = displayableSource.getImage(x, y, currentLevel.z);
@@ -86,44 +88,39 @@ public class DisplayableView extends JPanel {
 
 	}
 
-	/**
-	 * 
-	 * @return true if reached the max Zoom;
-	 */
-	public boolean incrZ() {
+	public boolean canZoomIn() {
+		return currentLevel.z > 0;
+	}
+
+	public boolean canZoomOut() {
+		return currentLevel.z < levels.size() - 1;
+	}
+
+	public void incrZ() {
 		if (currentLevel.z > 0) {
 			ZoomLevel zl = levels.get(currentLevel.z - 1);
 			currentLevel = zl;
 			resetSizeEtc(zl);
-			if (zl.z == 0) { return true; }
 		} else {
 			System.out.println("Already at max Zoom");
-			return true;
-		}
-		return false;
-	}
-
-	public void repaintTile(long x, long y, long z) {
-		if (currentLevel.z == z) {
-			System.out.println("repainting "+ x +" "+ y +" "+ z );
-			repaint((int) x * tileSize, (int) y * tileSize, tileSize, tileSize);
 		}
 	}
 
-	/**
-	 * 
-	 * @return true if reached the min zoom
-	 */
-	public boolean decrZ() {
+	public void decrZ() {
 		if (currentLevel.z < levels.size() - 1) {
 			ZoomLevel zl = levels.get(currentLevel.z + 1);
 			currentLevel = zl;
 			resetSizeEtc(zl);
-			if (zl.z == levels.size() - 1) { return true; }
 		} else {
 			System.out.println("Already at min Zoom");
-			return true;
 		}
-		return false;
 	}
+
+	public void repaintTile(long x, long y, long z) {
+		if (currentLevel.z == z) {
+			System.out.println("repainting " + x + " " + y + " " + z);
+			repaint((int) x * tileSize, (int) y * tileSize, tileSize, tileSize);
+		}
+	}
+
 }

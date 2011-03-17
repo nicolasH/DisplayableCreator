@@ -112,11 +112,13 @@ public class DisplayableViewer extends JPanel {
 		}
 
 		public void run() {
+			zM.setEnabled(false);
+			zP.setEnabled(false);
 			loadingLabel.setText("Loading displayable ...");
 			progress.setIndeterminate(true);
 			currentZoom.setText("Current zoom : ... ");
-			currentSource = new DisplayableSource(displayableLocation, loadingLabel,tileViewer);
-//			currentSource.registerView(tileViewer);
+			currentSource = new DisplayableSource(displayableLocation, loadingLabel, tileViewer);
+			// currentSource.registerView(tileViewer);
 			tileViewer.setDisplayable(currentSource);
 			currentZoom.setText("Current zoom : " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ());
 			ZoomLevel zl = currentSource.getMaxInfo();
@@ -129,35 +131,25 @@ public class DisplayableViewer extends JPanel {
 			progress.setIndeterminate(false);
 			progress.setVisible(false);
 			loadingLabel.setVisible(false);
-
+			zP.setEnabled(tileViewer.canZoomIn());
+			zM.setEnabled(tileViewer.canZoomOut());
 		}
 	}
 
 	public class ZoomAction implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			boolean reached;
-			System.out.println("Action command : [" + e.getActionCommand() + "]");
 			if (e.getActionCommand().equals("+")) {
 				System.out.println("zoom +");
-				reached = tileViewer.incrZ();
-				if (reached) {
-					zP.setEnabled(false);
-				} else {
-					zP.setEnabled(true);
-				}
-				zM.setEnabled(true);
+				tileViewer.incrZ();
 			}
 			if (e.getActionCommand().equals("-")) {
 				System.out.println("zoom -");
-				reached = tileViewer.decrZ();
-				if (reached) {
-					zM.setEnabled(false);
-				} else {
-					zM.setEnabled(true);
-				}
-				zP.setEnabled(true);
+				tileViewer.decrZ();
 			}
+			zP.setEnabled(tileViewer.canZoomIn());
+			zM.setEnabled(tileViewer.canZoomOut());
+
 			currentZoom.setText("Current zoom : " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + "/" + currentSource.getMaxZ());
 		}
 	}

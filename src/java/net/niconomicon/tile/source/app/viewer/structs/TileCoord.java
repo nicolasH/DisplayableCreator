@@ -15,4 +15,8 @@ public class TileCoord {
 		this.y = y;
 		this.z = z;
 	}
+
+	public String toString() {
+		return "z =" + z + " y=" + y + " x=" + x;
+	}
 }
