@@ -52,14 +52,16 @@ public class DisplayableViewer extends JPanel {
 	private void init() {
 		viewerFrame = new JFrame();
 		this.setLayout(new BorderLayout());
-		this.add(new JScrollPane(tileViewer), BorderLayout.CENTER);
+		JScrollPane sp = new JScrollPane(tileViewer);
+		sp.setMinimumSize(new Dimension(340, 340));
+		this.add(sp, BorderLayout.CENTER);
 
 		this.setMinimumSize(new Dimension(400, 400));
 		viewerFrame.setContentPane(this);
-		viewerFrame.setMinimumSize(new Dimension(400, 400));
+		viewerFrame.setMinimumSize(new Dimension(340, 340));
 		viewerFrame.setLocation(400, 200);
-		viewerFrame.setSize(500, 500);
-		this.setPreferredSize(new Dimension(500, 500));
+		viewerFrame.setSize(340, 500);
+		this.setPreferredSize(new Dimension(340, 340));
 
 		toolBar = new JToolBar("Zoom", JToolBar.HORIZONTAL);
 		currentZoom = new JLabel();

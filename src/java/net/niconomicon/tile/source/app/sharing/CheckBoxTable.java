@@ -42,9 +42,9 @@ public class CheckBoxTable extends JTable {
 
 	 public static final int colView = 3;
 
-	 public static final int colWidthShare = 40;
-	 public static final int colWidthEdit = 50;
-	 public static final int colWidthView = 40;
+	 public static final int colWidthShare = 50;
+	 public static final int colWidthEdit = 60;
+	 public static final int colWidthView = 50;
 	// public static final int colRemove = 4;
 
 	public CheckBoxTable(DisplayableViewer viewer) {

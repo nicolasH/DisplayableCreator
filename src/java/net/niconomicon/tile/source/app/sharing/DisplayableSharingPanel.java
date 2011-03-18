@@ -57,35 +57,13 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	CheckBoxTable mapList;
 	JSpinner portNumber;
 	JLabel sharingStatus;
-	
+	JLabel sharingLocation;
 	String rootDir = "/Users/niko/Sites/testApp/mapRepository";
 
 	DisplayableViewer viewer;
 
 	InetAddress localaddr;
 	Timer timer;
-
-	/**
-	 * Stand alone main
-	 * 
-	 */
-	public static void main(String[] args) {
-		DisplayableSharingPanel service = new DisplayableSharingPanel(null);
-		JFrame frame = new JFrame("Sharing Service");
-		frame.setContentPane(service);
-		frame.pack();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				// TODO Auto-generated method stub
-				((DisplayableSharingPanel) ((JFrame) e.getSource()).getContentPane()).stopSharing();
-				super.windowClosing(e);
-			}
-		});
-		frame.setVisible(true);
-
-	}
 
 	public DisplayableSharingPanel(DisplayableViewer viewer) {
 		this.viewer = viewer;
@@ -132,6 +110,10 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		sharingManager = new SharingManager();
 		mapList = new CheckBoxTable(viewer);
 		timer = new Timer();
+
+		sharingLocation = new JLabel();
+		sharingStatus = new JLabel("Sharing status : [not running]");
+
 		mapList.getModel().addTableModelListener(this);
 		mapList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		// mapList.getSelectionModel().addListSelectionListener(this);
@@ -164,7 +146,6 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		portPanel.add(portNumber);
 		options.add(portPanel);
 		// start sharing
-		sharingStatus = new JLabel("Sharing status : [not running]");
 		options.add(sharingStatus);
 		shareButton = new JButton("Start sharing");
 		shareButton.addActionListener(new ActionListener() {
@@ -176,14 +157,24 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		timer.scheduleAtFixedRate(new LocalHostChecker(), delta, delta);
 		switchSharing(false);
 		options.add(shareButton);
+		options.add(sharingLocation);
 		shareButton.getActionListeners();
 		this.add(options, BorderLayout.SOUTH);
 	}
 
 	public void setTooltipHostname(String host) {
+		if (host == null) {
+			sharingStatus.setToolTipText(null);
+			sharingLocation.setText("");
+			return;
+		}
 		int port = ((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue();
 		sharingStatus
 				.setToolTipText("If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://" + host + ":" + port + "/ in your iPhone / iPod touch web browser");
+		sharingLocation
+//				.setText("<html><body>If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://" + host + ":" + port + "/ in your iPhone / iPod touch web browser</body></html>");
+		.setText("<html><body>Also accessible in Safari at http://" + host + ":" + port + "/ </body></html>");
+
 	}
 
 	public static List<String> getDBFilesInSubDirectory(File dir) {
@@ -246,7 +237,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		sharingStatus.setText("Sharing status : [stopping ...]");
 		sharingStatus.revalidate();
 		stopSharing();
-		sharingStatus.setToolTipText("");
+		setTooltipHostname(null);
 		sharingStatus.setText("Sharing status : [not running]");
 		shareButton.setText("Start sharing");
 	}
