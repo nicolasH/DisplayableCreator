@@ -101,11 +101,12 @@ public class DisplayableSource {
 		String k = Ref.getKey(x, y, z);
 		queued.remove(k);
 		cache.put(k, im);
-		// if (queued.size() == 0) {
-		// view.revalidate();
-		// } else {
 		view.repaintTile(x, y, z);
-		// }
+
+		if (queued.size() == 0) {
+			view.repaint(200);
+		}
+
 	}
 
 	public class LiveCacheLoader extends TimerTask {

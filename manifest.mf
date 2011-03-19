@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: net.niconomicon.tile.source.app.TileCreatorFrame
+Main-Class: net.niconomicon.tile.source.app.DisplayableCreatorApp
 
