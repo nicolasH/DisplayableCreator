@@ -27,12 +27,12 @@ If you want, after the Displayable is created, you can save it someplace. The fo
 - You can choose the title of the image as it will appear in the iphone app.
 - You can choose the name of the file that will be saved (by default the same name as the original file with a different extension).
 
-# Phase 2 : Sharing the tile sets.
+# Phase 2 : Sharing the Displayable(s).
 By default, the Displayable creator start with the sharing enabled, but no Displayable loaded.
 
 Your iPhone/iPod touch needs to be on the same network as the computer on which you run the Displayable creator for sharing to work.
 
-- Sharing is not enalbed, click "start sharing".  
+- Sharing is not enabled, click "start sharing".  
 - On your iPhone/ iPod launch the Displayator app and then tap on the "Download images" list item. The available images should appear shortly. You can then select one and download it.
 
 [jnlp]:http://www.displayator.com/DisplayableCreator/DisplayableCreator.jnlp
