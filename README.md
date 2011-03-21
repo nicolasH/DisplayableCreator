@@ -7,15 +7,15 @@ It then allows one to share that something over the network. I am calling this s
 The current implementation tile the image and store the tiles in a sqlite db. The tiles are also created for the image at half the size, one quarter etc... until the shrunk image is smaller than the iPhone screen.
 
 
-For transferring the Displayable to the iDevice, the app uses the mDNS standard (a.k.a bonjour formerly known as 'rendezvous') and a webserver, as implemented in respectively [jmDNS][jmdns] and [jetty][jetty].
+For transferring the Displayable to the iDevice, the app uses the Multicast DNS standard (a.k.a mDNS, 'bonjour', formerly known as 'rendezvous') and a webserver, as implemented in respectively [jmDNS][jmdns] and [jetty][jetty].
 
-You can run the current latest version of it [from the displayator website as a jnlp][jnlp] (java webstart).
+You can run the latest version of it [from the displayator website][jnlp] as a "Java Web Start"* application.
 
 The supported images types are the standard GIF, PNG, BMP and most jpgs. Not supported formats include CMYK JPEG, PDF and TIFFs.
 
 On Windows, the Adobe Acrobat Reader should be able to export PDFs as images. On Mac OS X, the Preview application can do it.
 
-
+*:[Java Web Start][java] application: a Java application that can run on your desktop without needing to install it permanently.
 
 ### Usage :
 
@@ -35,6 +35,7 @@ Your iPhone/iPod touch needs to be on the same network as the computer on which 
 - Sharing is not enabled, click "start sharing".  
 - On your iPhone/ iPod launch the Displayator app and then tap on the "Download images" list item. The available images should appear shortly. You can then select one and download it.
 
+[java]:http://www.java.com
 [jnlp]:http://www.displayator.com/DisplayableCreator/DisplayableCreator.jnlp
 [jmdns]:http://jmdns.sourceforge.net/
 [jetty]:http://eclipse.org/jetty/
