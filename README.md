@@ -13,7 +13,7 @@ You can run the latest version of it [from the displayator website][jnlp] as a "
 
 The supported images types are the standard GIF, PNG, BMP and most jpgs. Not supported formats include CMYK JPEG, PDF and TIFFs.
 
-On Windows, the Adobe Acrobat Reader should be able to export PDFs as images. On Mac OS X, the Preview application can do it.
+On Windows, the Adobe Acrobat Reader should be able to export PDFs as images. On Mac OS X, the Preview application can do it; it can also export CMYK JPEGs as PDFs and then those as PNG. 
 
 *:[Java Web Start][java] application: a Java application that can run on your desktop without needing to install it permanently.
 
