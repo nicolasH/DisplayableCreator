@@ -101,8 +101,6 @@ public class DisplayableView extends JPanel {
 			ZoomLevel zl = levels.get(currentLevel.z - 1);
 			currentLevel = zl;
 			resetSizeEtc(zl);
-		} else {
-			System.out.println("Already at max Zoom");
 		}
 	}
 
@@ -111,14 +109,12 @@ public class DisplayableView extends JPanel {
 			ZoomLevel zl = levels.get(currentLevel.z + 1);
 			currentLevel = zl;
 			resetSizeEtc(zl);
-		} else {
-			System.out.println("Already at min Zoom");
 		}
 	}
 
 	public void repaintTile(long x, long y, long z) {
 		if (currentLevel.z == z) {
-			System.out.println("repainting " + x + " " + y + " " + z);
+			// System.out.println("repainting " + x + " " + y + " " + z);
 			repaint((int) x * tileSize, (int) y * tileSize, tileSize, tileSize);
 		}
 	}

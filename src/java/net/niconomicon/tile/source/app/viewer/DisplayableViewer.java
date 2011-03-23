@@ -88,9 +88,8 @@ public class DisplayableViewer extends JPanel {
 		if (currentSource != null) {
 			currentSource.done();
 		}
-		System.out.println("setting tile set");
-		infos.setText(" Size : ? px * ? px. ");
-		currentZoom.setText("Current zoom : ");
+		infos.setText(" Original size : loading ... ");
+		currentZoom.setText(" Current zoom level : ");
 		this.displayableLocation = displayableLocation;
 		try {
 			String title = SQliteTileCreatorMultithreaded.getTitle(displayableLocation);
@@ -124,7 +123,7 @@ public class DisplayableViewer extends JPanel {
 			tileViewer.setDisplayable(currentSource);
 			currentZoom.setText("Current zoom : " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ());
 			ZoomLevel zl = currentSource.getMaxInfo();
-			infos.setText("Maximum Size : " + zl.width + " px * " + zl.height + " px. ");
+			infos.setText(" Original size : " + zl.width + " px * " + zl.height + " px. ");
 			tileViewer.revalidate();
 			revalidate();
 			viewerFrame.pack();
