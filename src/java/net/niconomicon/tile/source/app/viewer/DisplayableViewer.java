@@ -5,6 +5,7 @@ package net.niconomicon.tile.source.app.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -71,10 +72,14 @@ public class DisplayableViewer extends JPanel {
 		progress = new JProgressBar();
 
 		zP = new JButton("+");
+		zP.setFont(infos.getFont().deriveFont(Font.BOLD));
 		zP.addActionListener(new ZoomAction());
+		zP.setMinimumSize(new Dimension(30,30));
 		toolBar.add(zP);
 		zM = new JButton("-");
 		zM.addActionListener(new ZoomAction());
+		zM.setMinimumSize(new Dimension(30,30));
+		zM.setFont(infos.getFont().deriveFont(Font.BOLD));
 		toolBar.add(zM);
 		toolBar.add(infos);
 		toolBar.add(currentZoom);
