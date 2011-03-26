@@ -71,12 +71,13 @@ public class DisplayableViewer extends JPanel {
 		loadingLabel = new JLabel();
 		progress = new JProgressBar();
 
-		zP = new JButton("+");
+		JLabel l = new JLabel("Zoom : ");
+		zP = new JButton(" + ");
 		zP.setFont(infos.getFont().deriveFont(Font.BOLD));
 		zP.addActionListener(new ZoomAction());
 		zP.setMinimumSize(new Dimension(30,30));
 		toolBar.add(zP);
-		zM = new JButton("-");
+		zM = new JButton(" - ");
 		zM.addActionListener(new ZoomAction());
 		zM.setMinimumSize(new Dimension(30,30));
 		zM.setFont(infos.getFont().deriveFont(Font.BOLD));
