@@ -27,6 +27,9 @@ import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
  */
 public class DisplayableViewer extends JPanel {
 
+	public static String _PLUS = " + ";
+	public static String _MINUS = " - ";
+
 	DisplayableView tileViewer;
 	DisplayableSource currentSource;
 	String displayableLocation;
@@ -72,18 +75,25 @@ public class DisplayableViewer extends JPanel {
 		progress = new JProgressBar();
 
 		JLabel l = new JLabel("Zoom : ");
-		zP = new JButton(" + ");
-		zP.setFont(infos.getFont().deriveFont(Font.BOLD));
+		toolBar.add(l);
+		zP = new JButton(_PLUS);
+		zP.setFont(zP.getFont().deriveFont(Font.BOLD));
+		zP.setFont(zP.getFont().deriveFont(24.0f));
 		zP.addActionListener(new ZoomAction());
-		zP.setMinimumSize(new Dimension(30,30));
+		zP.setMinimumSize(new Dimension(30, 30));
 		toolBar.add(zP);
-		zM = new JButton(" - ");
-		zM.addActionListener(new ZoomAction());
-		zM.setMinimumSize(new Dimension(30,30));
-		zM.setFont(infos.getFont().deriveFont(Font.BOLD));
-		toolBar.add(zM);
-		toolBar.add(infos);
+
 		toolBar.add(currentZoom);
+		
+		zM = new JButton(_MINUS);
+		zM.addActionListener(new ZoomAction());
+		zM.setMinimumSize(new Dimension(30, 30));
+		zM.setFont(zM.getFont().deriveFont(Font.BOLD));
+		zM.setFont(zM.getFont().deriveFont(64.0f));
+
+		toolBar.add(zM);
+		
+		toolBar.add(infos);
 		toolBar.add(loadingLabel);
 		toolBar.add(progress);
 		this.add(toolBar, BorderLayout.NORTH);
@@ -95,7 +105,7 @@ public class DisplayableViewer extends JPanel {
 			currentSource.done();
 		}
 		infos.setText(" Original size : loading ... ");
-		currentZoom.setText(" Current zoom level : ");
+		currentZoom.setText(" ? / ? ");
 		this.displayableLocation = displayableLocation;
 		try {
 			String title = SQliteTileCreatorMultithreaded.getTitle(displayableLocation);
@@ -123,11 +133,11 @@ public class DisplayableViewer extends JPanel {
 			zP.setEnabled(false);
 			loadingLabel.setText("Loading displayable ...");
 			progress.setIndeterminate(true);
-			currentZoom.setText("Current zoom : ... ");
+			currentZoom.setText(" ? / ? ");
 			currentSource = new DisplayableSource(displayableLocation, loadingLabel, tileViewer);
 			// currentSource.registerView(tileViewer);
 			tileViewer.setDisplayable(currentSource);
-			currentZoom.setText("Current zoom : " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ());
+			currentZoom.setText(" " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ()+" ");
 			ZoomLevel zl = currentSource.getMaxInfo();
 			infos.setText(" Original size : " + zl.width + " px * " + zl.height + " px. ");
 			tileViewer.revalidate();
@@ -146,18 +156,18 @@ public class DisplayableViewer extends JPanel {
 	public class ZoomAction implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			if (e.getActionCommand().equals("+")) {
+			if (e.getActionCommand().equals(_PLUS)) {
 				System.out.println("zoom +");
 				tileViewer.incrZ();
 			}
-			if (e.getActionCommand().equals("-")) {
+			if (e.getActionCommand().equals(_MINUS)) {
 				System.out.println("zoom -");
 				tileViewer.decrZ();
 			}
 			zP.setEnabled(tileViewer.canZoomIn());
 			zM.setEnabled(tileViewer.canZoomOut());
 
-			currentZoom.setText("Current zoom : " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + "/" + currentSource.getMaxZ());
+			currentZoom.setText(" " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ()+" ");
 		}
 	}
 
