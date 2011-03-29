@@ -119,10 +119,13 @@ public class SQliteTileCreatorMultithreaded {
 			statement.executeUpdate("drop table if exists level_infos");
 			statement.executeUpdate("drop table if exists tiles_" + tilesetKey);
 			//
-			statement.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB, flippedVertically BOOL)");
-			statement.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
+			statement
+					.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB, flippedVertically BOOL)");
+			statement
+					.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
 			// currently the layer name should be the same as the map name, as only one layer is supported
-			statement.executeUpdate("CREATE TABLE layers_infos (" + "layerName STRING, mapKey LONG, zindex LONG, zoom  LONG, width LONG,height LONG, tiles_x LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
+			statement
+					.executeUpdate("CREATE TABLE layers_infos (" + "layerName STRING, mapKey LONG, zindex LONG, zoom  LONG, width LONG,height LONG, tiles_x LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
 			statement.executeUpdate("CREATE TABLE tiles_" + tilesetKey + "_" + layerKey + " (x LONG , y LONG, z LONG, data BLOB)");
 			// Prepare most frequently used statement;
 			String insertTiles = "insert into tiles_" + tilesetKey + "_" + layerKey + " values( ?, ?, ?, ?)";
@@ -455,40 +458,5 @@ public class SQliteTileCreatorMultithreaded {
 			e.printStackTrace();
 		}
 
-	}
-
-	public static void main(String[] args) throws Exception {
-		String[] files;
-		files = new String[] { "pdfs/CERN_Prevessin_A3_Paysage.pdf" };
-
-		String destDir = "/Users/niko/tileSources/bench/";
-		String src = "/Users/niko/tileSources/";
-		// This call blocks until done (duh) - for usually more than 2 second. It loads the native sqlite library.
-		SQliteTileCreatorMultithreaded.loadLib();
-		SQliteTileCreatorMultithreaded creator = new SQliteTileCreatorMultithreaded();
-		long start, stop;
-		int count = 1;
-		int nThreads = 4;
-		int c = 0;
-		String extension = ".its";// For "image tile set"
-		for (int i = 0; i < count; i++) {
-			System.gc();
-			for (String file : files) {
-				creator.title = file.substring(0, file.lastIndexOf(".")) + "_multi";
-				System.out.println("Processing " + creator.title);
-				String dstFile = destDir + creator.title + extension;
-				File f = new File(dstFile);
-				if (f.exists()) {
-					System.out.println("removing this file : " + dstFile);
-					f.delete();
-				}
-				start = System.nanoTime();
-				System.out.println("Started : " + dstFile);
-				creator.calculateTiles(dstFile, src + file, 192, "png", null, nThreads, true, null);
-				creator.finalizeFile();
-				stop = System.nanoTime();
-				System.out.println("## => total_time: " + ((double) (stop - start) / 1000000) + " ms nThreads = " + nThreads + " + 1 mains + 1 writer");
-			}
-		}
 	}
 }

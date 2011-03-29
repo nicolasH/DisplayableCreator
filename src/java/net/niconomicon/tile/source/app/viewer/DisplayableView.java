@@ -44,6 +44,8 @@ public class DisplayableView extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		if (null == displayableSource) { return;/* Component shown but displayable not yet set.*/}
+
 		// System.out.println("paintComponent");
 		Graphics2D g2 = (Graphics2D) g;
 		Rectangle r = g2.getClipBounds();

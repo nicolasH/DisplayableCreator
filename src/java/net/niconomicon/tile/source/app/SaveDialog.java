@@ -158,13 +158,17 @@ public class SaveDialog extends JPanel {
 
 	public String showDialog(Component parent, String currentLocation) {
 		fillForm(currentLocation);
-		boolean resOk = false;
-		while (!resOk) {
-			int result = JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+		String res = "nah";
+		while (null != res) {
+			int result = JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null, null, null);
 			if (JOptionPane.YES_OPTION == result) {
-				resOk = save(currentLocation);
+				res = save(currentLocation);
 			} else {
-				resOk = true;
+				res = null;
+			}
+			if (res != null) {
+				JOptionPane.showConfirmDialog(parent, res);
 			}
 		}
 		return newLocation;
@@ -179,6 +183,7 @@ public class SaveDialog extends JPanel {
 			String suggestedFile = Ref.fileSansDot(currentLocation);
 			try {
 				if (Ref.isInTmpLocation(currentLocation)) {
+					// keep the lastIndex here because tmp file format should contain the '_'
 					suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf("_")) + Ref.ext_db;
 				}
 			} catch (Exception ex) {
@@ -195,27 +200,30 @@ public class SaveDialog extends JPanel {
 		}
 	}
 
-	public boolean save(String originalFile) {
+	public String save(String originalFile) {
 		String newPath = where.getText();
-		if (null == newPath || "null".equals(newPath)) { return false; }
-		if (null == outputFileName.getText() || "null".compareTo(outputFileName.getText()) == 0) { return false; }
+		String newName = outputFileName.getText();
+		if (null == newPath || "null".equals(newPath) || newPath.length() == 0) { return "No path set, cannot save the file."; }
+		if (null == newName || "null".equals(newName) || newName.length() == 0) { return "No file name set. Cannot save the file"; }
+		if (newName.contains(File.separator)) { return "Invalid file name. It cannot contains [" + File.separator + "]. Change to save the file"; }
+
 		newPath = newPath.endsWith(File.separator) ? newPath : newPath + File.separator;
 
 		Ref.setDefaultDir(newPath);
-		newPath += outputFileName.getText();
+		newPath += newName;
 		if (originalFile.compareTo(newPath) != 0) {
 			File f = new File(originalFile);
 			boolean res = f.renameTo(new File(newPath));
-			if (!res) { return false; }
+			if (!res) { return "<html><body>Could not move or rename the file to <br/>[" + newPath + "]<br/><b> Try to change the name of the file or its location.</b></body></html>"; }
 			newLocation = newPath;
 		}
 		// else{// yes ! no change to the location !
 
-		if (null == title.getText() || "null".equals(title.getText())) { return false; }
+		if (null == title.getText() || "null".equals(title.getText())) { return "No title was found. Please give a title to save the file."; }
 		if (!currentTitle.equals(title.getText())) {
 			SQliteTileCreatorMultithreaded.updateTitle(newPath, currentTitle, title.getText());
 		}
-		return true;
+		return null;
 	}
 
 	private class RootDirSetter implements Runnable {

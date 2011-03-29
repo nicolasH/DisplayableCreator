@@ -93,7 +93,7 @@ public class ImageToDisplayable {
 		// globcover : 20 ~> 14 seconds on second iteration.
 		// String destDir = "/Users/niko/tileSources/bench/";
 		// String src = "/Users/niko/tileSources/";
-		String title = fopen.getName().substring(0, fopen.getName().lastIndexOf("."));
+		String title = Ref.fileSansDot(fopen.getAbsolutePath());
 
 		SQliteTileCreatorMultithreaded creator = new SQliteTileCreatorMultithreaded();
 		creator.title = title;
@@ -104,7 +104,7 @@ public class ImageToDisplayable {
 			System.out.println("Processing " + title);
 			start = System.nanoTime();
 
-			creator.calculateTiles(fWrite.getAbsolutePath(), fopen.getAbsolutePath(), 192, "png", null, nThreads, true,null);
+			creator.calculateTiles(fWrite.getAbsolutePath(), fopen.getAbsolutePath(), 192, "png", null, nThreads, true, null);
 			creator.finalizeFile();
 			stop = System.nanoTime();
 			System.out.println("total_time: " + ((double) (stop - start) / 1000000) + " ms");

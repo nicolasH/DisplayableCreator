@@ -58,7 +58,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	JSpinner portNumber;
 	JLabel sharingStatus;
 	JLabel sharingLocation;
-	String rootDir = "/Users/niko/Sites/testApp/mapRepository";
+	//String rootDir = "/Users/niko/Sites/testApp/mapRepository";
 
 	DisplayableViewer viewer;
 

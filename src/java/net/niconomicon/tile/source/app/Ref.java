@@ -76,7 +76,11 @@ public final class Ref {
 	}
 
 	public static final String fileSansDot(String fullPath) {
-		return fullPath.substring(fullPath.lastIndexOf(File.separator) + 1, fullPath.lastIndexOf("."));
+		int end = fullPath.lastIndexOf(".");
+		if (end < 0) {
+			end = fullPath.length();
+		}
+		return fullPath.substring(fullPath.lastIndexOf(File.separator) + 1, end);
 	}
 
 	public static final String pathSansFile(String fullPath) {
