@@ -57,10 +57,12 @@ public class JettyImageServerServlet extends HttpServlet {
 		String request = req.getRequestURI();
 		System.out.println("URI : " + request);
 
-		if (request.compareTo("/" + Ref.sharing_jsonRef) == 0) {
+		if (request.equals("/" + Ref.sharing_jsonRef) || request.equals(Ref.URI_jsonRef)) {
+			String k = "/" + Ref.sharing_jsonRef;
+
 			System.out.println("should be returning the Displayable Feed [" + imaginaryMap.get(request).length() + "]");
 			try {
-				sendString(imaginaryMap.get(request), resp);
+				sendString(imaginaryMap.get(k), resp);
 				return;
 			} catch (Exception ex) {
 				resp.sendError(500, "The server encountered an error while trying to send the content for request [" + request + "]");
@@ -80,7 +82,7 @@ public class JettyImageServerServlet extends HttpServlet {
 
 		if (request.equals("/") || request.equals(Ref.URI_htmlRef)) {
 			request = Ref.URI_htmlRef;
-			System.out.println("should be returning the mapFeed [" + imaginaryMap.get(request).length() + "]");
+			System.out.println("should be returning the html list [" + imaginaryMap.get(request).length() + "]");
 			try {
 				String resolvedAddressItem = Ref.app_handle_item + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
 				String resolvedAddressList = Ref.app_handle_list + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
@@ -107,7 +109,9 @@ public class JettyImageServerServlet extends HttpServlet {
 			try {
 				sendFile(f, resp);
 			} catch (Exception ex) {
-				resp.sendError(500, "The server encountered an error while trying to send the requested file [ " + f.getName() + "] for request [" + request + "]");
+				resp.sendError(
+						500,
+						"The server encountered an error while trying to send the requested file [ " + f.getName() + "] for request [" + request + "]");
 				return;
 			}
 		} else {

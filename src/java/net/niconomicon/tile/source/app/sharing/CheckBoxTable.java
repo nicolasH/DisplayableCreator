@@ -10,12 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -40,11 +38,12 @@ public class CheckBoxTable extends JTable {
 	public static final int colTitle = 1;
 	public static final int colEdit = 2;
 
-	 public static final int colView = 3;
+	public static final int colView = 3;
 
-	 public static final int colWidthShare = 50;
-	 public static final int colWidthEdit = 60;
-	 public static final int colWidthView = 50;
+	public static final int colWidthShare = 40;
+	public static final int colWidthEdit = 40;
+	public static final int colWidthView = 40;
+
 	// public static final int colRemove = 4;
 
 	public CheckBoxTable(DisplayableViewer viewer) {
@@ -57,17 +56,17 @@ public class CheckBoxTable extends JTable {
 		this.getColumnModel().getColumn(colCheckBox).setPreferredWidth(colWidthShare);
 		this.getColumnModel().getColumn(colCheckBox).setMinWidth(colWidthShare);
 		this.getColumnModel().getColumn(colCheckBox).setMaxWidth(colWidthShare);
-		
+
 		this.getColumnModel().getColumn(colTitle).setPreferredWidth(200);
 
 		this.getColumnModel().getColumn(colEdit).setPreferredWidth(colWidthEdit);
 		this.getColumnModel().getColumn(colEdit).setMinWidth(colWidthEdit);
 		this.getColumnModel().getColumn(colEdit).setMaxWidth(colWidthEdit);
-		
+
 		this.getColumnModel().getColumn(colView).setPreferredWidth(colWidthView);
 		this.getColumnModel().getColumn(colView).setMinWidth(colWidthView);
 		this.getColumnModel().getColumn(colView).setMaxWidth(colWidthView);
-		
+
 		this.setMinimumSize(new Dimension(330, 100));
 		ColoredCellRenderer a = new ColoredCellRenderer();
 		this.getColumnModel().getColumn(colTitle).setCellRenderer(a);
@@ -150,11 +149,9 @@ public class CheckBoxTable extends JTable {
 				case colTitle:
 					return i.title;
 				case colView:
-					return "view";
+					return ButtonForTable.text_view;
 				case colEdit:
-					return Ref.isInTmpLocation(i.location) ? "!save!" : "edit";
-					// case colRemove:
-					// return "remove";
+					return Ref.isInTmpLocation(i.location) ? ButtonForTable.text_save : ButtonForTable.text_edit;
 				}
 			}
 			return null;
@@ -286,31 +283,4 @@ public class CheckBoxTable extends JTable {
 		}
 	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		JFrame f = new JFrame("test map list model");
-		Map<String, String> mapLost = new HashMap<String, String>();
-		mapLost.put("france.mdb", "Map of france");
-		mapLost.put("faso.mdb", "Map of burkina Faso");
-		mapLost.put("uk.mdb", "Map of United kingdom of england and northern ireland");
-		CheckBoxTable list = new CheckBoxTable(null);
-		f.setContentPane(list);
-		f.pack();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setVisible(true);
-		while (true) {
-			try {
-				Thread.sleep(3000);
-				list.addData(mapLost);
-				for (int i = 0; i < list.model.getRowCount(); i++) {
-					System.out
-							.println("Value for i = " + i + " :: " + list.model.getValueAt(i, 0) + "::" + list.model.getValueAt(i, 1) + " :: " + list.model
-									.getValueAt(i, 2));
-				}
-				break;
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
 }

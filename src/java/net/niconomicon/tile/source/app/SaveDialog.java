@@ -160,8 +160,8 @@ public class SaveDialog extends JPanel {
 		fillForm(currentLocation);
 		String res = "nah";
 		while (null != res) {
-			int result = JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE, null, null, null);
+			int result = JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+					null, new String[] { "Save", "Cancel" }, null);
 			if (JOptionPane.YES_OPTION == result) {
 				res = save(currentLocation);
 			} else {

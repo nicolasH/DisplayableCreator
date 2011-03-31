@@ -34,6 +34,7 @@
 				<directory>src/java</directory>
 				<includes>
 					<include>**/*.css</include>
+					<include>**/*.gif</include>
 				</includes>
 			</resource>
 		</resources>

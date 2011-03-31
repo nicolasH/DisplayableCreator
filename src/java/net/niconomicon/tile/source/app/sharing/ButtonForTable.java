@@ -3,11 +3,14 @@
  */
 package net.niconomicon.tile.source.app.sharing;
 
+import icons.IconsLoader;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
@@ -26,39 +29,58 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 	DisplayableViewer viewer = null;
 	SaveDialog saveDialog = null;
 
-	String lastValue = null;
+	// String lastValue = null;
 	JButton ren;
 	String defaultText;
 
 	int lastRow;
 	JTable lastTable;
+	IconsLoader iconLoader;
 
 	public ButtonForTable(String text) {
 		defaultText = text;
-		ren = new JButton(text);
+		ren = new JButton();
 	}
+
+	public static final String text_save = "! Save this Displayable ! Otherwise it will be erased when you quit.";
+	public static final String text_edit = "Edit Displayable : title, file name, location";
+	public static final String text_view = "View Displayable";
 
 	public ButtonForTable(SaveDialog save, String text) {
 		this(text);
 		saveDialog = save;
+		iconLoader = IconsLoader.getIconsLoader();
+
 	}
 
 	public ButtonForTable(DisplayableViewer viewer, String text) {
 		this(text);
 		this.viewer = viewer;
+		iconLoader = IconsLoader.getIconsLoader();
 	}
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		// lastRow = row;
-		// lastTable = table;
 
-		JButton b = ren;
+		String text;
 		if (value == null) {
-			b.setText(defaultText);
+			text = defaultText;
 		} else {
-			b.setText(value.toString());
+			text = value.toString();
 		}
-		return b;
+		ren.setToolTipText(text);
+		ImageIcon ic = null;
+		if (text.equals(text_save)) {
+			ic = iconLoader.ic_save_16;
+		}
+		if (text.equals(text_edit)) {
+			ic = iconLoader.ic_edit_16;
+		}
+		if (text.equals(text_view)) {
+			ic = iconLoader.ic_zoom_16;
+		}
+		ren.setIcon(ic);
+
+		return ren;
 	}
 
 	/* (non-Javadoc)
@@ -72,10 +94,27 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		lastRow = row;
 		lastTable = table;
 
-		lastValue = value.toString();
 		JButton b = new JButton();
+
+		String text;
+		if (value == null) {
+			text = defaultText;
+		} else {
+			text = value.toString();
+		}
+		ImageIcon ic = null;
+		if (text.equals(text_save)) {
+			ic = iconLoader.ic_save_16;
+		}
+		if (text.equals(text_edit)) {
+			ic = iconLoader.ic_edit_16;
+		}
+		if (text.equals(text_view)) {
+			ic = iconLoader.ic_zoom_16;
+		}
+		b.setIcon(ic);
+		b.setToolTipText(text);
 		b.addActionListener(this);
-		b.setText(value.toString());
 		return b;
 	}
 
