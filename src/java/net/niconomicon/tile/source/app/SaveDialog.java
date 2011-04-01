@@ -180,7 +180,7 @@ public class SaveDialog extends JPanel {
 		try {
 			currentTitle = SQliteTileCreatorMultithreaded.getTitle(currentLocation);
 			title.setText(currentTitle);
-			String suggestedFile = Ref.fileSansDot(currentLocation);
+			String suggestedFile = Ref.fileSansDot(currentLocation) + Ref.ext_db;
 			try {
 				if (Ref.isInTmpLocation(currentLocation)) {
 					// keep the lastIndex here because tmp file format should contain the '_'

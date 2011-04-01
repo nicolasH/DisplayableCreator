@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -123,11 +125,14 @@ public class CheckBoxTable extends JTable {
 	class CustomTableModel extends DefaultTableModel {
 
 		List<DisplayableInfos> backstore;
+		Set<String> knownPaths;
 
 		public CustomTableModel() {
 			super();
 			setColumnIdentifiers(columnsTitles);
 			backstore = new ArrayList<CheckBoxTable.DisplayableInfos>();
+			knownPaths = new HashSet<String>();
+
 		}
 
 		public int getColumnCount() {
@@ -191,7 +196,10 @@ public class CheckBoxTable extends JTable {
 			// backstore.clear();
 			for (Entry<String, String> elem : pathToTitle.entrySet()) {
 				DisplayableInfos info = new DisplayableInfos(elem.getKey(), elem.getValue());
-				backstore.add(info);
+				if (!knownPaths.contains(info.location)) {
+					knownPaths.add(info.location);
+					backstore.add(info);
+				}
 			}
 			Collections.sort(backstore);
 			fireTableDataChanged();
@@ -199,6 +207,7 @@ public class CheckBoxTable extends JTable {
 
 		public void addDisplayable(DisplayableInfos infos) {
 			backstore.add(infos);
+			knownPaths.add(infos.location);
 			Collections.sort(backstore);
 			fireTableDataChanged();
 		}
@@ -217,7 +226,9 @@ public class CheckBoxTable extends JTable {
 			DisplayableInfos i;
 			for (DisplayableInfos info : backstore) {
 				if (info.location.contentEquals(oldLocation)) {
-					info.location = newlocation;;
+					knownPaths.remove(info.location);
+					knownPaths.add(newlocation);
+					info.location = newlocation;
 				}
 			}
 			fireTableDataChanged();
