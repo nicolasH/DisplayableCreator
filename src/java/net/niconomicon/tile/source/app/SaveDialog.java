@@ -82,13 +82,13 @@ public class SaveDialog extends JPanel {
 			}
 		});
 
+		// //////////////
+		// First column : titles
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x;
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("Title :"), c);
-
-		// //////////////
 
 		c = new GridBagConstraints();
 		c.gridy = y++;
@@ -102,17 +102,19 @@ public class SaveDialog extends JPanel {
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("In directory :"), c);
 
+		// second, third and fourth columns : textfileds label and buttons
 		x = 1;
 		y = 0;
 		c = new GridBagConstraints();
-		c.gridy = y++;
+		c.gridy = y;
 		c.gridx = x;
-		c.gridwidth = 2;
+		c.gridwidth = 3;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		option.add(title, c);
 
+		y++;
 		c = new GridBagConstraints();
-		c.gridy = y++;
+		c.gridy = y;
 		c.gridx = x;
 		c.gridwidth = 2;
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -121,13 +123,27 @@ public class SaveDialog extends JPanel {
 
 		c = new GridBagConstraints();
 		c.gridy = y;
+		c.gridx = x + 2;
+		c.gridwidth = 1;
+//		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = c.LINE_END;
+		option.add(new JLabel(".mdb"), c);
+
+		y++;
+		
+		c = new GridBagConstraints();
+		c.gridy = y;
 		c.gridx = x;
+		c.gridwidth = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = c.LINE_START;
 		option.add(where, c);
 
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = x + 1;
+		c.gridwidth = 2;
+		c.anchor = c.LINE_END;
 		option.add(browseOutput, c);
 
 		this.add(option, BorderLayout.CENTER);
