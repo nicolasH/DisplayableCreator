@@ -124,7 +124,7 @@ public class SaveDialog extends JPanel {
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x + 2;
-		c.gridwidth = 1;
+//		c.gridwidth = 1;
 //		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = c.LINE_END;
 		option.add(new JLabel(".mdb"), c);
@@ -134,15 +134,14 @@ public class SaveDialog extends JPanel {
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x;
-		c.gridwidth = 1;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = c.LINE_START;
 		option.add(where, c);
 
 		c = new GridBagConstraints();
-		c.gridy = y++;
+		c.gridy = y;
 		c.gridx = x + 1;
-		c.gridwidth = 2;
+		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
 		option.add(browseOutput, c);
 
