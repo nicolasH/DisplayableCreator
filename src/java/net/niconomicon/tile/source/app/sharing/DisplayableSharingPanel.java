@@ -58,7 +58,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	JSpinner portNumber;
 	JLabel sharingStatus;
 	JLabel sharingLocation;
-	//String rootDir = "/Users/niko/Sites/testApp/mapRepository";
+	// String rootDir = "/Users/niko/Sites/testApp/mapRepository";
 
 	DisplayableViewer viewer;
 
@@ -172,8 +172,9 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		sharingStatus
 				.setToolTipText("If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://" + host + ":" + port + "/ in your iPhone / iPod touch web browser");
 		sharingLocation
-//				.setText("<html><body>If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://" + host + ":" + port + "/ in your iPhone / iPod touch web browser</body></html>");
-		.setText("<html><body>Also accessible in Safari at http://" + host + ":" + port + "/ </body></html>");
+		// .setText("<html><body>If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://"
+		// + host + ":" + port + "/ in your iPhone / iPod touch web browser</body></html>");
+				.setText("<html><body>Also accessible in Safari at http://" + host + ":" + port + "/ </body></html>");
 
 	}
 
@@ -245,7 +246,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	public boolean startSharing(boolean shouldPopup) {
 		// HashSet<String> sharedDB = new HashSet<String>();
 		Collection<String> sharedMaps = mapList.getSelectedTilesSetFiles();
-		System.out.println("should start sharing the maps");
+		System.out.println("should start sharing the maps, with " + (shouldPopup ? "popup" : "no popup") + " in case of problem");
 		// generate the xml;
 		int port = ((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue();
 		try {
@@ -264,7 +265,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 						.showConfirmDialog(
 								this,
 								"<html><body>Error while starting the sharing component on port [" + port + "]: <br/><i>" + ex.getMessage() + "</i></body></html>",
-								"Error creating startng the sharing component", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+								"Error creating starting the sharing component", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
 			}
 			ex.printStackTrace();
 			return false;

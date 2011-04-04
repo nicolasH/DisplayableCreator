@@ -124,13 +124,13 @@ public class SaveDialog extends JPanel {
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x + 2;
-//		c.gridwidth = 1;
-//		c.fill = GridBagConstraints.HORIZONTAL;
+		// c.gridwidth = 1;
+		// c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = c.LINE_END;
 		option.add(new JLabel(".mdb"), c);
 
 		y++;
-		
+
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x;
@@ -199,11 +199,15 @@ public class SaveDialog extends JPanel {
 			try {
 				if (Ref.isInTmpLocation(currentLocation)) {
 					// keep the lastIndex here because tmp file format should contain the '_'
-					suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf("_")) + Ref.ext_db;
+					suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf("_"));// + Ref.ext_db
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+			if (suggestedFile.endsWith(Ref.ext_db)) {
+				suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf(Ref.ext_db));
+			}
+
 			this.outputFileName.setText(suggestedFile);
 			this.where.setText(Ref.getDefaultDir());
 			// init dialog
