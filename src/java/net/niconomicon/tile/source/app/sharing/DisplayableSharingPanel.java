@@ -158,7 +158,6 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		switchSharing(false);
 		options.add(shareButton);
 		options.add(sharingLocation);
-		shareButton.getActionListeners();
 		this.add(options, BorderLayout.SOUTH);
 	}
 
@@ -218,19 +217,19 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	}
 
 	public void switchSharing(boolean shouldPopup) {
-		currentlySharing = !currentlySharing;
 		try {
 			localaddr = InetAddress.getLocalHost();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		if (currentlySharing) {
+		if (!currentlySharing) {
 			sharingStatus.setText("Sharing status : [starting ...]");
 			sharingStatus.revalidate();
 			if (startSharing(shouldPopup)) {
 				sharingStatus.setText("Sharing status : [running]");
 				setTooltipHostname(localaddr.getHostName());
 				shareButton.setText("Stop sharing");
+				currentlySharing = !currentlySharing;
 				return;
 			}
 		}
