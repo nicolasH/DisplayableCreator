@@ -13,8 +13,9 @@ You can run the latest version of it [from the displayator website][jnlp] as a "
 
 The supported images types are the standard GIF, PNG, BMP and most jpgs. Not supported formats include CMYK JPEG, PDF and TIFFs.
 
-On Windows, I do not know of a good free PDF renderer for transforming PDF into images. On Mac OS X, the Preview application can do it; it can also export CMYK JPEGs as PDFs and then those as PNG. 
-I have also created a Java Application to rasterize PDFs but it only work for the simplest PDFs. You can see its [sources on github][pdf-jr-git], visit its [project homepage][pdf-jr] is here, and you can [run it as a JNLP][pdf-jr-jnlp].
+On Windows, I do not know of a good free PDF renderer for transforming PDF into images. On Mac OS X, the Preview application can do it; it can also export CMYK JPEGs as PDFs and then those as PNG.   
+
+I have also created a Java Application to rasterize PDFs but it only work for the simplest PDFs. You can see its [sources on github][pdf-jr-git], visit its [project homepage][pdf-jr] is here, and you can [run it as a JNLP][pdf-jr-jnlp]. It is based on the PDF-Renderer Library from java.net .
 
 *:[Java Web Start][java] application: a Java application that can run on your desktop without needing to install it permanently.
 
