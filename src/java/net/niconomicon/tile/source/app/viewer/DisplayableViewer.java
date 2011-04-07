@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
+import net.niconomicon.tile.source.app.viewer.actions.Resizer;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
@@ -93,6 +94,11 @@ public class DisplayableViewer extends JPanel {
 		toolBar.add(infos);
 		toolBar.add(loadingLabel);
 		toolBar.add(progress);
+		JButton b;
+		b = new JButton("iPhone size");
+		b.addActionListener(new Resizer(viewerFrame, new Dimension(340, 500)));
+		toolBar.add(b);
+
 		this.add(toolBar, BorderLayout.NORTH);
 	}
 
