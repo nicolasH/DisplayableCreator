@@ -91,13 +91,17 @@ public class DisplayableViewer extends JPanel {
 		zM.addActionListener(new ZoomAction());
 		toolBar.add(zM);
 
+		JButton b;
+		b = new JButton(loader.ic_itouch_24_v);
+		b.addActionListener(new Resizer(viewerFrame, new Dimension(340, 500)));
+		toolBar.add(b);
+		b = new JButton(loader.ic_itouch_24_h);
+		b.addActionListener(new Resizer(viewerFrame, new Dimension(500, 340)));
+		toolBar.add(b);
+
 		toolBar.add(infos);
 		toolBar.add(loadingLabel);
 		toolBar.add(progress);
-		JButton b;
-		b = new JButton("iPhone size");
-		b.addActionListener(new Resizer(viewerFrame, new Dimension(340, 500)));
-		toolBar.add(b);
 
 		this.add(toolBar, BorderLayout.NORTH);
 	}
