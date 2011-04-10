@@ -93,11 +93,11 @@ public class DisplayableViewer extends JPanel {
 
 		JButton b;
 		b = new JButton(loader.ic_itouch_24_v);
-		b.setToolTipText("Resize window to iphone screen size (vertical)");
+		b.setToolTipText("Resize window to iphone screen size (vertical : ~ 320x480 pixels)");
 		b.addActionListener(new Resizer(viewerFrame, new Dimension(340, 500)));
 		toolBar.add(b);
 		b = new JButton(loader.ic_itouch_24_h);
-		b.setToolTipText("Resize window to iphone screen size (horizontal)");
+		b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
 		b.addActionListener(new Resizer(viewerFrame, new Dimension(500, 340)));
 		toolBar.add(b);
 
