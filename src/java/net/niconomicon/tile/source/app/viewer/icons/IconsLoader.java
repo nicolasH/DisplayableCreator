@@ -1,7 +1,7 @@
 /**
  * 
  */
-package icons;
+package net.niconomicon.tile.source.app.viewer.icons;
 
 import java.net.URL;
 
@@ -15,8 +15,8 @@ public class IconsLoader {
 
 	public ImageIcon ic_itouch_24_h;
 	public ImageIcon ic_itouch_24_v;
-//	public ImageIcon ic_itouch_24;
-	
+	// public ImageIcon ic_itouch_24;
+
 	public ImageIcon ic_edit_16;
 	public ImageIcon ic_edit_24;
 	public ImageIcon ic_save_16;
@@ -28,7 +28,7 @@ public class IconsLoader {
 	public ImageIcon ic_zoomOut_16;
 	public ImageIcon ic_zoomOut_24;
 
-	static final String iconsLocation = "icons/";
+	static final String iconsLocation = "net/niconomicon/tile/source/app/viewer/icons/";
 	private static IconsLoader icons;
 
 	public static IconsLoader getIconsLoader() {
@@ -40,13 +40,13 @@ public class IconsLoader {
 
 	private IconsLoader() {
 		URL url;
-		
+
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "itouch24_h.png");
 		ic_itouch_24_h = new ImageIcon(url);
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "itouch24_v.png");
 		ic_itouch_24_v = new ImageIcon(url);
-//		url = this.getClass().getClassLoader().getResource(iconsLocation + "itouch24.png");
-//		ic_itouch_24 = new ImageIcon(url);
+		// url = this.getClass().getClassLoader().getResource(iconsLocation + "itouch24.png");
+		// ic_itouch_24 = new ImageIcon(url);
 
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "Edit16.gif");
 		ic_edit_16 = new ImageIcon(url);

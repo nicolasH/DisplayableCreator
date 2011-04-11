@@ -3,7 +3,6 @@
  */
 package net.niconomicon.tile.source.app.sharing;
 
-import icons.IconsLoader;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -19,6 +18,7 @@ import javax.swing.table.TableCellRenderer;
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.SaveDialog;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
+import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 
 /**
  * @author Nicolas Hoibian

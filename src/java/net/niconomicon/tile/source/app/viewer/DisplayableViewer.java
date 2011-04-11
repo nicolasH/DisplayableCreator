@@ -3,7 +3,6 @@
  */
 package net.niconomicon.tile.source.app.viewer;
 
-import icons.IconsLoader;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -22,6 +21,7 @@ import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.actions.Resizer;
+import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
