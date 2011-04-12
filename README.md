@@ -21,7 +21,7 @@ I have also created a Java Application to rasterize PDFs but it only work for th
 
 ### Usage :
 
-# Phase 1 : Displayable creation.
+# Step 1 : Displayable creation
 
 - Drop the image you want to transform into a Displayable onto the top area of the application (by clicking on the top browse button of the app. The tiling process will start immediately.
 
@@ -29,12 +29,13 @@ If you want, after the Displayable is created, you can save it someplace. The fo
 - You can choose the title of the image as it will appear in the iphone app.
 - You can choose the name of the file that will be saved (by default the same name as the original file with a different extension).
 
-# Phase 2 : Sharing the Displayable(s).
+# Step 2 : Sharing the Displayable(s).
+
 By default, the Displayable creator start with the sharing enabled, but no Displayable loaded.
 
-Your iPhone/iPod touch needs to be on the same network as the computer on which you run the Displayable creator for sharing to work.
+Your iPhone/iPod touch needs to be on the same network as the computer on which you run the Displayable creator for sharing to work. Your computer have to allow the Displayable Creator application to accept incoming connections. 
 
-- Sharing is not enabled, click "start sharing".  
+- If sharing is not enabled, click on the "start sharing" button.  
 - On your iPhone/ iPod launch the Displayator app and then tap on the "Download images" list item. The available images should appear shortly. You can then select one and download it.
 
 [java]:http://www.java.com
