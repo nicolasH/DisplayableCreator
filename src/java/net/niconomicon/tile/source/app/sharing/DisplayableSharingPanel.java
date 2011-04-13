@@ -229,7 +229,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 				sharingStatus.setText("Sharing status : [running]");
 				setTooltipHostname(localaddr.getHostName());
 				shareButton.setText("Stop sharing");
-				currentlySharing = !currentlySharing;
+				currentlySharing = true;
 				return;
 			}
 		}
@@ -240,6 +240,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		setTooltipHostname(null);
 		sharingStatus.setText("Sharing status : [not running]");
 		shareButton.setText("Start sharing");
+		currentlySharing = false;
 	}
 
 	public boolean startSharing(boolean shouldPopup) {
