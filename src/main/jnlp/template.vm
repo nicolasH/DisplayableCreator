@@ -5,7 +5,7 @@
         <vendor>Nicolas Hoibian</vendor>
         <description>This app is meant to create Displayables for the Displayator iPad, iPhone & iPod touch app</description>
         <description kind="short">DisplayableCreator</description>
-        <homepage href=""/>
+        <homepage href="http://www.displayator.com/"/>
         <offline-allowed/>
     </information>
   <security>

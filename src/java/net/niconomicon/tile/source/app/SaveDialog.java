@@ -183,7 +183,8 @@ public class SaveDialog extends JPanel {
 				res = null;
 			}
 			if (res != null) {
-				JOptionPane.showConfirmDialog(parent, res);
+				JOptionPane.showOptionDialog(parent, res, "Error", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[] { "Ok" },
+						null);
 			}
 		}
 		return newLocation;
