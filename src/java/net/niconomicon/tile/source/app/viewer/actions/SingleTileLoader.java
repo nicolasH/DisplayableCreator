@@ -35,38 +35,39 @@ public class SingleTileLoader implements Runnable {
 	}
 
 	public void run() {
-		long start , stop;
-		start = System.currentTimeMillis();
+//		long start, stop;
+//		start = System.currentTimeMillis();
 		int count = 0;
 		if (displayableSource.hasImage(coord)) { return; }
 		try {
 			Statement statement = displayable.createStatement();
 			ResultSet rs = statement.executeQuery("select * from tiles_0_0 where z=" + coord.z + " and y=" + coord.y + " and x=" + coord.x);
 			while (rs.next()) {
-				count ++;
+				count++;
 				long x = rs.getLong(1);
 				long y = rs.getLong(2);
 				long z = rs.getLong(3);
-//				System.out.println("found a tile for " + x + " " + y + " " + z);
+				// System.out.println("found a tile for " + x + " " + y + " " + z);
 				byte[] data = rs.getBytes(4);
 				// cache.put(Ref.getKey(x, y, z), data);
 				try {
 					BufferedImage t = ImageIO.read(new ByteArrayInputStream(data));
+					// System.out.println("Getting type for loaded tile : : " + t.getType());
 					t = FastClipper.fastClip(t, new Rectangle(0, 0, t.getWidth(), t.getHeight()), true);
 					// System.out.println("key : " + key + " data " + t + " cache " + cache);
 					displayableSource.setImage(x, y, z, t);
-//					int tileSize = DisplayableView.tileSize;
+					// int tileSize = DisplayableView.tileSize;
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
 
-
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		stop = System.currentTimeMillis();
-		System.out.println("Loading done (count = "+count+ " time : "+(stop - start) + " ) for z = " + coord.z + " y = " + coord.y + " x = " + coord.x);
+//		stop = System.currentTimeMillis();
+		// System.out.println("Loading done (count = " + count + " time : " + (stop - start) + " ) for z = " + coord.z +
+		// " y = " + coord.y + " x = " + coord.x);
 
 	}
 }

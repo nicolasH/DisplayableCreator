@@ -5,6 +5,7 @@ package net.niconomicon.tile.source.app.tiling;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,13 +49,7 @@ public class TileSerializeJob implements Runnable {
 			long start = System.nanoTime();
 			ByteArrayOutputStream byteStorage = new ByteArrayOutputStream();
 
-			BufferedImage bufferedImage = new BufferedImage(tile.getWidth(null), tile.getHeight(null), BufferedImage.TYPE_INT_RGB);
-			Graphics g = bufferedImage.createGraphics();
-			// Color.WHITE sets the background to white. You can use any other color
-			g.drawImage(tile, 0, 0, Color.WHITE, null);
-			g.finalize();
-			ImageIO.write(bufferedImage, tileType, byteStorage);
-//			ImageIO.write(tile, tileType, byteStorage);
+			ImageIO.write(tile, tileType, byteStorage);
 
 			long stop = System.nanoTime();
 			// System.out.println("serializing_tile: " + ((double) (stop - start) / 1000000) + " ms");

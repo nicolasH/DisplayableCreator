@@ -418,11 +418,11 @@ public class SQliteTileCreatorMultithreaded {
 		}
 
 		serialPool.shutdown();
-		serialPool.awaitTermination(15, TimeUnit.MINUTES);
+		serialPool.awaitTermination(30, TimeUnit.MINUTES);
 		start = System.nanoTime();
 
 		plumberPool.shutdown();
-		plumberPool.awaitTermination(15, TimeUnit.MINUTES);
+		plumberPool.awaitTermination(30, TimeUnit.MINUTES);
 		System.out.println(" ... setting tile info");
 		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null, flipVertically);
 		System.out.println(" ... creating index ...");
