@@ -74,6 +74,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	 * @see javax.swing.event.TableModelListener#tableChanged(javax.swing.event.TableModelEvent)
 	 */
 	public void tableChanged(TableModelEvent e) {
+		System.out.println("Table changed. Event : "+e.getType());
 		if (sharingManager.isSharing()) {
 			sharingManager.setSharingList(mapList.getSelectedTilesSetFiles());
 			// update the list of shared documents

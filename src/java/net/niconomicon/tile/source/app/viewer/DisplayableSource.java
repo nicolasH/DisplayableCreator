@@ -43,7 +43,7 @@ public class DisplayableSource {
 
 	PreparedStatement tilesInRange;
 	DisplayableView view;
-
+	int type = -1;
 	ConcurrentLinkedQueue<TileCoord> neededTiles;
 	Map<String, BufferedImage> cache;
 
@@ -116,7 +116,7 @@ public class DisplayableSource {
 			if (c == null || hasImage(c)) {
 				return;
 			} else {
-				SingleTileLoader loader = new SingleTileLoader(mapDB, c, DisplayableSource.this);
+				SingleTileLoader loader = new SingleTileLoader(mapDB, c, DisplayableSource.this, type);
 				tileLoader.submit(loader);
 			}
 		}
@@ -134,6 +134,7 @@ public class DisplayableSource {
 			System.out.println("trying to open the map : " + tileSourcePath);
 			mapDB = DriverManager.getConnection("jdbc:sqlite:" + tileSourcePath);
 			mapDB.setReadOnly(true);
+			type = SingleTileLoader.getPossibleType(mapDB);
 
 			Statement statement = mapDB.createStatement();
 			// zoom = 0;
@@ -157,7 +158,7 @@ public class DisplayableSource {
 			if (view != null) {
 				view.resetSizeEtc(currentLevel);
 			}
-			System.out.println("fully cached !");
+			// System.out.println("fully cached !");
 		} catch (Exception ex) {
 			System.err.println("ex for map : " + tileSourcePath);
 			ex.printStackTrace();

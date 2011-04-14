@@ -3,7 +3,6 @@
  */
 package net.niconomicon.tile.source.app.viewer;
 
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -21,6 +20,7 @@ import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.actions.Resizer;
+import net.niconomicon.tile.source.app.viewer.actions.SingleTileLoader;
 import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
@@ -149,6 +149,7 @@ public class DisplayableViewer extends JPanel {
 			currentZoom.setText(" " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ() + " ");
 			ZoomLevel zl = currentSource.getMaxInfo();
 			infos.setText(" Original size : " + zl.width + " px * " + zl.height + " px. ");
+
 			tileViewer.revalidate();
 			revalidate();
 			viewerFrame.pack();

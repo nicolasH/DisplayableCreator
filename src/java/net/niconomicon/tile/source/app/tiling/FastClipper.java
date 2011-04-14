@@ -58,6 +58,10 @@ public class FastClipper {
 		return fastClip(src, clip, false);
 	}
 
+	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip, boolean flipVertically) {
+		return fastClip(src, clip, flipVertically, src.getType());
+	}
+
 	/**
 	 * @param src
 	 *            source image.
@@ -68,8 +72,12 @@ public class FastClipper {
 	 * @return an independent copy of the part of the image described by clip, flipped vertically according to
 	 *         'flipVertically'.
 	 */
-	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip, boolean flipVertically) {
-		BufferedImage dst = new BufferedImage(clip.width, clip.height, src.getType());
+	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip, boolean flipVertically, int type) {
+		System.out.println("Flipping image of type " + src.getType() + " given type : " + type + " and transparency : " + src.getTransparency());
+		if (src.getType() != BufferedImage.TYPE_CUSTOM) {
+			type = src.getType();
+		}
+		BufferedImage dst = new BufferedImage(clip.width, clip.height, type);
 
 		Object srcbuf = null;
 		Object dstbuf = null;
@@ -77,13 +85,6 @@ public class FastClipper {
 		int mpx = src.getWidth() * src.getHeight();
 		int factor = 1;
 		DataBuffer buff = src.getRaster().getDataBuffer();
-		// don't forget to clip and flip this too.
-		// if (src.getAlphaRaster() != null) {
-		// DataBuffer transBuffer = src.getAlphaRaster().getDataBuffer();
-		// System.out.println("transBuffer type : " + transBuffer.getClass() +" - "+transBuffer+
-		// " original buffer "+buff.getClass() + " - "+buff);
-		// //the transparent buffer and the raster buffer seem to be the same buffer object in at least two png case.
-		// }
 		/**
 		 * Handles transparency correctly for some GIFs
 		 */
