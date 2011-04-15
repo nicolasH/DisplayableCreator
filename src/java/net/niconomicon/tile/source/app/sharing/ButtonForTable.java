@@ -3,7 +3,6 @@
  */
 package net.niconomicon.tile.source.app.sharing;
 
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -133,10 +132,13 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		if (null != saveDialog) {
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
 			System.out.println("Saving : last row : " + lastRow + " file : " + fileLocation);
-			String newLocation = saveDialog.showDialog(lastTable, fileLocation);
-			if (newLocation != null) {
-				lastTable.setValueAt(newLocation, lastRow, -1);
-				if (!Ref.isInTmpLocation(newLocation)) {
+			String[] newInfos = saveDialog.showDialog(lastTable, fileLocation);
+			if (newInfos[1] != null) {
+				lastTable.setValueAt(newInfos[1], lastRow, CheckBoxTable.colTitle);
+			}
+			if (newInfos[0] != null) {
+				lastTable.setValueAt(newInfos[0], lastRow, -1);
+				if (!Ref.isInTmpLocation(newInfos[0])) {
 					this.fireEditingStopped();
 				}
 			}

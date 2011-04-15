@@ -68,7 +68,7 @@ public final class Ref {
 	}
 
 	public static final boolean isInTmpLocation(String currentLocation) {
-		if (tmpFile.getParent().compareTo(Ref.pathSansFileSansSep(currentLocation)) == 0) {
+		if (currentLocation != null && tmpFile.getParent().compareTo(Ref.pathSansFileSansSep(currentLocation)) == 0) {
 			return true;
 		} else {
 			return false;

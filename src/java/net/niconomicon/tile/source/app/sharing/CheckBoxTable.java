@@ -171,19 +171,21 @@ public class CheckBoxTable extends JTable {
 		}
 
 		public void setValueAt(Object aValue, int row, int column) {
+			if (column == colView) { return; }
 			if (column == -1 && aValue != null && row < backstore.size()) {
+				String s = backstore.get(row).location;
 				backstore.get(row).location = (String) aValue;
-				try {
-					backstore.get(row).title = SQliteTileCreatorMultithreaded.getTitle(backstore.get(row).location);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				};
+				// visible data did not change unless the it was a temporary file.
+				if (!(Ref.isInTmpLocation(s) && Ref.isInTmpLocation(backstore.get(row).location))) { return; }
 			}
-			System.out.println("aValue:" + aValue);
-			if (column == 0) {//
+			// visible data did change.
+			if (column == colTitle && aValue != null && row < backstore.size()) {
+				backstore.get(row).title = (String) aValue;
+				Collections.sort(backstore);
+			}
+			if (column == colCheckBox) {
 				backstore.get(row).shouldShare = ((Boolean) aValue).booleanValue();
 			}
-			Collections.sort(backstore);
 			fireTableDataChanged();
 		}
 

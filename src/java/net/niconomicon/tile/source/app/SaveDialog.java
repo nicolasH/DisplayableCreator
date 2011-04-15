@@ -48,6 +48,7 @@ public class SaveDialog extends JPanel {
 
 	String currentTitle = "";
 	String newLocation = null;
+	String newTitle = null;
 
 	public SaveDialog() {
 		super();
@@ -171,7 +172,13 @@ public class SaveDialog extends JPanel {
 		}
 	}
 
-	public String showDialog(Component parent, String currentLocation) {
+	/**
+	 * 
+	 * @param parent
+	 * @param currentLocation
+	 * @return [newLocation,newTitle]
+	 */
+	public String[] showDialog(Component parent, String currentLocation) {
 		fillForm(currentLocation);
 		String res = "nah";
 		while (null != res) {
@@ -187,7 +194,14 @@ public class SaveDialog extends JPanel {
 						null);
 			}
 		}
-		return newLocation;
+		String[] ret = new String[] { null, null };
+		if (currentLocation != newLocation) {
+			ret[0] = newLocation;
+		}
+		if (currentTitle != newTitle) {
+			ret[1] = newTitle;
+		}
+		return ret;
 	}
 
 	public void fillForm(String currentLocation) {
@@ -232,6 +246,7 @@ public class SaveDialog extends JPanel {
 
 		if (null == title.getText() || "null".equals(title.getText())) { return "No title was found. Please give a title to save the file."; }
 		if (!currentTitle.equals(title.getText())) {
+			newTitle = title.getText();
 			SQliteTileCreatorMultithreaded.updateTitle(originalFile, currentTitle, title.getText());
 		}
 
