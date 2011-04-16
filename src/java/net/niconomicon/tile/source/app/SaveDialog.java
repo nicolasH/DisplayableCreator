@@ -181,9 +181,10 @@ public class SaveDialog extends JPanel {
 	public String[] showDialog(Component parent, String currentLocation) {
 		fillForm(currentLocation);
 		String res = "nah";
+		String[] ret = new String[] { null, null };
 		while (null != res) {
 			int result = JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null, new String[] { "Save", "Cancel" }, null);
+					null, new String[] { "[ Save ]", "[ Cancel ]" }, null);
 			if (JOptionPane.YES_OPTION == result) {
 				res = save(currentLocation);
 			} else {
@@ -194,7 +195,7 @@ public class SaveDialog extends JPanel {
 						null);
 			}
 		}
-		String[] ret = new String[] { null, null };
+
 		if (currentLocation != newLocation) {
 			ret[0] = newLocation;
 		}
@@ -247,7 +248,7 @@ public class SaveDialog extends JPanel {
 		if (null == title.getText() || "null".equals(title.getText())) { return "No title was found. Please give a title to save the file."; }
 		if (!currentTitle.equals(title.getText())) {
 			newTitle = title.getText();
-			SQliteTileCreatorMultithreaded.updateTitle(originalFile, currentTitle, title.getText());
+			SQliteTileCreatorMultithreaded.updateTitle(originalFile, currentTitle, newTitle);
 		}
 
 		Ref.setDefaultDir(newPath);
@@ -258,6 +259,7 @@ public class SaveDialog extends JPanel {
 			File f = new File(originalFile);
 			boolean ok = f.renameTo(new File(newPath));
 			if (!ok) { return "<html><body>Could not move or rename the file to <br/>[" + newPath + "]<br/><b> Try to change the name of the file or its location.</b></body></html>"; }
+			System.out.println("Renamed " + originalFile + " to " + newLocation);
 			newLocation = newPath;
 		}
 		// success !

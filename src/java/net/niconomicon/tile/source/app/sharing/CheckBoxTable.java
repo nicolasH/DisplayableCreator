@@ -172,6 +172,8 @@ public class CheckBoxTable extends JTable {
 
 		public void setValueAt(Object aValue, int row, int column) {
 			if (column == colView) { return; }
+			if (column == colEdit) { return; }
+
 			if (column == -1 && aValue != null && row < backstore.size()) {
 				String s = backstore.get(row).location;
 				backstore.get(row).location = (String) aValue;

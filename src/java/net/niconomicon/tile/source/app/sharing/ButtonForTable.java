@@ -125,13 +125,13 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		System.out.println("Action source : " + e.getActionCommand());
 		if (null != viewer) {
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
-			System.out.println("Saving : last row : " + lastRow + " file : " + fileLocation);
+			System.out.println("Showing viewer : last row : " + lastRow + " file : " + fileLocation);
 			viewer.setDisplayable(fileLocation);
 			return;
 		}
 		if (null != saveDialog) {
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
-			System.out.println("Saving : last row : " + lastRow + " file : " + fileLocation);
+			System.out.println("Showing save Dialog : last row : " + lastRow + " file : " + fileLocation);
 			String[] newInfos = saveDialog.showDialog(lastTable, fileLocation);
 			if (newInfos[1] != null) {
 				lastTable.setValueAt(newInfos[1], lastRow, CheckBoxTable.colTitle);
