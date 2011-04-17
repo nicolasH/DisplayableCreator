@@ -179,6 +179,8 @@ public class SaveDialog extends JPanel {
 	 * @return [newLocation,newTitle]
 	 */
 	public String[] showDialog(Component parent, String currentLocation) {
+		newLocation = null;
+		newTitle = null;
 		fillForm(currentLocation);
 		String res = "nah";
 		String[] ret = new String[] { null, null };

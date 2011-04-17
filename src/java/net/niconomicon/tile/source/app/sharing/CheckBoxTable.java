@@ -175,19 +175,22 @@ public class CheckBoxTable extends JTable {
 			if (column == colEdit) { return; }
 
 			if (column == -1 && aValue != null && row < backstore.size()) {
-				String s = backstore.get(row).location;
-				backstore.get(row).location = (String) aValue;
+				String oldL = backstore.get(row).location;
+				if (!knownPaths.remove(oldL)) {
+					backstore.get(row).location = (String) aValue;
+					knownPaths.add(backstore.get(row).location);
+				}
 				// visible data did not change unless the it was a temporary file.
-				if (!(Ref.isInTmpLocation(s) && Ref.isInTmpLocation(backstore.get(row).location))) { return; }
+				if (!(Ref.isInTmpLocation(oldL) && Ref.isInTmpLocation(backstore.get(row).location))) { return; }
 			}
 			// visible data did change.
 			if (column == colTitle && aValue != null && row < backstore.size()) {
 				backstore.get(row).title = (String) aValue;
-				Collections.sort(backstore);
 			}
 			if (column == colCheckBox) {
 				backstore.get(row).shouldShare = ((Boolean) aValue).booleanValue();
 			}
+			Collections.sort(backstore);
 			fireTableDataChanged();
 		}
 
