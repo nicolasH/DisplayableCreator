@@ -228,7 +228,6 @@ public final class Ref {
 				String[] descriptions = generateDescriptionsForConnection(connection, size, mapFileName, urlToFile);
 				json.append(descriptions[0]);
 				html.append(descriptions[1]);
-				// html.append(generateHTMLForConnection(connection,size,mapFileName));
 				if (connection != null) connection.close();
 			} catch (Exception ex) {
 				System.out.println("failed to get infos for [" + mapFileName + "]");

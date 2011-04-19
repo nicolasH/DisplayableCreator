@@ -118,7 +118,7 @@ public class CheckBoxTable extends JTable {
 		}
 
 		public int compareTo(DisplayableInfos o) {
-			return title.compareTo(o.title);
+			return title.toLowerCase().compareTo(o.title.toLowerCase());
 		}
 	}
 
