@@ -6,8 +6,10 @@ package net.niconomicon.tile.source.app.viewer.actions;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.imageio.ImageIO;
@@ -92,6 +94,7 @@ public class SingleTileLoader implements Runnable {
 
 	public static int getPossibleType(Connection conn) {
 		int type = -1;
+		byte[] data = null;
 		try {
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery("select * from tiles_0_0 where z=0 and x=0 and y=0");
@@ -100,33 +103,50 @@ public class SingleTileLoader implements Runnable {
 				long y = rs.getLong(2);
 				long z = rs.getLong(3);
 				System.out.println("found a tile for " + x + " " + y + " " + z);
-				byte[] data = rs.getBytes(4);
-
+				data = rs.getBytes(4);
+			}
+			rs.close();
+		} catch (Exception ex) {}
+		if (data != null) {
+			BufferedImage t = null;
+			try {
+				t = ImageIO.read(new ByteArrayInputStream(data));
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+			if (t != null && t.getType() != BufferedImage.TYPE_CUSTOM) { return t.getType(); }
+			if (t != null && t.getType() == BufferedImage.TYPE_CUSTOM) {
 				try {
-					BufferedImage t = ImageIO.read(new ByteArrayInputStream(data));
-					if (t.getType() == BufferedImage.TYPE_CUSTOM) {
-						System.out.println("Getting type for loaded tile : : " + t.getType());
-						for (int i = 0; i < imageTypes.length; i++) {
-							type = imageTypes[i];
-							try {
-								t = FastClipper.fastClip(t, new Rectangle(0, 0, t.getWidth(), t.getHeight()), true, type);
-								System.out.println("Succeeded with type " + type);
-								return type;
-							} catch (Exception ex) {
-								System.out.println("Exception with type " + type);
-								// ex.printStackTrace();
-							}
-						}
-					} else {
-						return t.getType();
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery("select * from tile_info");
+					// (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB, flippedVertically
+					// BOOL
+					// , javaImageType INT)");
+					while (rs.next()) {
+						type = rs.getInt("javaImageType");
+						rs.close();
+						return type;
 					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
+				} catch (SQLException ex) {
+					// then continue
 				}
 			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			// ////////////////
+			// type == -1
+			System.out.println("Guessing type for loaded tile : : " + t.getType());
+			for (int i = 0; i < imageTypes.length; i++) {
+				type = imageTypes[i];
+				try {
+					t = FastClipper.fastClip(t, new Rectangle(0, 0, t.getWidth(), t.getHeight()), true, type);
+					System.out.println("Succeeded with type " + type);
+					return type;
+				} catch (Exception ex) {
+					System.out.println("Exception with type " + type);
+					// ex.printStackTrace();
+				}
+			}
 		}
+
 		return type;
 	}
 }

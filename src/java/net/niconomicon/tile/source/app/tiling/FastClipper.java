@@ -73,7 +73,8 @@ public class FastClipper {
 	 *         'flipVertically'.
 	 */
 	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip, boolean flipVertically, int type) {
-		System.out.println("Flipping image of type " + src.getType() + " given type : " + type + " and transparency : " + src.getTransparency());
+		// System.out.println("Flipping image of type " + src.getType() + " given type : " + type +
+		// " and transparency : " + src.getTransparency());
 		if (src.getType() != BufferedImage.TYPE_CUSTOM) {
 			type = src.getType();
 		}

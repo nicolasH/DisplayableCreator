@@ -120,7 +120,7 @@ public class SQliteTileCreatorMultithreaded {
 			statement.executeUpdate("drop table if exists tiles_" + tilesetKey);
 			//
 			statement
-					.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB, flippedVertically BOOL)");
+					.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB, flippedVertically BOOL , javaImageType INT)");
 			statement
 					.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
 			// currently the layer name should be the same as the map name, as only one layer is supported
@@ -330,6 +330,7 @@ public class SQliteTileCreatorMultithreaded {
 		}
 		System.out.println("Minimum size ");
 		boolean miniatureCreated = false;
+		int bufferedImageTileType = img.getType();
 		while (scaledWidth > minimumDimension || scaledHeight > minimumDimension) {
 			if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
 				serialPool.shutdownNow();
@@ -424,7 +425,7 @@ public class SQliteTileCreatorMultithreaded {
 		plumberPool.shutdown();
 		plumberPool.awaitTermination(30, TimeUnit.MINUTES);
 		System.out.println(" ... setting tile info");
-		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null, flipVertically);
+		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null, flipVertically,bufferedImageTileType);
 		System.out.println(" ... creating index ...");
 		createIndexOnTileTable(connection, tilesetKey, layerKey);
 		System.out.println("tiles created");
@@ -443,15 +444,16 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
-	public void setTileInfo(long mapID, String tileType, long tileWidth, long tileHeight, InputStream emptyTile, boolean verticallyFlipped) {
+	public void setTileInfo(long mapID, String tileType, long tileWidth, long tileHeight, InputStream emptyTile, boolean verticallyFlipped, int bufferedImageTileType) {
 		try {
-			PreparedStatement st = connection.prepareStatement("insert into tile_info values (?, ?, ?, ?, ?, ?)");
+			PreparedStatement st = connection.prepareStatement("insert into tile_info values (?, ?, ?, ?, ?, ?, ?)");
 			st.setLong(1, mapID);
 			st.setString(2, tileType);
 			st.setLong(3, tileWidth);
 			st.setLong(4, tileHeight);
 			// st.setBlob(5, emptyTile.);
 			st.setBoolean(6, verticallyFlipped);
+			st.setInt(7, bufferedImageTileType);
 			st.execute();
 		} catch (SQLException e) {
 			System.err.println("Information insertion failed.");
