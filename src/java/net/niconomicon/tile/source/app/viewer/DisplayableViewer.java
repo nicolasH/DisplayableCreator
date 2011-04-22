@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
+import net.niconomicon.tile.source.app.viewer.actions.FullScreenResizer;
 import net.niconomicon.tile.source.app.viewer.actions.Resizer;
 import net.niconomicon.tile.source.app.viewer.actions.SingleTileLoader;
 import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
@@ -100,10 +101,10 @@ public class DisplayableViewer extends JPanel {
 		b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
 		b.addActionListener(new Resizer(viewerFrame, new Dimension(500, 340)));
 		toolBar.add(b);
-		
+
 		b = new JButton(loader.ic_itouch_24_h);
 		b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
-		b.addActionListener(new Resizer(viewerFrame, new Dimension(-1, -1)));
+		b.addActionListener(new FullScreenResizer(viewerFrame, b, toolBar));
 		toolBar.add(b);
 
 		toolBar.add(infos);

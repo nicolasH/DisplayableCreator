@@ -24,12 +24,6 @@ public class Resizer implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
-		if (dim.height == dim.width && dim.height == -1) {
-			Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-			frame.setSize(d);
-			frame.setLocation(0,0);
-			return;
-		}
 		frame.setSize(dim);
 	}
 }
