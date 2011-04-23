@@ -53,7 +53,7 @@ public class DisplayableSource {
 	Timer loader;
 
 	public DisplayableSource(String tileSourcePath, JLabel loadingLabel, DisplayableView view) {
-		tileLoader = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount / 2);
+		tileLoader = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount);
 		neededTiles = new ConcurrentLinkedQueue<TileCoord>();
 		this.view = view;
 		LinkedHashMap<String, BufferedImage> cacheImpl = new LinkedHashMap<String, BufferedImage>(200) {

@@ -271,7 +271,7 @@ public class SQliteTileCreatorMultithreaded {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 		ExecutorService serialPool = Executors.newFixedThreadPool(nThreads);
-		ExecutorService plumberPool = Executors.newFixedThreadPool(1);
+		ExecutorService plumberPool = Executors.newFixedThreadPool(1);//writing to a SQLite DB : 1 thread max :-( 
 
 		if (destinationFile == null || pathToFile == null) { return; }
 		// the pathTo file includes the fileName.

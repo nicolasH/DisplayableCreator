@@ -17,6 +17,7 @@ public class Test {
 
 	public static void main(String[] args) {
 		try {
+			System.out.println("Available processors : " + Runtime.getRuntime().availableProcessors());
 			int[] types = new int[] { BufferedImage.TYPE_CUSTOM, // 0
 			BufferedImage.TYPE_INT_RGB, // 1
 			BufferedImage.TYPE_INT_ARGB, // 2

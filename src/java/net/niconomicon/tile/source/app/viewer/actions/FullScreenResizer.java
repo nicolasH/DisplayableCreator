@@ -3,12 +3,14 @@
  */
 package net.niconomicon.tile.source.app.viewer.actions;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JToolBar;
@@ -34,20 +36,32 @@ public class FullScreenResizer implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		ImageIcon icon;
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		Point pos = new Point(0, 0);
+
 		if (fullScreen) {
-			frame.setLocation(framePreFullPos);
-			frame.setSize(framePreFullDim);
 			fullScreen = false;
-			button.setIcon(IconsLoader.getIconsLoader().ic_zoomOut_24);
-			// toolbar.setFloatable(true);
-			return;
+			icon = IconsLoader.getIconsLoader().ic_wExp_24;
+			pos = framePreFullPos;
+			dim = framePreFullDim;
+		} else {
+			fullScreen = true;
+			icon = IconsLoader.getIconsLoader().ic_wCon_24;
+			framePreFullDim = frame.getSize();
+			framePreFullPos = frame.getLocation();
 		}
-		framePreFullDim = frame.getSize();
-		framePreFullPos = frame.getLocation();
-		button.setIcon(IconsLoader.getIconsLoader().ic_zoomIn_24);
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation(0, 0);
-		frame.setSize(d);
-		fullScreen = true;
+		// frame.dispose();
+		// // Can only be changed while not displayable.
+		// // but cause problems in mac os x : window appear bellow the toolbar.
+		// frame.setUndecorated(fullScreen);
+		// frame.pack();
+//		frame.setVisible(false);
+		button.setIcon(icon);
+		// frame.setAlwaysOnTop(fullScreen);
+		// Can only affect the window if it is displayable
+		frame.setSize(dim);
+		frame.setLocation(pos);
+//		frame.setVisible(true);
 	}
 }

@@ -78,19 +78,19 @@ public class DisplayableViewer extends JPanel {
 		loadingLabel = new JLabel();
 		progress = new JProgressBar();
 
-		JLabel l = new JLabel("Zoom : ");
-		toolBar.add(l);
 		IconsLoader loader = IconsLoader.getIconsLoader();
-		zP = new JButton(loader.ic_zoomIn_24);
-
-		zP.addActionListener(new ZoomAction());
-		toolBar.add(zP);
-
-		toolBar.add(currentZoom);
 
 		zM = new JButton(loader.ic_zoomOut_24);
 		zM.addActionListener(new ZoomAction());
 		toolBar.add(zM);
+
+		toolBar.add(currentZoom);
+
+		zP = new JButton(loader.ic_zoomIn_24);
+		zP.addActionListener(new ZoomAction());
+		toolBar.add(zP);
+
+		toolBar.addSeparator();
 
 		JButton b;
 		b = new JButton(loader.ic_itouch_24_v);
@@ -102,7 +102,8 @@ public class DisplayableViewer extends JPanel {
 		b.addActionListener(new Resizer(viewerFrame, new Dimension(500, 340)));
 		toolBar.add(b);
 
-		b = new JButton(loader.ic_itouch_24_h);
+		toolBar.addSeparator();
+		b = new JButton(loader.ic_wExp_24);
 		b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
 		b.addActionListener(new FullScreenResizer(viewerFrame, b, toolBar));
 		toolBar.add(b);

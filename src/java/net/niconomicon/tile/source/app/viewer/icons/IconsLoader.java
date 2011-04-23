@@ -16,6 +16,8 @@ public class IconsLoader {
 	public ImageIcon ic_itouch_24_h;
 	public ImageIcon ic_itouch_24_v;
 	// public ImageIcon ic_itouch_24;
+	public ImageIcon ic_wExp_24;
+	public ImageIcon ic_wCon_24;
 
 	public ImageIcon ic_edit_16;
 	public ImageIcon ic_edit_24;
@@ -45,8 +47,11 @@ public class IconsLoader {
 		ic_itouch_24_h = new ImageIcon(url);
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "itouch24_v.png");
 		ic_itouch_24_v = new ImageIcon(url);
-		// url = this.getClass().getClassLoader().getResource(iconsLocation + "itouch24.png");
-		// ic_itouch_24 = new ImageIcon(url);
+
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "windowContract24.png");
+		ic_wCon_24= new ImageIcon(url);
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "windowExpand24.png");
+		ic_wExp_24= new ImageIcon(url);
 
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "Edit16.gif");
 		ic_edit_16 = new ImageIcon(url);
