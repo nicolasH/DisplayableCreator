@@ -24,9 +24,10 @@ public class DisplayableCreatorApp {
 	DisplayableSharingPanel mapSharingPanel;
 	DisplayableViewer displayableViewer;
 
-	public static int ThreadCount = 8;
+	public static int ThreadCount = 4;
 
 	public DisplayableCreatorApp() {
+		ThreadCount = Math.max(Runtime.getRuntime().availableProcessors()*2, ThreadCount);
 		init();
 	}
 
