@@ -1,8 +1,9 @@
 import java.io.File;
-
-import javax.swing.JProgressBar;
+import java.io.IOError;
+import java.io.IOException;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.tiling.GenericTileCreator;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 
 /**
@@ -15,52 +16,98 @@ import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
  */
 public class ImageToDisplayable {
 
+	public static final String swSrc = "-i";
+	public static final String swDst = "-d";
+	public static final String swThr = "-t";
+	public static final String swTSize = "-s";
+	public static final String swName = "-n";
+
 	public static void printOptions() {
-		System.out.println("usage : tests [nThreads] [nIters] [srcimage] [destFile]");
-		System.out.println("[nThread] will be the number of threads used to serialize the tiles. ");
-		System.out.println("          The main thread will open,resize the image and write the tiles to the storage. If <= 1 will be replaced by 1.");
-		System.out.println("[nIters] will be the number of times the image will be open, tiled and serialized.");
-		System.out.println("          if <=1 will be replaced by 1. If >1 the iteration will be added to the destination file name.");
+		String name = ImageToDisplayable.class.getName();
 
-		System.out.println("[srcImage] the image you want to tile.");
-		System.out.println("[srcImage] where the tiles image will be stored.");
+		System.out.println("usage : " + name + " -i [srcimage]");
+		System.out
+				.println("      : " + name + " " + swSrc + " [srcimage] " + swDst + " [destFile] " + swThr + " [nThreads] " + swTSize + " [tileSize]" + swName + " [Disp name/title]");
+		System.out.println("");
+		System.out.println("options :");
+		System.out.println("        : " + swSrc + " : path to the image to transform into a displayable. Mandatory.");
+		System.out.println("        All other options are dispensable.");
+		System.out
+				.println("        : " + swDst + " : the file to which the Displayable should be saved. Defaults to the [srcImage] with a different (" + Ref.ext_db + ") extension.");
+		System.out.println("        : " + swThr + " : The number of threads to use to serialize the tiles. Defaults to 4.");
+		System.out.println("        : " + swTSize + " : The size of the tile. Default to 192.");
+		System.out.println("        : " + swName + " : The name / title of the Displayable.");
+		System.out.println("");
 		System.out.println("example usage :");
-		System.out.println("java -Xmx1024m -jar bla.jar Tile 1 1 ~niko/Big.jpg /tmp/test.tdb");
-
-		System.out.println("java -Xmx1024m -jar bla.jar Tile 24 1 ~niko/Big.jpg /tmp/test.tdb");
-
+		System.out.println("java -Xmx1024m -Xms128m -jar displayable-creator.jar " + name + " -i /some/path/to/an/image.jpg");
+		System.out.println("# will create a Displayable and save it as /some/path/to/an/image" + Ref.ext_db);
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) throws Exception {
-		if (args.length < 4) {
-			printOptions();
-		}
-		int nThreads = 1;
-		int nIters = 1;
-		File fopen = null;
-		File fWrite = null;
+	public static int getNumberOrBail(String val) {
+		int ret = -1;
 		try {
-			nThreads = Integer.parseInt(args[0]);
-			nIters = Integer.parseInt(args[1]);
+			ret = Integer.parseInt(val);
 		} catch (Exception ex) {
 			printOptions();
 			ex.printStackTrace();
 			System.exit(0);
 		}
-		nIters = Math.max(nIters, 1);
+		return ret;
+	}
+
+	/**
+	 * -i [source image] -d [displayable name(should not exist)] -t [nb of threads to use] -s [size of the tile] -n
+	 * [name / title of the displayable]
+	 * 
+	 * @param args
+	 * @throws InterruptedException
+	 */
+	public static void main(String[] args) throws InterruptedException, IOException {
+		if (args.length < 2) {
+			printOptions();
+			return;
+		}
+		int nThreads = 1;
+		int tileSize = GenericTileCreator.defaultTileSize;
+		String src = null;
+		String dst = null;
+
+		for (int i = 0; i < args.length - 1; i++) {
+			String sw = args[i];
+			String val = args[i + 1];
+			if (sw.equals(swSrc)) {
+				src = val;
+			}
+			if (sw.equals(swDst)) {
+				dst = val;
+			}
+			if (sw.equals(swThr)) {
+				nThreads = getNumberOrBail(val);
+			}
+			if (sw.equals(swTSize)) {
+				tileSize = getNumberOrBail(val);
+			}
+		}
+
+		if (null == src) {
+			System.out.println("The image to transform into a Displayable is missing. Please give one.");
+			printOptions();
+			return;
+		}
 		nThreads = Math.max(nThreads, 1);
+
+		File fopen = null;
+		File fWrite = null;
+
 		try {
-			fopen = new File(args[2]);
+			fopen = new File(src);
 			if (!fopen.exists()) {
-				System.out.println("Could not find this file : [" + args[2] + "]");
+				System.out.println("Could not find this file : [" + src + "]");
 				printOptions();
 				System.exit(0);
 			}
 			if (!fopen.canRead()) {
-				System.out.println("The program doesn't have the rights to read this file : [" + args[2] + "]");
+				System.out.println("The program doesn't have the rights to read this file : [" + src + "]");
 				printOptions();
 				System.exit(0);
 			}
@@ -70,15 +117,19 @@ public class ImageToDisplayable {
 			System.exit(0);
 		}
 
+		if (dst == null) {
+			dst = Ref.pathSansFile(src) + Ref.fileSansDot(src) + Ref.ext_db;
+			System.out.println("No output file provided. Going to write to " + dst);
+		}
 		try {
-			fWrite = new File(args[3]);
+			fWrite = new File(dst);
 			if (fWrite.exists()) {
-				System.out.println("This file : [" + args[3] + "] already exists. Please remove it before running this program.");
+				System.out.println("This file : [" + dst + "] already exists. Please remove it before running this program.");
 				printOptions();
 				System.exit(0);
 			}
 			if (!fWrite.createNewFile()) {
-				System.out.println("The program could not create this file: [" + args[3] + "] Please ensure the place is writable.");
+				System.out.println("The program could not create this file: [" + dst + "] Please ensure the place is writable.");
 				printOptions();
 				System.exit(0);
 			}
@@ -94,20 +145,15 @@ public class ImageToDisplayable {
 		// String destDir = "/Users/niko/tileSources/bench/";
 		// String src = "/Users/niko/tileSources/";
 		String title = Ref.fileSansDot(fopen.getAbsolutePath());
-
+		SQliteTileCreatorMultithreaded.loadLib();
 		SQliteTileCreatorMultithreaded creator = new SQliteTileCreatorMultithreaded();
 		creator.title = title;
-		creator.loadLib();
-		Thread.sleep(3000);
 		long start, stop;
-		for (int i = 0; i < nIters; i++) {
-			System.out.println("Processing " + title);
-			start = System.nanoTime();
-
-			creator.calculateTiles(fWrite.getAbsolutePath(), fopen.getAbsolutePath(), 192, "png", null, nThreads, true, null);
-			creator.finalizeFile();
-			stop = System.nanoTime();
-			System.out.println("total_time: " + ((double) (stop - start) / 1000000) + " ms");
-		}
+		System.out.println("Processing " + title + " using " + nThreads + " threads.");
+		start = System.nanoTime();
+		creator.calculateTiles(fWrite.getAbsolutePath(), fopen.getAbsolutePath(), tileSize, "png", null, nThreads, true, null);
+		creator.finalizeFile();
+		stop = System.nanoTime();
+		System.out.println("### [" + title + "] total_time: " + ((double) (stop - start) / 1000000) + " ms");
 	}
 }

@@ -37,7 +37,7 @@ public final class Ref {
 	public static final String app_handle_item = "displayator-image:";
 	public static final String app_handle_list = "displayator-list:";
 
-	public static final String ext_db = ".mdb";
+	public static final String ext_db = ".disp";
 	public static final String ext_thumb = ".thumb";
 	public static final String ext_mini = ".mini";
 
@@ -75,6 +75,11 @@ public final class Ref {
 		}
 	}
 
+	/**
+	 * 
+	 * @param fullPath
+	 * @return the name of the file without its path and without its extension (if any)
+	 */
 	public static final String fileSansDot(String fullPath) {
 		int end = fullPath.lastIndexOf(".");
 		if (end < 0) {
@@ -83,10 +88,18 @@ public final class Ref {
 		return fullPath.substring(fullPath.lastIndexOf(File.separator) + 1, end);
 	}
 
+	/**
+	 * @param fullPath
+	 * @return the files parent directory including the last file separator
+	 */
 	public static final String pathSansFile(String fullPath) {
 		return fullPath.substring(0, fullPath.lastIndexOf(File.separator) + 1);
 	}
 
+	/**
+	 * @param fullPath
+	 * @return the files parent directory excluding the last file separator
+	 */
 	public static final String pathSansFileSansSep(String fullPath) {
 		return fullPath.substring(0, fullPath.lastIndexOf(File.separator));
 	}

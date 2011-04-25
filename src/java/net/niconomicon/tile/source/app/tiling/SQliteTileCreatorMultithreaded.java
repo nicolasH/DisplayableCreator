@@ -4,7 +4,9 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -247,7 +249,7 @@ public class SQliteTileCreatorMultithreaded {
 		long zindex = 0;
 		String stat = "INSERT INTO layers_infos VALUES(?,?,?,?,?,?,?,?,?,?)";
 		try {
-			System.out.println("stat = " + stat);
+			// System.out.println("stat = " + stat);
 			PreparedStatement ps = connection.prepareStatement(stat);
 			int i = 1;
 			ps.setString(i++, layerName);
@@ -267,11 +269,11 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
-	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, TilingStatusReporter progressIndicator, int nThreads, boolean flipVertically, Inhibitor inhibitor) throws Exception {
+	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, TilingStatusReporter progressIndicator, int nThreads, boolean flipVertically, Inhibitor inhibitor) throws IOException, InterruptedException {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 		ExecutorService serialPool = Executors.newFixedThreadPool(nThreads);
-		ExecutorService plumberPool = Executors.newFixedThreadPool(1);//writing to a SQLite DB : 1 thread max :-( 
+		ExecutorService plumberPool = Executors.newFixedThreadPool(1);// writing to a SQLite DB : 1 thread max :-(
 
 		if (destinationFile == null || pathToFile == null) { return; }
 		// the pathTo file includes the fileName.
@@ -284,10 +286,12 @@ public class SQliteTileCreatorMultithreaded {
 		description = (null == description ? "No Description" : description);
 
 		// /////////////////////////////////
-		System.out.println("creating the tiles");
+		System.out.println("Creating the tiles:");
 		// //////////////////////////////
 		BufferedImage img = null;
 		long stop, start;
+		System.out.print("Opening the image ... ");
+		// System.out.flush();
 		start = System.nanoTime();
 
 		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) { return; }
@@ -297,11 +301,11 @@ public class SQliteTileCreatorMultithreaded {
 		// //////////////////////////////
 
 		stop = System.nanoTime();
-		System.out.println("opening_image: " + ((double) (stop - start) / 1000000) + " ms");
-
+		System.out.println(" done. It took " + ((double) (stop - start) / 1000000) + " ms");
+		// Scaled image to 413 x 281. It took 404.18 ms
 		int width = img.getWidth();
 		int height = img.getHeight();
-
+		System.out.println("Original size : " + width + " x " + height);
 		sourceWidth = width;
 		sourceHeigth = height;
 
@@ -328,7 +332,6 @@ public class SQliteTileCreatorMultithreaded {
 			aaX = aaX * ZOOM_FACTOR;
 			aaY = aaY * ZOOM_FACTOR;
 		}
-		System.out.println("Minimum size ");
 		boolean miniatureCreated = false;
 		int bufferedImageTileType = img.getType();
 		while (scaledWidth > minimumDimension || scaledHeight > minimumDimension) {
@@ -396,7 +399,7 @@ public class SQliteTileCreatorMultithreaded {
 			nbY = (int) Math.ceil((double) scaledHeight / tileSize);
 
 			zoom++;
-			if (inhibitor.hasRunInhibitionBeenRequested()) {
+			if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
 				serialPool.shutdownNow();
 				plumberPool.shutdownNow();
 				return;
@@ -404,28 +407,31 @@ public class SQliteTileCreatorMultithreaded {
 
 			start = System.nanoTime();
 			xxx = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
-			img = new BufferedImage(scaledWidth, scaledHeight, img.getType());
+			int ype = img.getType();
+			img = null;
+			img = new BufferedImage(scaledWidth, scaledHeight, ype);
 			Graphics g0 = img.createGraphics();
 
 			g0.drawImage(xxx, 0, 0, scaledWidth, scaledHeight, 0, 0, scaledWidth, scaledHeight, null);
 			g0.dispose();
 			stop = System.nanoTime();
-			System.out.println("scaled_image_" + zoom + ": " + ((double) (stop - start) / 1000000) + " ms");
+			System.out.println("Scaled image to " + scaledWidth + " x " + scaledHeight + ". It took " + ((double) (stop - start) / 1000000) + " ms");
 		}
-		if (inhibitor.hasRunInhibitionBeenRequested()) {
+		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
 			serialPool.shutdownNow();
 			plumberPool.shutdownNow();
 			return;
 		}
-
+		System.out.println(" ... waiting for tiles to be serialized ...");
 		serialPool.shutdown();
 		serialPool.awaitTermination(30, TimeUnit.MINUTES);
 		start = System.nanoTime();
+		System.out.println(" ... waiting for tiles to be written ...");
 
 		plumberPool.shutdown();
 		plumberPool.awaitTermination(30, TimeUnit.MINUTES);
 		System.out.println(" ... setting tile info");
-		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null, flipVertically,bufferedImageTileType);
+		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null, flipVertically, bufferedImageTileType);
 		System.out.println(" ... creating index ...");
 		createIndexOnTileTable(connection, tilesetKey, layerKey);
 		System.out.println("tiles created");
