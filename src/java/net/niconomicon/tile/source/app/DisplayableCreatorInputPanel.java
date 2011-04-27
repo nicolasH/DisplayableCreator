@@ -212,7 +212,7 @@ public class DisplayableCreatorInputPanel extends JLayeredPane implements Tiling
 										.substring(currentSourcePath.lastIndexOf(File.separator) + 1) + " ...",
 								0.009);
 						long start = System.currentTimeMillis();
-						Communicator comm = new Communicator(preview);
+//						Communicator comm = new Communicator(preview);
 						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE,
 								DisplayableCreatorInputPanel.this, DisplayableCreatorApp.ThreadCount, true, inhibitor);
 						long end = System.currentTimeMillis();
@@ -270,7 +270,6 @@ public class DisplayableCreatorInputPanel extends JLayeredPane implements Tiling
 				try {
 					setImageFileToTile(sourceChooser.getSelectedFile());
 				} catch (Exception e) {
-					// from.setText("Sorry, cannot open the file");
 					e.printStackTrace();
 				}
 			}

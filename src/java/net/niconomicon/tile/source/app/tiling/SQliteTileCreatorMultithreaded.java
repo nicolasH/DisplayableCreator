@@ -83,12 +83,12 @@ public class SQliteTileCreatorMultithreaded {
 	public PreparedStatement insertTile;
 
 	/**
-	 * an archive is a collection of maps. a map is a collection of layers. a layer has an area
+	 * This method will open the file as a sqlite db and drop then create the tables used for storing a Displayable.
+	 * //An archive is a collection of Displayable. a Displayable is a collection of layers. a layer has an area
 	 * 
-	 * @param archiveName
-	 * @param fileSansDot
+	 * @param archivePath
 	 */
-	public void initSource(String archiveName) {
+	public void initSource(String archivePath) {
 		tilesetKey = -1;
 		layerKey = -1;
 
@@ -110,7 +110,7 @@ public class SQliteTileCreatorMultithreaded {
 		connection = null;
 		try {
 			// create a database connection
-			connection = DriverManager.getConnection("jdbc:sqlite:" + archiveName);
+			connection = DriverManager.getConnection("jdbc:sqlite:" + archivePath);
 			connection.setAutoCommit(false);
 			// System.out.println("Archive name : " + archiveName);
 			Statement statement = connection.createStatement();
@@ -141,6 +141,10 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
+	/**
+	 * This method will write the info about the Displayable (name, author, title , size etc...) and call the commit and
+	 * close method on the db connection.
+	 */
 	public void finalizeFile() {
 		addInfos(name, author, source, title, description, zIndex, sourceWidth, sourceHeigth, mini, thumb);
 		try {
@@ -152,6 +156,13 @@ public class SQliteTileCreatorMultithreaded {
 		// add source, author,date , thumb
 	}
 
+	/**
+	 * Connect to the database and changes the title before disconnecting.
+	 * 
+	 * @param dbFile
+	 * @param oldTitle
+	 * @param newTitle
+	 */
 	public static void updateTitle(String dbFile, String oldTitle, String newTitle) {
 		String stat = "UPDATE infos SET title=? WHERE title=?";
 		String date = new Date(System.currentTimeMillis()).toString();
