@@ -9,7 +9,7 @@
 		<dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
 			<artifactId>jetty-all</artifactId>
-			<version>8.0.0.M1</version>
+			<version>8.0.0.M2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.xerial</groupId>
@@ -120,16 +120,16 @@
 		</plugins>
 	</build>
 	<repositories>
-		<repository>
+		<!--<repository>
 			<id>atlassian-m2-repository</id>
 			<name>Atlassian Public Repository</name>
 			<url>https://maven.atlassian.com/public</url>
-		</repository>
-		<repository>
+		</repository>-->
+		<!--<repository>
 			<id>niconomicon.repo</id>
 			<name>Niconomicon Public Repository</name>
 			<url>http://www.niconomicon.net/tests/maven</url>
-		</repository>
+		</repository>-->
 		<repository>
 			<id>central</id>
 			<name>Maven Repository Switchboard</name>
