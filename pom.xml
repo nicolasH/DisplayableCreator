@@ -120,16 +120,6 @@
 		</plugins>
 	</build>
 	<repositories>
-		<!--<repository>
-			<id>atlassian-m2-repository</id>
-			<name>Atlassian Public Repository</name>
-			<url>https://maven.atlassian.com/public</url>
-		</repository>-->
-		<!--<repository>
-			<id>niconomicon.repo</id>
-			<name>Niconomicon Public Repository</name>
-			<url>http://www.niconomicon.net/tests/maven</url>
-		</repository>-->
 		<repository>
 			<id>central</id>
 			<name>Maven Repository Switchboard</name>
@@ -147,7 +137,5 @@
 			<name>twdata.org Maven 2 Repository</name>
 			<url>http://twdata-m2-repository.googlecode.com/svn/</url>
 		</pluginRepository>
-		<!-- <pluginRepository> <id>onejar-maven-plugin.googlecode.com</id> <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url> 
-			</pluginRepository> -->
 	</pluginRepositories>
 </project>
