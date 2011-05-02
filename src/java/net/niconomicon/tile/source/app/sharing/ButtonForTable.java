@@ -132,16 +132,17 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 		if (null != saveDialog) {
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
 			System.out.println("Showing save Dialog : last row : " + lastRow + " file : " + fileLocation);
-			String[] newInfos = saveDialog.showDialog(lastTable, fileLocation);
-			if (newInfos[1] != null) {
-				lastTable.setValueAt(newInfos[1], lastRow, CheckBoxTable.colTitle);
+			ResultStruct newInfos = saveDialog.showDialog(lastTable, fileLocation);
+			if (newInfos.newLocation != null) {
+				lastTable.setValueAt(newInfos.newLocation, lastRow, -1);
 			}
-			if (newInfos[0] != null) {
-				lastTable.setValueAt(newInfos[0], lastRow, -1);
-				if (!Ref.isInTmpLocation(newInfos[0])) {
-					this.fireEditingStopped();
-				}
+			if (newInfos.newTitle != null) {
+				lastTable.setValueAt(newInfos.newTitle, lastRow, CheckBoxTable.colTitle);
 			}
+			if (null != newInfos.newLocation && !Ref.isInTmpLocation(newInfos.newLocation)) {
+				this.fireEditingStopped();
+			}
+
 			return;
 		}
 		((CheckBoxTable.CustomTableModel) lastTable.getModel()).removeDisplayable(new int[] { lastRow });

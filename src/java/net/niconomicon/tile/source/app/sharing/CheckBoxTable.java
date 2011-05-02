@@ -176,7 +176,8 @@ public class CheckBoxTable extends JTable {
 
 			if (column == -1 && aValue != null && row < backstore.size()) {
 				String oldL = backstore.get(row).location;
-				if (!knownPaths.remove(oldL)) {
+				
+				if (knownPaths.remove(oldL)) {
 					backstore.get(row).location = (String) aValue;
 					knownPaths.add(backstore.get(row).location);
 				}

@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import net.niconomicon.tile.source.app.sharing.ResultStruct;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 
 /**
@@ -128,7 +129,7 @@ public class SaveDialog extends JPanel {
 		// c.gridwidth = 1;
 		// c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = c.LINE_END;
-		option.add(new JLabel(".mdb"), c);
+		option.add(new JLabel(Ref.ext_db), c);
 
 		y++;
 
@@ -178,12 +179,11 @@ public class SaveDialog extends JPanel {
 	 * @param currentLocation
 	 * @return [newLocation,newTitle]
 	 */
-	public String[] showDialog(Component parent, String currentLocation) {
+	public ResultStruct showDialog(Component parent, String currentLocation) {
 		newLocation = null;
 		newTitle = null;
 		fillForm(currentLocation);
 		String res = "nah";
-		String[] ret = new String[] { null, null };
 		while (null != res) {
 			int result = JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 					null, new String[] { "Save", "Cancel" }, null);
@@ -197,12 +197,12 @@ public class SaveDialog extends JPanel {
 						null);
 			}
 		}
-
+		ResultStruct ret = new ResultStruct();
 		if (currentLocation != newLocation) {
-			ret[0] = newLocation;
+			ret.newLocation = newLocation;
 		}
 		if (currentTitle != newTitle) {
-			ret[1] = newTitle;
+			ret.newTitle = newTitle;
 		}
 		return ret;
 	}
@@ -261,8 +261,8 @@ public class SaveDialog extends JPanel {
 			File f = new File(originalFile);
 			boolean ok = f.renameTo(new File(newPath));
 			if (!ok) { return "<html><body>Could not move or rename the file to <br/>[" + newPath + "]<br/><b> Try to change the name of the file or its location.</b></body></html>"; }
-			System.out.println("Renamed " + originalFile + " to " + newLocation);
 			newLocation = newPath;
+			System.out.println("Renamed " + originalFile + " to " + newLocation);
 		}
 		// success !
 		return null;

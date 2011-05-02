@@ -91,7 +91,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		}
 		System.out.println("Table changed. " + _case + " = " + e.getType() + " source " + e.getSource() + " row : " + e.getFirstRow() + " - " + e
 				.getLastRow() + "  col :" + e.getColumn());
-		System.out.println("heee haa");
+		//System.out.println("heee haa");
 
 		if (sharingManager.isSharing()) {
 			sharingManager.setSharingList(mapList.getSelectedTilesSetFiles());
