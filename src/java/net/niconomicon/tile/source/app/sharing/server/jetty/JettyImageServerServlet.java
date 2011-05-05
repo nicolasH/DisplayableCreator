@@ -60,7 +60,7 @@ public class JettyImageServerServlet extends HttpServlet {
 		if (request.equals("/" + Ref.sharing_jsonRef) || request.equals(Ref.URI_jsonRef)) {
 			String k = "/" + Ref.sharing_jsonRef;
 
-			System.out.println("should be returning the Displayable Feed [" + imaginaryMap.get(request).length() + "]");
+			//System.out.println("should be returning the Displayable Feed [" + imaginaryMap.get(k).length() + "]");
 			try {
 				sendString(imaginaryMap.get(k), resp);
 				return;
@@ -70,7 +70,7 @@ public class JettyImageServerServlet extends HttpServlet {
 			}
 		}
 		if (request.compareTo("/index.css") == 0) {
-			System.out.println("should be returning the css.");
+			//System.out.println("should be returning the css.");
 			try {
 				sendCSS(resp);
 				return;
@@ -82,7 +82,7 @@ public class JettyImageServerServlet extends HttpServlet {
 
 		if (request.equals("/") || request.equals(Ref.URI_htmlRef)) {
 			request = Ref.URI_htmlRef;
-			System.out.println("should be returning the html list [" + imaginaryMap.get(request).length() + "]");
+			//System.out.println("should be returning the html list [" + imaginaryMap.get(request).length() + "]");
 			try {
 				String resolvedAddressItem = Ref.app_handle_item + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
 				String resolvedAddressList = Ref.app_handle_list + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
