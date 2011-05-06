@@ -1,4 +1,4 @@
-### Displayable Creator
+## Displayable Creator
 
 This java application was created to transform big images into something that allows the images to be viewable at full resolution on an iPhone or iPod touch.
 
@@ -18,17 +18,19 @@ I have also created another Java Application to rasterize PDFs but it only work 
 
 *:[Java Web Start][java] application: a Java application that can run on your desktop by clicking on a link in your web browser; without needing to install it permanently.
 
-### Usage :
+## Usage :
 
-# Step 1 : Displayable creation
+### Step 1 : Displayable creation
 
 - Drop the image you want to transform into a Displayable onto the top area of the application (by clicking on the top browse button of the app. The tiling process will start immediately.
 
-By default the displayables are created in temporary files. If you want you can save it to a permanent location on your computer. The following actions can be taken :
-- You can choose the title of the image as it will appear in the iPhone app.
+Done !
+
+By default the displayables are created in temporary files. If you want you can save it to a permanent location on your computer. The following optional steps can be taken :
+- You can choose the title of the Displayable as it will appear in the iPhone app.
 - You can choose the name and location of the file that will be saved (but not the extension).
 
-# Step 2 : Sharing the Displayable(s).
+### Step 2 : Sharing the Displayable(s).
 
 By default, the Displayable creator start with the sharing enabled, but no Displayable loaded.
 
