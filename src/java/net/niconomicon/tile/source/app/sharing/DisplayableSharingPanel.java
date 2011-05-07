@@ -4,11 +4,10 @@
 package net.niconomicon.tile.source.app.sharing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.InetAddress;
 import java.sql.Connection;
@@ -28,7 +27,6 @@ import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,7 +38,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.DisplayableCreatorInputPanel;
 import net.niconomicon.tile.source.app.filter.DirOrDisplayableFilter;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
@@ -59,7 +56,8 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	JLabel sharingStatus;
 	JLabel sharingLocation;
 	// String rootDir = "/Users/niko/Sites/testApp/mapRepository";
-
+	Color defaultColor;
+	
 	DisplayableViewer viewer;
 
 	InetAddress localaddr;
@@ -132,6 +130,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 
 		sharingLocation = new JLabel();
 		sharingStatus = new JLabel("Sharing status : [not running]");
+		defaultColor = sharingStatus.getBackground();
 
 		mapList.getModel().addTableModelListener(this);
 		mapList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -184,9 +183,13 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		if (host == null) {
 			sharingStatus.setToolTipText(null);
 			sharingLocation.setText("");
+			sharingStatus.setOpaque(true);
+			sharingStatus.setBackground(Color.ORANGE);
 			return;
 		}
 		int port = ((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue();
+		sharingStatus.setOpaque(true);
+		sharingStatus.setBackground(Color.GREEN);
 		sharingStatus
 				.setToolTipText("If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://" + host + ":" + port + "/ in your iPhone / iPod touch web browser");
 		sharingLocation
@@ -246,7 +249,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 			sharingStatus.revalidate();
 			if (startSharing(shouldPopup)) {
 				sharingStatus.setText("Sharing status : [running]");
-				setTooltipHostname(localaddr.getHostName());
+				setTooltipHostname(localaddr.getHostAddress());
 				shareButton.setText("Stop sharing");
 				currentlySharing = true;
 				return;
@@ -257,7 +260,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		sharingStatus.revalidate();
 		stopSharing();
 		setTooltipHostname(null);
-		sharingStatus.setText("Sharing status : [not running]");
+		sharingStatus.setText("Sharing status : ! [not running] !");
 		shareButton.setText("Start sharing");
 		currentlySharing = false;
 	}
