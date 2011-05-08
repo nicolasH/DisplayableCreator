@@ -4,11 +4,14 @@
 package net.niconomicon.tile.source.app;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
@@ -36,9 +39,10 @@ public class DisplayableCreatorApp {
 		displayableViewer = DisplayableViewer.createInstance();
 		tileCreatorPanel = new DisplayableCreatorInputPanel();
 		mapSharingPanel = new DisplayableSharingPanel(displayableViewer);
-
-		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder("Create a Displayable"));
-		mapSharingPanel.setBorder(BorderFactory.createTitledBorder("Share Displayables"));
+		Font font = new Font(null,Font.BOLD,12);
+		Border etch = BorderFactory.createEtchedBorder();
+		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch, "Create a Displayable",TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,font));
+		mapSharingPanel.setBorder(BorderFactory.createTitledBorder(etch, "Share Displayables",TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,font));
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(tileCreatorPanel, BorderLayout.NORTH);
 		p.add(mapSharingPanel, BorderLayout.CENTER);
