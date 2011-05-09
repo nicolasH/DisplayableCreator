@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -32,7 +33,7 @@ public class SharingWidget extends JPanel {
 	}
 
 	JLabel sharingStatus;
-	JLabel sharingLocation;
+	JTextField sharingLocation;
 	JButton actionButton;
 
 	Color defaultColor;
@@ -46,7 +47,14 @@ public class SharingWidget extends JPanel {
 
 		this.actionButton = actionButton;
 		sharingStatus = new JLabel(" ... ");
-		sharingLocation = new JLabel(" ... ");
+		sharingStatus.setHorizontalAlignment(JLabel.CENTER);
+		sharingStatus.setVerticalAlignment(JLabel.CENTER);
+
+		sharingLocation = new JTextField(" ... ");
+		sharingLocation.setBorder(null);
+		sharingLocation.setOpaque(false);
+		sharingLocation.setEditable(false);
+		sharingLocation.setHorizontalAlignment(JLabel.CENTER);
 		defaultColor = sharingStatus.getBackground();
 
 		JLabel l;
@@ -58,6 +66,8 @@ public class SharingWidget extends JPanel {
 
 		c = new GridBagConstraints();
 		c.gridx = 1;
+		c.anchor = c.LINE_START;
+
 		this.add(portNumber, c);
 
 		c = new GridBagConstraints();
@@ -70,7 +80,7 @@ public class SharingWidget extends JPanel {
 		c = new GridBagConstraints();
 		c.gridy = 1;
 		c.gridx = 1;
-		c.fill = GridBagConstraints.HORIZONTAL;
+		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 4.0;
 		this.add(sharingStatus, c);
 
@@ -85,9 +95,10 @@ public class SharingWidget extends JPanel {
 		c.gridy = 2;
 		c.gridx = 0;
 		c.gridwidth = 3;
+		c.weighty = 1.5;
+		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		this.add(this.sharingLocation, c);
-		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 
 	}
 
@@ -113,27 +124,29 @@ public class SharingWidget extends JPanel {
 			}
 			switch (status) {
 			case ACTIVATING:
-				sharingStatus.setText(" Activating ...");
+				sharingStatus.setText(" Starting ... ");
 				setTooltipHostname(localaddr);
 				actionButton.setEnabled(false);
 				setTooltipHostname(null);
+				actionButton.setText("Stop");
 				break;
 			case ACTIVE:
-				sharingStatus.setText("Active ");
+				sharingStatus.setText(" Active ");
 				sharingStatus.setBackground(Color.GREEN);
 				setTooltipHostname(localaddr);
 				actionButton.setText("Stop");
 				actionButton.setEnabled(true);
 				break;
 			case DEACTIVATING:
-				sharingStatus.setText(" Stopping ...");
+				sharingStatus.setText(" Stopping ... ");
 				sharingStatus.revalidate();
 				actionButton.setEnabled(false);
 				setTooltipHostname(null);
+				actionButton.setText("Start");
 				break;
 			case DEACTIVATED:
 				setTooltipHostname(null);
-				sharingStatus.setText(" Stopped");
+				sharingStatus.setText(" Stopped ");
 				sharingStatus.setBackground(Color.ORANGE);
 				actionButton.setText("Start");
 				actionButton.setEnabled(true);
@@ -161,9 +174,9 @@ public class SharingWidget extends JPanel {
 		}
 		sharingStatus.setOpaque(true);
 		sharingStatus.setBackground(Color.GREEN);
-		sharingStatus.setToolTipText("If the list of items do not appear quickly on your iPhone/iPod touch, try accessing http://" + host
-				.getHostAddress() + ":" + getPort() + "/ in your iPhone / iPod touch web browser");
-		sharingLocation.setText("<html><body>Also accessible in Safari at http://" + host.getHostAddress() + ":" + getPort() + "/ </body></html>");
-
+		String add = "http://" + host.getHostAddress() + ":" + getPort() + "/";
+		sharingStatus
+				.setToolTipText("If the list of Displayables does not appear quickly on your iPhone/iPod touch, try accessing " + add + " in your iPhone / iPod touch web browser");
+		sharingLocation.setText("The Displayables are also accessible in Safari at http://" + host.getHostAddress() + ":" + getPort() + "/");
 	}
 }

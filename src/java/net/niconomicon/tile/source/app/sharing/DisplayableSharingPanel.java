@@ -146,7 +146,13 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		JButton shareButton = new JButton("Start sharing");
 		shareButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				switchSharing(true);
+				Runnable runn = new Runnable() {
+					public void run() {
+						switchSharing(true);
+					}
+				};
+				Thread t = new Thread(runn);
+				t.start();
 			}
 		});
 
