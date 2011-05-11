@@ -39,7 +39,7 @@ public class DisplayableCreatorApp {
 		displayableViewer = DisplayableViewer.createInstance();
 		tileCreatorPanel = new DisplayableCreatorInputPanel();
 		mapSharingPanel = new DisplayableSharingPanel(displayableViewer);
-		Font font = new Font(null,Font.BOLD,12);
+		Font font = new Font(null,Font.BOLD,16);
 		Border etch = BorderFactory.createEtchedBorder();
 		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch, "Create a Displayable",TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,font));
 		mapSharingPanel.setBorder(BorderFactory.createTitledBorder(etch, "Share Displayables",TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,font));
