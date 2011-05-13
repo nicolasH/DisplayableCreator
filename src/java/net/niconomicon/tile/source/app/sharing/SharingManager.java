@@ -42,18 +42,18 @@ public class SharingManager {
 	}
 
 	public boolean isSharing() {
-		if(null != server)
-		{		return server.isRunning();}
+		if (null != server) { return server.isRunning(); }
 		return false;
 	}
 
 	public void setSharingList(Collection<String> sharedMaps) {
 		service.addImages(sharedMaps);
+		restartAnnouncer();
 	}
 
 	public void startSharing() throws Exception {
 		System.out.println("supposedly starting to share on port :" + port);
-		
+
 		if (null != server && server.isRunning()) {
 			server.stop();
 		}
@@ -68,4 +68,15 @@ public class SharingManager {
 		sharingAnnouncer.stopSharing();
 	}
 
+	public void restartAnnouncer() {
+		Thread t = new Thread(new Restarter());
+		t.start();
+	}
+
+	private class Restarter implements Runnable {
+		public void run() {
+			sharingAnnouncer.stopSharing();
+			sharingAnnouncer.reactivateSharing();
+		}
+	}
 }

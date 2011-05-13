@@ -39,10 +39,12 @@ public class DisplayableCreatorApp {
 		displayableViewer = DisplayableViewer.createInstance();
 		tileCreatorPanel = new DisplayableCreatorInputPanel();
 		mapSharingPanel = new DisplayableSharingPanel(displayableViewer);
-		Font font = new Font(null,Font.BOLD,16);
+		Font font = new Font(null, Font.BOLD, 16);
 		Border etch = BorderFactory.createEtchedBorder();
-		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch, "Create a Displayable",TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,font));
-		mapSharingPanel.setBorder(BorderFactory.createTitledBorder(etch, "Share Displayables",TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,font));
+		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch, "Create a Displayable", TitledBorder.DEFAULT_JUSTIFICATION,
+				TitledBorder.DEFAULT_POSITION, font));
+		mapSharingPanel.setBorder(BorderFactory.createTitledBorder(etch, "Share Displayables", TitledBorder.DEFAULT_JUSTIFICATION,
+				TitledBorder.DEFAULT_POSITION, font));
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(tileCreatorPanel, BorderLayout.NORTH);
 		p.add(mapSharingPanel, BorderLayout.CENTER);
@@ -57,8 +59,15 @@ public class DisplayableCreatorApp {
 			}
 		});
 		t.start();
+		Thread shutdownThread = new Thread(new Runnable(){
+			public void run(){
+				tileCreatorPanel.sharingPanel.stopSharing();
+			}
+		}) ;
+		Runtime.getRuntime().addShutdownHook(shutdownThread);
 	}
 
+	
 	public static void main(String[] args) {
 		DisplayableCreatorApp app = new DisplayableCreatorApp();
 	}

@@ -53,7 +53,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
 
-	CheckBoxTable mapList;
+	CheckBoxTable displayablesList;
 	// JSpinner portNumber;
 
 	SharingWidget widget;
@@ -96,7 +96,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		// System.out.println("heee haa");
 
 		if (sharingManager.isSharing()) {
-			sharingManager.setSharingList(mapList.getSelectedTilesSetFiles());
+			sharingManager.setSharingList(displayablesList.getSelectedTilesSetFiles());
 			// update the list of shared documents
 		} else {
 			// don't care ;-)
@@ -129,17 +129,16 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	public void init() {
 
 		sharingManager = new SharingManager();
-		mapList = new CheckBoxTable(viewer);
+		displayablesList = new CheckBoxTable(viewer);
 		timer = new Timer();
 
-		mapList.table.getModel().addTableModelListener(this);
+		displayablesList.table.getModel().addTableModelListener(this);
 		// mapList.getSelectionModel().addListSelectionListener(this);
 		this.setLayout(new BorderLayout());
 		this.add(createDirSelectionPanel(), BorderLayout.NORTH);
 		// shared files
 		// //////////////////////////////////////////
-		this.add(mapList, BorderLayout.CENTER);
-
+		this.add(displayablesList, BorderLayout.CENTER);
 		// //////////////////////////////////////////
 		// port number
 		// start sharing
@@ -203,9 +202,9 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 				ex.printStackTrace();
 			}
 		}
-		mapList.addData(fileToTitle);
+		displayablesList.addData(fileToTitle);
 		if (sharingManager.isSharing()) {
-			sharingManager.setSharingList(mapList.getSelectedTilesSetFiles());
+			sharingManager.setSharingList(displayablesList.getSelectedTilesSetFiles());
 		}
 	}
 
@@ -236,7 +235,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 
 	public boolean startSharing(boolean shouldPopup) {
 		// HashSet<String> sharedDB = new HashSet<String>();
-		Collection<String> sharedMaps = mapList.getSelectedTilesSetFiles();
+		Collection<String> sharedMaps = displayablesList.getSelectedTilesSetFiles();
 		System.out.println("should start sharing the maps, with " + (shouldPopup ? "popup" : "no popup") + " in case of problem");
 		// generate the xml;
 		try {
@@ -278,11 +277,11 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	 *            This can be a temporary file.
 	 */
 	public void addDisplayableToShare(String fileLocation, String title) {
-		mapList.addDisplayable(fileLocation, title);
+		displayablesList.addDisplayable(fileLocation, title);
 	}
 
 	public void updateDisplayableLocation(String oldLocation, String newLocation) {
-		mapList.updateLocation(oldLocation, newLocation);
+		displayablesList.updateLocation(oldLocation, newLocation);
 	}
 
 	public Map<String, String> getDisplayableList(String rootDir, String[] maps) {
