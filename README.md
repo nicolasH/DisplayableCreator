@@ -36,8 +36,8 @@ By default, the Displayable creator start with the sharing enabled, but no Displ
 
 Your iPhone/iPod touch needs to be on the same network as the computer on which you run the Displayable creator for sharing to work. Your computer have to allow the Displayable Creator application to accept incoming connections. 
 
-- If sharing is not enabled, click on the "start sharing" button.  
-- On your iPhone/ iPod launch the Displayator app and then tap on the "Download images" list item. The available images should appear shortly. You can then select one and download it.
+- If sharing is not enabled, click on the "start sharing" button.  You might have to adjust the port to one that is not used or blocked by your firewall.
+- On your iPhone/ iPod launch the Displayator app and then tap on the "Download Displayables" list item. The available images should appear shortly. You can then select one and download it.
 
 [java]:http://www.java.com
 [jnlp]:http://www.displayator.com/DisplayableCreator/DisplayableCreator.jnlp
