@@ -130,21 +130,7 @@ public class CheckBoxTable extends JPanel {
 		model.updateDisplayableLocation(oldLocation, newLocation);
 	}
 
-	private class DisplayableInfos implements Comparable<DisplayableInfos> {
-		String title;
-		String location;
-		boolean shouldShare;
-
-		public DisplayableInfos(String path, String title) {
-			this.title = title;
-			this.location = path;
-			this.shouldShare = true;
-		}
-
-		public int compareTo(DisplayableInfos o) {
-			return title.toLowerCase().compareTo(o.title.toLowerCase());
-		}
-	}
+	
 
 	class CustomTableModel extends DefaultTableModel {
 
@@ -154,7 +140,7 @@ public class CheckBoxTable extends JPanel {
 		public CustomTableModel() {
 			super();
 			setColumnIdentifiers(columnsTitles);
-			backstore = new ArrayList<CheckBoxTable.DisplayableInfos>();
+			backstore = new ArrayList<DisplayableInfos>();
 			knownPaths = new HashSet<String>();
 
 		}
