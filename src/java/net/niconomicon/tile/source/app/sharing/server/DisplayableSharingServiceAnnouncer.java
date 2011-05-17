@@ -101,6 +101,8 @@ public class DisplayableSharingServiceAnnouncer {
 				System.out.println("Opened JmDNS. Registering the service...");
 				Map<String, String> m = new HashMap<String, String>();
 				m.put("data_path", Ref.sharing_jsonRef);
+				m.put("service_name", getServiceName(servicePort));				
+
 				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
 				jmdns.registerService(info);
 				System.out.println("\nRegistered Service as " + info);
@@ -134,5 +136,28 @@ public class DisplayableSharingServiceAnnouncer {
 				}
 			}
 		}
+	}
+
+	public static String getServiceName(int port) {
+		String localH = "";
+
+		String s = null;
+		try {
+			s = InetAddress.getLocalHost().getHostName();
+		} catch (Exception ex) {}
+		if (s == null) {
+			try {
+				s = InetAddress.getLocalHost().getHostAddress();
+			} catch (Exception ex) {}
+		}
+		if (s == null) {
+			localH = "?";
+		} else {
+			localH = s;
+		}
+		if (localH.length() > 20) {
+			localH = localH.substring(localH.length() - 20);
+		}
+		return localH + ":" + port;
 	}
 }
