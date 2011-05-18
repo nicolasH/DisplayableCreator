@@ -59,7 +59,6 @@ public class JettyImageServerServlet extends HttpServlet {
 
 		if (request.equals("/" + Ref.sharing_jsonRef) || request.equals(Ref.URI_jsonRef)) {
 			String k = "/" + Ref.sharing_jsonRef;
-
 			//System.out.println("should be returning the Displayable Feed [" + imaginaryMap.get(k).length() + "]");
 			try {
 				sendString(imaginaryMap.get(k), resp);
@@ -69,7 +68,7 @@ public class JettyImageServerServlet extends HttpServlet {
 				return;
 			}
 		}
-		if (request.compareTo("/index.css") == 0) {
+		if (request.equals("/index.css")) {
 			//System.out.println("should be returning the css.");
 			try {
 				sendCSS(resp);
@@ -98,10 +97,15 @@ public class JettyImageServerServlet extends HttpServlet {
 			}
 		}
 
+		if(request.startsWith("/")){
+			request = request.substring(1);
+		}
 		if (null == imaginaryMap || !imaginaryMap.containsKey(request) || imaginaryMap.get(request) == null) {
 			resp.sendError(404, "The server could not find or get access to [" + request + "]");
+			System.out.println("404");
 			return;
 		}
+
 		String string = imaginaryMap.get(request);
 		System.out.println("String from the imaginary map : [" + string + "]");
 		File f = new File(string);

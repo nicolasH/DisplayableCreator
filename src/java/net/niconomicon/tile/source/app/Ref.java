@@ -279,7 +279,7 @@ public final class Ref {
 			ResultSet rs = statement.executeQuery("select * from infos");
 			while (rs.next()) {
 				// read the result set
-				String name = fileName.contains(File.separator) ? "/" + fileName.substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
+				String name = fileName.contains(File.separator) ?  fileName.substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
 				name = name.replace(' ', '_');
 				String mini = name + Ref.ext_mini;
 				String thumb = name + Ref.ext_thumb;

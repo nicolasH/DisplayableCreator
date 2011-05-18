@@ -23,6 +23,7 @@ public class DisplayableSharingServiceAnnouncer {
 	private int servicePort;
 	JmDNS jmdns;
 	static DisplayableSharingServiceAnnouncer service;
+	ServiceInfo lastInfos;
 	boolean shouldExit = false;
 	Boolean shouldUnregister = true;
 	Timer lhc;
@@ -54,15 +55,14 @@ public class DisplayableSharingServiceAnnouncer {
 									jmdns.unregisterAllServices();
 									jmdns.close();
 								}
-								System.out.println("Opening JmDNS");
+								System.out.println("Th Opening JmDNS");
 								jmdns = JmDNS.create();
-								System.out.println("Opened JmDNS. Registering the service...");
-								Map<String, String> m = new HashMap<String, String>();
-								// m.put("path", "");
-								m.put("data_path", Ref.sharing_jsonRef);
+								System.out.println("Th Opened JmDNS. Registering the service...");
+								Map<String, String> m = getJmDNSPayload(servicePort);
+
 								ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
 								jmdns.registerService(info);
-								System.out.println("\nRegistered Service as " + info);
+								System.out.println("Th Registered Service as " + info);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -96,16 +96,19 @@ public class DisplayableSharingServiceAnnouncer {
 	public void reactivateSharing() {
 		synchronized (shouldUnregister) {
 			try {
+				if (lastInfos != null && jmdns!=null) {
+					jmdns.unregisterAllServices();
+					lastInfos = null;
+				}
 				System.out.println("Opening JmDNS");
 				jmdns = JmDNS.create();
 				System.out.println("Opened JmDNS. Registering the service...");
 				Map<String, String> m = new HashMap<String, String>();
-				m.put("data_path", Ref.sharing_jsonRef);
-				m.put("service_name", getServiceName(servicePort));				
+				m = getJmDNSPayload(servicePort);
+				lastInfos = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
 
-				ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
-				jmdns.registerService(info);
-				System.out.println("\nRegistered Service as " + info);
+				jmdns.registerService(lastInfos);
+				System.out.println("Registered Service as " + lastInfos);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -123,6 +126,7 @@ public class DisplayableSharingServiceAnnouncer {
 				try {
 					System.out.println("unregistering services");
 					jmdns.unregisterAllServices();
+					lastInfos = null;
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -136,6 +140,13 @@ public class DisplayableSharingServiceAnnouncer {
 				}
 			}
 		}
+	}
+
+	public static Map<String, String> getJmDNSPayload(int port) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("data_path", Ref.sharing_jsonRef);
+		map.put("service_name", getServiceName(port));
+		return map;
 	}
 
 	public static String getServiceName(int port) {
