@@ -36,6 +36,15 @@ public class DisplayableInfos implements Comparable<DisplayableInfos> {
 	}
 
 	public String tooltip() {
-		return "Weight : " + size + " Dimensions : " + width + " * " + height + " pixels";
+		float s = size / 1024;
+		String w = "KB";
+		if (s > 1024.0f) {
+			s = s / 1024.0f;
+			w = "MB";
+		}
+		s = s * 10;// 1.0045678 -> 10.04
+		int t = (int) s;
+		s = t / 10;
+		return "Weight : " + s + w + " Dimensions : " + width + " * " + height + " pixels";
 	}
 }
