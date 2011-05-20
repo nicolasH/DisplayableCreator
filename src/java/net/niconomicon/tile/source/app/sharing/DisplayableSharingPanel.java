@@ -241,7 +241,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		try {
 			sharingManager.setPort(widget.getPort());
 			sharingManager.setSharingList(sharedMaps);
-			sharingManager.startSharing();
+			//sharingManager.startSharing();
 		} catch (Exception ex) {
 			try {
 				sharingManager.stopSharing();
