@@ -91,8 +91,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 			_case = "INSERT";
 			break;
 		}
-		System.out.println("Table changed. " + _case + " = " + e.getType() + " source " + e.getSource() + " row : " + e.getFirstRow() + " - " + e
-				.getLastRow() + "  col :" + e.getColumn());
+		//System.out.println("Table changed. " + _case + " = " + e.getType() + " source " + e.getSource() + " row : " + e.getFirstRow() + " - " + e.getLastRow() + "  col :" + e.getColumn());
 		// System.out.println("heee haa");
 
 		if (sharingManager.isSharing()) {

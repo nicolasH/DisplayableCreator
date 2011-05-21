@@ -64,8 +64,12 @@ public class SharingManager {
 	}
 
 	public void stopSharing() throws Exception {
-		server.stop();
-		sharingAnnouncer.stopSharing();
+		if (server != null) {
+			server.stop();
+		}
+		if (sharingAnnouncer != null) {
+			sharingAnnouncer.stopSharing();
+		}
 	}
 
 	public void restartAnnouncer() {
