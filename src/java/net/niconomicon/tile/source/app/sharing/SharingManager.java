@@ -36,6 +36,7 @@ public class SharingManager {
 
 	public void setPort(int port) throws Exception {
 		this.port = port;
+		sharingAnnouncer.setPort(port);
 		if (null != server && server.isRunning()) {
 			startSharing();
 		}
@@ -48,7 +49,7 @@ public class SharingManager {
 
 	public void setSharingList(Collection<String> sharedMaps) {
 		service.addImages(sharedMaps);
-		restartAnnouncer();
+		//restartAnnouncer();
 	}
 
 	public void startSharing() throws Exception {

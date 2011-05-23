@@ -124,6 +124,7 @@ public class SharingWidget extends JPanel {
 			}
 			switch (status) {
 			case ACTIVATING:
+				portNumber.setEnabled(false);
 				sharingStatus.setText(" Starting ... ");
 				setTooltipHostname(localaddr);
 				actionButton.setEnabled(false);
@@ -150,6 +151,7 @@ public class SharingWidget extends JPanel {
 				sharingStatus.setBackground(Color.ORANGE);
 				actionButton.setText("Start");
 				actionButton.setEnabled(true);
+				portNumber.setEnabled(true);
 				break;
 
 			default:

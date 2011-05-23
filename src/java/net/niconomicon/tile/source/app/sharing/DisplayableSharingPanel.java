@@ -91,12 +91,13 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 			_case = "INSERT";
 			break;
 		}
-		//System.out.println("Table changed. " + _case + " = " + e.getType() + " source " + e.getSource() + " row : " + e.getFirstRow() + " - " + e.getLastRow() + "  col :" + e.getColumn());
+		// System.out.println("Table changed. " + _case + " = " + e.getType() + " source " + e.getSource() + " row : " +
+		// e.getFirstRow() + " - " + e.getLastRow() + "  col :" + e.getColumn());
 		// System.out.println("heee haa");
 
 		if (sharingManager.isSharing()) {
 			sharingManager.setSharingList(displayablesList.getSelectedTilesSetFiles());
-			// update the list of shared documents
+			sharingManager.restartAnnouncer();			// update the list of shared documents
 		} else {
 			// don't care ;-)
 			return;
@@ -142,6 +143,9 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		// port number
 		// start sharing
 		JButton shareButton = new JButton("Start sharing");
+		widget = new SharingWidget(shareButton);
+		this.add(widget, BorderLayout.SOUTH);
+
 		shareButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Runnable runn = new Runnable() {
@@ -154,8 +158,6 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 			}
 		});
 
-		widget = new SharingWidget(shareButton);
-
 		long delta = 10000;
 		timer.scheduleAtFixedRate(new LocalHostChecker(), delta, delta);
 		Runnable runn = new Runnable() {
@@ -165,7 +167,6 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		};
 		Thread t = new Thread(runn);
 		t.start();
-		this.add(widget, BorderLayout.SOUTH);
 	}
 
 	public static List<String> getDBFilesInSubDirectory(File dir) {
@@ -204,32 +205,34 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		displayablesList.addData(fileToTitle);
 		if (sharingManager.isSharing()) {
 			sharingManager.setSharingList(displayablesList.getSelectedTilesSetFiles());
+			sharingManager.restartAnnouncer();
 		}
 	}
 
 	public void switchSharing(boolean shouldPopup) {
-
-		if (!currentlySharing) {
-			try {
-				widget.setStatus(STATUS.ACTIVATING);
-			} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
-			if (startSharing(shouldPopup)) {
+		//synchronized (widget) {
+			if (!currentlySharing) {
 				try {
-					widget.setStatus(STATUS.ACTIVE);
+					widget.setStatus(STATUS.ACTIVATING);
 				} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
-				currentlySharing = true;
-				return;
+				if (startSharing(shouldPopup)) {
+					try {
+						widget.setStatus(STATUS.ACTIVE);
+					} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
+					currentlySharing = true;
+					return;
+				}
 			}
-		}
-		// stopping sharing or start sharing failed.
-		try {
-			widget.setStatus(STATUS.DEACTIVATING);
-		} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
-		stopSharing();
-		try {
-			widget.setStatus(STATUS.DEACTIVATED);
-		} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
-		currentlySharing = false;
+			// stopping sharing or start sharing failed.
+			try {
+				widget.setStatus(STATUS.DEACTIVATING);
+			} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
+			stopSharing();
+			try {
+				widget.setStatus(STATUS.DEACTIVATED);
+			} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
+			currentlySharing = false;
+		//}
 	}
 
 	public boolean startSharing(boolean shouldPopup) {
@@ -240,7 +243,8 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		try {
 			sharingManager.setPort(widget.getPort());
 			sharingManager.setSharingList(sharedMaps);
-			//sharingManager.startSharing();
+			sharingManager.startSharing();
+			// sharingManager.startSharing();
 		} catch (Exception ex) {
 			try {
 				sharingManager.stopSharing();

@@ -38,8 +38,19 @@ public class DisplayableSharingServiceAnnouncer {
 	}
 
 	public class LocalHostChecker extends TimerTask {
-		String hostname = "bla";
-		String localHost = "notBla";
+
+		String hostname;
+		String localHost;
+
+		public LocalHostChecker() {
+			try {
+				hostname = InetAddress.getLocalHost().getCanonicalHostName();
+				localHost = InetAddress.getLocalHost().getCanonicalHostName();
+			} catch (Exception ex) {
+				hostname = "bla";
+				localHost = "notBla";
+			}
+		}
 
 		public void run() {
 			if (shouldExit) { return; }
@@ -50,22 +61,24 @@ public class DisplayableSharingServiceAnnouncer {
 						// System.out.println("Localhost : " + localHost);
 						if (!hostname.equals(localHost)) {
 							hostname = localHost;
-							try {
-								if (jmdns != null) {// assuming the
-									jmdns.unregisterAllServices();
-									jmdns.close();
-								}
-								System.out.println("Th Opening JmDNS");
-								jmdns = JmDNS.create();
-								System.out.println("Th Opened JmDNS. Registering the service...");
-								Map<String, String> m = getJmDNSPayload(servicePort);
-
-								ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
-								jmdns.registerService(info);
-								System.out.println("Th Registered Service as " + info);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+							reactivateSharing();
+							// try {
+							// if (jmdns != null) {// assuming the
+							// jmdns.unregisterAllServices();
+							// jmdns.close();
+							// }
+							// System.out.println("Th Opening JmDNS");
+							// jmdns = JmDNS.create();
+							// System.out.println("Th Opened JmDNS. Registering the service...");
+							// Map<String, String> m = getJmDNSPayload(servicePort);
+							//
+							// ServiceInfo info = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName,
+							// servicePort, 1, 1, m);
+							// jmdns.registerService(info);
+							// System.out.println("Th Registered Service as " + info);
+							// } catch (Exception e) {
+							// e.printStackTrace();
+							// }
 						}
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -85,6 +98,10 @@ public class DisplayableSharingServiceAnnouncer {
 		}
 	}
 
+	public void setPort(int port) {
+		servicePort = port;
+	}
+
 	public void startSharing(int port) {
 		synchronized (shouldUnregister) {
 			shouldUnregister = false;
@@ -96,7 +113,9 @@ public class DisplayableSharingServiceAnnouncer {
 	public void reactivateSharing() {
 		synchronized (shouldUnregister) {
 			try {
-				if (lastInfos != null && jmdns!=null) {
+				if (lastInfos != null && jmdns != null) {
+					System.out.println("unregistering " + lastInfos);
+					jmdns.unregisterService(lastInfos);
 					jmdns.unregisterAllServices();
 					lastInfos = null;
 				}
@@ -125,6 +144,9 @@ public class DisplayableSharingServiceAnnouncer {
 			if (null != jmdns) {
 				try {
 					System.out.println("unregistering services");
+					if (lastInfos != null) {
+						jmdns.unregisterService(lastInfos);
+					}
 					jmdns.unregisterAllServices();
 					lastInfos = null;
 				} catch (Exception ex) {
