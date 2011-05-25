@@ -23,6 +23,7 @@ import javax.swing.border.BevelBorder;
 import net.niconomicon.tile.source.app.Ref;
 
 /**
+ * This class manages the user interaction elements for the parameters of the "Displayable sharing" functionnality.
  * @author Nicolas Hoibian
  * 
  */
