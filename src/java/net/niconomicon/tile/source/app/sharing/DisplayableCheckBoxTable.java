@@ -36,7 +36,7 @@ import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
  * @author niko
  * 
  */
-public class CheckBoxTable extends JPanel {
+public class DisplayableCheckBoxTable extends JPanel {
 
 	private final String[] columnsTitles = new String[] { "Share", "Title", "Edit", "View" };
 
@@ -57,7 +57,7 @@ public class CheckBoxTable extends JPanel {
 
 	JTable table;
 
-	public CheckBoxTable(DisplayableViewer viewer) {
+	public DisplayableCheckBoxTable(DisplayableViewer viewer) {
 		super(new BorderLayout());
 		SaveDialog saveDialog = new SaveDialog();
 		table = new JTable();
@@ -100,7 +100,7 @@ public class CheckBoxTable extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				int item = table.getSelectedRow();
 				if (item < 0) {
-					JOptionPane.showMessageDialog(CheckBoxTable.this, "Please select a displayable", "No Displayable selected",
+					JOptionPane.showMessageDialog(DisplayableCheckBoxTable.this, "Please select a displayable", "No Displayable selected",
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}

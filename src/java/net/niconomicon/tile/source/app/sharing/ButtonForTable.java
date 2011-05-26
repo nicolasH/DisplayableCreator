@@ -137,7 +137,7 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 				lastTable.setValueAt(newInfos.newLocation, lastRow, -1);
 			}
 			if (newInfos.newTitle != null) {
-				lastTable.setValueAt(newInfos.newTitle, lastRow, CheckBoxTable.colTitle);
+				lastTable.setValueAt(newInfos.newTitle, lastRow, DisplayableCheckBoxTable.colTitle);
 			}
 			if (null != newInfos.newLocation && !Ref.isInTmpLocation(newInfos.newLocation)) {
 				this.fireEditingStopped();
@@ -145,7 +145,7 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 
 			return;
 		}
-		((CheckBoxTable.CustomTableModel) lastTable.getModel()).removeDisplayable(new int[] { lastRow });
+		((DisplayableCheckBoxTable.CustomTableModel) lastTable.getModel()).removeDisplayable(new int[] { lastRow });
 
 		System.out.println("Action performed. Presumably for file " + fileLocation);
 	}

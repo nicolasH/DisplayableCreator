@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.niconomicon</groupId>
 	<artifactId>displayable-creator</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<url>http://www.niconomicon.net/tests/maven/net/niconomicon/DisplayableCreator</url>
 	<dependencies>
 		<dependency>

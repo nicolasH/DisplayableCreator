@@ -14,7 +14,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
  * @author niko
- * 
+ * This class is designed to handle the activation of the Displayable server and its announcement.
  */
 public class SharingManager {
 

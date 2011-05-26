@@ -46,14 +46,14 @@ import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
  * @author niko
- * 
+ * This class is designed to assemble and present the widgets related to the Displayable sharing functionality.
  */
 public class DisplayableSharingPanel extends JPanel implements TableModelListener {
 
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
 
-	CheckBoxTable displayablesList;
+	DisplayableCheckBoxTable displayablesList;
 	// JSpinner portNumber;
 
 	SharingWidget widget;
@@ -129,7 +129,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	public void init() {
 
 		sharingManager = new SharingManager();
-		displayablesList = new CheckBoxTable(viewer);
+		displayablesList = new DisplayableCheckBoxTable(viewer);
 		timer = new Timer();
 
 		displayablesList.table.getModel().addTableModelListener(this);
