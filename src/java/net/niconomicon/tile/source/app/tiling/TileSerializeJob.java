@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 
 /**
  * @author niko
- * 
+ * This class transforms a BufferedImage into a png image and send it to a persister.
  */
 public class TileSerializeJob implements Runnable {
 

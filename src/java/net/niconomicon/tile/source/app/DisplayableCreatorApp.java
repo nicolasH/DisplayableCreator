@@ -19,7 +19,7 @@ import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
  * @author niko
- * 
+ * This is the Main class for the Displayable Creator GUI.
  */
 public class DisplayableCreatorApp {
 

@@ -32,7 +32,7 @@ import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 
 /**
  * @author Nicolas Hoibian
- * 
+ * This is the dialogs that pops up when the user wants to change a particular displayable informations.
  */
 public class SaveDialog extends JPanel {
 

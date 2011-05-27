@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 /**
  * @author niko
- * 
+ * This class persists the given image into the sqlite db using the given prepared statement
  */
 public class TileWritingJob implements Runnable {
 	long x;
