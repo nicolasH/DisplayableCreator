@@ -10,7 +10,7 @@ import javax.swing.JProgressBar;
 
 /**
  * @author Nicolas Hoibian
- * 
+ * This class is used to stop the creation of a displayable on user request, as it is a lengthy process.
  */
 public class Inhibitor implements ActionListener {
 

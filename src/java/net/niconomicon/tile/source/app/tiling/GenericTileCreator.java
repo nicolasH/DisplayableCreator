@@ -17,7 +17,7 @@ import net.niconomicon.tile.source.app.Ref;
 
 /**
  * @author niko
- * 
+ * This class will eventually create tiles from an image into a provided container class, as soon as I get to it.
  */
 public class GenericTileCreator {
 

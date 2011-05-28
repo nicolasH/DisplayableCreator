@@ -23,7 +23,8 @@ import net.niconomicon.tile.source.app.Ref;
 
 /**
  * @author niko
- * 
+ * The servlet that is given to the Jetty Server instance to serve the Displayables, 
+ * their thumbnails and miniatures, as well as the JSON and HTML description of the shared Displayables.
  */
 public class JettyImageServerServlet extends HttpServlet {
 
