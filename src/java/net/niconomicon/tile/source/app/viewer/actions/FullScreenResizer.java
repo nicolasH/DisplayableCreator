@@ -8,7 +8,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -59,7 +58,7 @@ public class FullScreenResizer implements ActionListener {
 		}
 
 		frame.dispose();
-		// // Can only be changed while not displayable.
+		// // Can only be changed while not displayable.-
 		// // but cause problems in mac os x : window appear bellow the toolbar.
 		frame.setUndecorated(fullScreen);
 		frame.pack();
@@ -70,6 +69,8 @@ public class FullScreenResizer implements ActionListener {
 		frame.setLocation(pos);
 
 		frame.setVisible(true);
+		//Only affecting the first screen.
+		//TODO figure out on which screen the displayale frame is currently, so that it can go fullscreen on that one.
 		if (fullScreen) {
 			gs[0].setFullScreenWindow(frame);
 		} else {
