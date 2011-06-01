@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.prefs.Preferences;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -48,6 +49,7 @@ public class SaveDialog extends JPanel {
 	JTextField title;
 
 	String currentTitle = "";
+	String currentDesc = "";
 	String newLocation = null;
 	String newTitle = null;
 
@@ -65,6 +67,8 @@ public class SaveDialog extends JPanel {
 
 		title = new JTextField("", 20);
 		description = new JTextArea("", 5, 30);
+		description.setBorder(BorderFactory.createLoweredBevelBorder());
+		description.setBorder(title.getBorder());
 		author = new JTextField(System.getProperty("user.name"), 20);
 
 		// load from file name
@@ -75,6 +79,7 @@ public class SaveDialog extends JPanel {
 		defaultDir = defaultDir == null ? System.getProperty("user.home") : defaultDir;
 		where = new JTextField(defaultDir, 20);
 		where.setEditable(false);
+		where.setBorder(null);
 
 		browseOutput = new JButton("Choose Directory");
 		browseOutput.addActionListener(new ActionListener() {
@@ -104,7 +109,14 @@ public class SaveDialog extends JPanel {
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("In directory :"), c);
 
-		// second, third and fourth columns : textfileds label and buttons
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = x;
+		c.anchor = c.LINE_END;
+		option.add(new JLabel("Description :"), c);
+		
+		//////////////////////////
+		// second, third and fourth columns : textfields label and buttons
 		x = 1;
 		y = 0;
 		c = new GridBagConstraints();
@@ -146,6 +158,17 @@ public class SaveDialog extends JPanel {
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
 		option.add(browseOutput, c);
+
+		y++;
+		c = new GridBagConstraints();
+		c.gridy = y;
+		c.gridx = x;
+		c.gridheight = 5;
+		c.gridwidth = 2;
+		c.fill = GridBagConstraints.BOTH;
+		c.anchor = c.NORTHWEST;
+		option.add(description, c);
+		
 
 		this.add(option, BorderLayout.CENTER);
 		// this.add(new JLabel("Save !"), BorderLayout.NORTH);
@@ -212,7 +235,9 @@ public class SaveDialog extends JPanel {
 		newLocation = null;
 		try {
 			currentTitle = SQliteTileCreatorMultithreaded.getTitle(currentLocation);
+			currentDesc = SQliteTileCreatorMultithreaded.getDesc(currentLocation);
 			title.setText(currentTitle);
+			description.setText(currentDesc);
 			String suggestedFile = Ref.fileSansDot(currentLocation) + Ref.ext_db;
 			try {
 				if (Ref.isInTmpLocation(currentLocation)) {
@@ -251,6 +276,10 @@ public class SaveDialog extends JPanel {
 		if (!currentTitle.equals(title.getText())) {
 			newTitle = title.getText();
 			SQliteTileCreatorMultithreaded.updateTitle(originalFile, currentTitle, newTitle);
+		}
+
+		if (null != description.getText() && 	!currentDesc.equals(description.getText())) {
+			SQliteTileCreatorMultithreaded.updateDesc(originalFile, description.getText());
 		}
 
 		Ref.setDefaultDir(newPath);

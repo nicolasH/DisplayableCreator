@@ -185,6 +185,32 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
+	/**
+	 * Connect to the database and changes the description before disconnecting.
+	 * 
+	 * @param dbFile
+	 * @param description
+	 */
+	public static void updateDesc(String dbFile, String newDesc) {
+		String stat = "UPDATE infos SET description=? ";
+		String date = new Date(System.currentTimeMillis()).toString();
+		// System.out.println("stat = " + stat);
+		try {
+			Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile);
+			connection.setAutoCommit(false);
+
+			PreparedStatement ps = connection.prepareStatement(stat);
+
+			ps.setString(1, newDesc);
+			ps.executeUpdate();
+			connection.commit();
+			connection.close();
+		} catch (SQLException e) {
+			System.err.println("Information insertion failed.");
+			e.printStackTrace();
+		}
+	}
+
 	public static String getTitle(String currentLocation) throws SQLException {
 		Connection connection = null;
 		// create a database connection
@@ -194,6 +220,21 @@ public class SQliteTileCreatorMultithreaded {
 		Statement statement = connection.createStatement();
 		statement.setQueryTimeout(3);
 		ResultSet set = statement.executeQuery("SELECT title FROM infos");
+		String s = set.getString(1);
+		connection.commit();
+		connection.close();
+		return s;
+	}
+
+	public static String getDesc(String currentLocation) throws SQLException {
+		Connection connection = null;
+		// create a database connection
+		connection = DriverManager.getConnection("jdbc:sqlite:" + currentLocation);
+		connection.setAutoCommit(false);
+		// System.out.println("Archive name : " + archiveName);
+		Statement statement = connection.createStatement();
+		statement.setQueryTimeout(3);
+		ResultSet set = statement.executeQuery("SELECT description FROM infos");
 		String s = set.getString(1);
 		connection.commit();
 		connection.close();

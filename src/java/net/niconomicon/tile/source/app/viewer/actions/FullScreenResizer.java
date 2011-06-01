@@ -58,7 +58,7 @@ public class FullScreenResizer implements ActionListener {
 		}
 
 		frame.dispose();
-		// // Can only be changed while not displayable.-
+		// // Can only be changed while not displayable ;-)
 		// // but cause problems in mac os x : window appear bellow the toolbar.
 		frame.setUndecorated(fullScreen);
 		frame.pack();
@@ -70,7 +70,7 @@ public class FullScreenResizer implements ActionListener {
 
 		frame.setVisible(true);
 		//Only affecting the first screen.
-		//TODO figure out on which screen the displayale frame is currently, so that it can go fullscreen on that one.
+		//TODO figure out on which screen the displayable frame is currently, so that it can go fullscreen on that one.
 		if (fullScreen) {
 			gs[0].setFullScreenWindow(frame);
 		} else {
