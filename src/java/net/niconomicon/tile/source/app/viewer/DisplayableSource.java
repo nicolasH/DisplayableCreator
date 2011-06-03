@@ -39,6 +39,9 @@ public class DisplayableSource {
 	Connection mapDB;
 	public static final int tileSize = 192;
 
+	String title;
+	String description;
+
 	public static final String getTilesInRange = "select * from tiles_0_0 where x >= ? and x <= ? and y >=? and y <=? and z=?";
 
 	PreparedStatement tilesInRange;
@@ -158,11 +161,25 @@ public class DisplayableSource {
 			if (view != null) {
 				view.resetSizeEtc(currentLevel);
 			}
+			rs = statement.executeQuery("select * from infos");
+			while (rs.next()) {
+				title = rs.getString("title");
+				description = rs.getString("description");
+			}
+
 			// System.out.println("fully cached !");
 		} catch (Exception ex) {
 			System.err.println("ex for map : " + tileSourcePath);
 			ex.printStackTrace();
 		}
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public List<ZoomLevel> getILevelInfos() {

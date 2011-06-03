@@ -5,6 +5,9 @@ package net.niconomicon.tile.source.app.sharing;
 
 import java.io.File;
 
+import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
+import net.niconomicon.tile.source.app.viewer.DisplayableSource;
+
 /**
  * @author Nicolas Hoibian
  * 
@@ -12,10 +15,11 @@ import java.io.File;
 public class DisplayableInfos implements Comparable<DisplayableInfos> {
 	String title;
 	String location;
+
 	boolean shouldShare;
 	long size;// in bytes;
-	long width; // in pixels
-	long height; // in pixels
+
+	DisplayableSource source;
 
 	public DisplayableInfos(String path, String title) {
 		this.title = title;
@@ -28,6 +32,7 @@ public class DisplayableInfos implements Comparable<DisplayableInfos> {
 			File f = new File(location);
 			size = f.length();
 			// load the displayable infos from the file.
+			source = new DisplayableSource(location, null, null);
 		}
 	}
 
@@ -45,6 +50,6 @@ public class DisplayableInfos implements Comparable<DisplayableInfos> {
 		s = s * 10;// 1.0045678 -> 10.04
 		int t = (int) s;
 		s = t / 10;
-		return "Weight : " + s + w + " Dimensions : " + width + " * " + height + " pixels";
+		return "Weight : " + s + w + " Dimensions : " + source.getMaxInfo().width + " * " + source.getMaxInfo().height + " pixels";
 	}
 }
