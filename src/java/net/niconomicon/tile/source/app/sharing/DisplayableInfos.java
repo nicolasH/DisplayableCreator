@@ -27,6 +27,13 @@ public class DisplayableInfos implements Comparable<DisplayableInfos> {
 		this.shouldShare = true;
 	}
 
+	public String getDescription(){
+		return source.getDescription();
+	}
+	
+	public String getTitle(){
+		return source.getTitle();
+	}
 	public class InfoLoader implements Runnable {
 		public void run() {
 			File f = new File(location);
