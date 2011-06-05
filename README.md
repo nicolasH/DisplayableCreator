@@ -4,7 +4,7 @@ This java application was created to transform big images into something that al
 
 It then allows one to share that something over the network. I am calling this something a "Displayable".
 
-The current implementation tile the image and store the tiles in a sqlite db. The tiles are also created for the image at half the size, one quarter etc... until the shrunk image is smaller than an original iPhone screen. The homepage of the Displayator app is at [www.displayator.com][disp].
+The current implementation tile the image and store the tiles in a sqlite db. The tiles are also created for the image at half the size, one quarter etc... until the shrunk image is smaller than an original iPhone screen resolution. The homepage of the Displayator app is at [www.displayator.com][disp].
 
 For transferring the Displayable to the iDevice, the app uses the Multicast DNS standard (a.k.a mDNS, 'bonjour', formerly known as 'rendezvous') and a webserver, as implemented in respectively [jmDNS][jmdns] and [jetty][jetty].
 
@@ -31,6 +31,7 @@ Done !
 If you want you can save it to a permanent location on your computer. The following optional steps can be taken :
 - You can choose the title of the Displayable as it will appear in the iPhone app.
 - You can choose the name and location of the file that will be saved (but not the extension).
+- You can add a description to the Displayable, which will be shown in the Displayator before the user decides to download the displayable on his iPhone.
 
 ### - Sharing the Displayable(s).
 
