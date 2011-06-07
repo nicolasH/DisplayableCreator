@@ -20,7 +20,7 @@ I have also created another Java Application to rasterize PDFs but it only work 
 
 ## Usage :
 
-### - Displayable creation:
+### -> Displayable creation:
 
 - Drop the image you want to transform into a Displayable onto the top area of the application's main window. The displayable creation will start immediately.
 
@@ -31,9 +31,9 @@ Done !
 If you want you can save it to a permanent location on your computer. The following optional steps can be taken :
 - You can choose the title of the Displayable as it will appear in the iPhone app.
 - You can choose the name and location of the file that will be saved (but not the extension).
-- You can add a description to the Displayable, which will be shown in the Displayator before the user decides to download the displayable on his iPhone.
+- You can add a description to the Displayable, which will be shown in the app before the user decides to download the Displayable on his iPhone or iPod Touch.
 
-### - Sharing the Displayable(s).
+### -> Sharing the Displayable(s).
 
 *By default, the Displayable creator start with the sharing enabled, but no Displayable loaded.*
 
