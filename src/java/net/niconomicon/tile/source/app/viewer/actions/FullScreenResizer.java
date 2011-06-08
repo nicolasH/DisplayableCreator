@@ -4,6 +4,7 @@
 package net.niconomicon.tile.source.app.viewer.actions;
 
 import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
@@ -69,12 +70,22 @@ public class FullScreenResizer implements ActionListener {
 		frame.setLocation(pos);
 
 		frame.setVisible(true);
-		//Only affecting the first screen.
-		//TODO figure out on which screen the displayable frame is currently, so that it can go fullscreen on that one.
+
 		if (fullScreen) {
-			gs[0].setFullScreenWindow(frame);
+			for (GraphicsDevice gd : gs) {
+				for (GraphicsConfiguration conf : gd.getConfigurations()) {
+					if (conf.getBounds().intersects(frame.getBounds())) {
+						gd.setFullScreenWindow(frame);
+						break;
+					}
+				}
+			}
 		} else {
-			gs[0].setFullScreenWindow(null);
+			for (GraphicsDevice gd : gs) {
+				if (gd.getFullScreenWindow() != null) {
+					gd.setFullScreenWindow(null);
+				}
+			}
 		}
 	}
 }
