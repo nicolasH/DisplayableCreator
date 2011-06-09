@@ -41,19 +41,21 @@ public class FullScreenResizer implements ActionListener {
 		ImageIcon icon;
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		Point pos = new Point(0, 0);
-
+String tooltip="";
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
 
 		if (fullScreen) {
 			fullScreen = false;
 			icon = IconsLoader.getIconsLoader().ic_wExp_24;
+			tooltip = "Make the Displayable view fullscreen";
 			pos = framePreFullPos;
 			dim = framePreFullDim;
 
 		} else {
 			fullScreen = true;
 			icon = IconsLoader.getIconsLoader().ic_wCon_24;
+			tooltip = "Return the Displayable view to its previous size";
 			framePreFullDim = frame.getSize();
 			framePreFullPos = frame.getLocation();
 		}
@@ -65,6 +67,7 @@ public class FullScreenResizer implements ActionListener {
 		frame.pack();
 		frame.setVisible(false);
 		button.setIcon(icon);
+		button.setToolTipText(tooltip);
 		// Can only affect the window if it is displayable
 		frame.setSize(dim);
 		frame.setLocation(pos);
