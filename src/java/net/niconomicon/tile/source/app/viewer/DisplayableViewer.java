@@ -104,7 +104,7 @@ public class DisplayableViewer extends JPanel {
 
 		toolBar.addSeparator();
 		b = new JButton(loader.ic_wExp_24);
-		b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
+		b.setToolTipText("Make the Displayable view fullscreen");
 		b.addActionListener(new FullScreenResizer(viewerFrame, b, toolBar));
 		toolBar.add(b);
 

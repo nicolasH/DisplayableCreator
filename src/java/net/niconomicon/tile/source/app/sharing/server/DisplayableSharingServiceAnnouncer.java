@@ -126,7 +126,6 @@ public class DisplayableSharingServiceAnnouncer {
 				Map<String, String> m = new HashMap<String, String>();
 				m = getJmDNSPayload(servicePort);
 				lastInfos = ServiceInfo.create("_http._tcp.local.", Ref.sharing_serviceName, servicePort, 1, 1, m);
-
 				jmdns.registerService(lastInfos);
 				System.out.println("Registered Service as " + lastInfos);
 			} catch (Exception e) {
