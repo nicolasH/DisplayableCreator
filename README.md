@@ -42,7 +42,9 @@ Your iPhone/iPod touch needs to be on the same network as the computer on which 
 - If sharing is not enabled, click on the "start sharing" button.  You might have to adjust the port to one that is not used or blocked by your firewall.
 - On your iPhone/ iPod launch the Displayator app and then tap on the "Download Displayables" list item. The available images should appear shortly. You can then select one and download it.
 
-### - Viewing the Displayable(s).
+- The Displayable creator also creates a web page with the list of shared displayables. You can visit it with the Mobile Safari browser on your iPhone or iPod touch.
+
+### -> Viewing the Displayable(s).
 
 You can view Displayables in the Displayator iOS app or in the DisplayableCreator.
 
