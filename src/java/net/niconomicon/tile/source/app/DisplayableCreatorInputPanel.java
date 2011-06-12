@@ -71,7 +71,6 @@ public class DisplayableCreatorInputPanel extends JLayeredPane implements Tiling
 	public DisplayableCreatorInputPanel() {
 		super();
 		creator = new SQliteTileCreatorMultithreaded();
-		// content = new JLayeredPane();// new BorderLayout());
 
 		imageFilter = new ImageFileFilter();
 
@@ -82,19 +81,11 @@ public class DisplayableCreatorInputPanel extends JLayeredPane implements Tiling
 		sourceChooser.setDialogTitle("Open Supported Images");
 		sourceChooser.setCurrentDirectory(new File(System.getProperty(USER_HOME)));
 
-		// preview = new TilingPreview();
-
 		browseInput = new JButton("Choose image");
 		browseInput.addActionListener(new InputActionListener());
 
-		// tileSize = new JComboBox(new String[] { "64", "128", "192", "256" });
-		// tileSize.setSelectedIndex(2);
-		// tileSize = new JComboBox(new String[] { "" + TILE_SIZE });
-		// tileSize.setSelectedIndex(0);
-
 		progressIndicator = new JProgressBar(0, 100);
 		inhibitor = new Inhibitor(progressIndicator);
-		// Replacing the FormLayout by a GridBagLayout
 
 		status = initStatusPanel();
 		input = initInputPanel();
@@ -102,7 +93,6 @@ public class DisplayableCreatorInputPanel extends JLayeredPane implements Tiling
 		this.setLayout(new GridLayout(0, 1));
 		this.add(input, new Integer(0));
 		this.setPreferredSize(new Dimension(300, 90));
-		// content.moveToFront(input);
 
 	}
 
@@ -184,12 +174,12 @@ public class DisplayableCreatorInputPanel extends JLayeredPane implements Tiling
 		progressIndicator.setEnabled(true);
 		tilingStatus.setText(text);
 		progressIndicator.setIndeterminate(true);
-		/*if (percent > 0.99 || percent < 0.1) {
-			progressIndicator.setIndeterminate(true);
-		} else {
-			progressIndicator.setIndeterminate(false);
-			progressIndicator.setValue((int) (percent * 100));
-		}*/
+//		if (percent > 0.99 || percent < 0.1) {
+//			progressIndicator.setIndeterminate(true);
+//		} else {
+//			progressIndicator.setIndeterminate(false);
+//			progressIndicator.setValue((int) (percent * 100));
+//		}
 	}
 
 	// this will open and tile the image in a separate thread
