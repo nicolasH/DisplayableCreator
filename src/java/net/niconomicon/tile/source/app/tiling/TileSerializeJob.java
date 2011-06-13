@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import javax.imageio.ImageIO;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * This class transforms a BufferedImage into a png image and send it to a persister.
  */
 public class TileSerializeJob implements Runnable {

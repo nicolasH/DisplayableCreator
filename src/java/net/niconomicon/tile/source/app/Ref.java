@@ -19,7 +19,7 @@ import java.util.prefs.Preferences;
 import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * This class contains the reference fields. The default port, displayable file extension, json displayable description uri and generation functions, displayable html description uri and generation functions etc ... 
  */
 public final class Ref {

@@ -33,7 +33,7 @@ import net.niconomicon.tile.source.app.SaveDialog;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * 
  */
 public class DisplayableCheckBoxTable extends JPanel {

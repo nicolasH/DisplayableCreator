@@ -45,7 +45,7 @@ import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * This class is designed to assemble and present the widgets related to the Displayable sharing functionality.
  */
 public class DisplayableSharingPanel extends JPanel implements TableModelListener {

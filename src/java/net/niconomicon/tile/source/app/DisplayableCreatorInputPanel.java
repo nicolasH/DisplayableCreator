@@ -30,7 +30,7 @@ import net.niconomicon.tile.source.app.tiling.TilingStatusReporter;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * 
  */
 public class DisplayableCreatorInputPanel extends JLayeredPane implements TilingStatusReporter {

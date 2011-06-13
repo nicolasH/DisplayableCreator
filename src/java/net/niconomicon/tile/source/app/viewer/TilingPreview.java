@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * 
  */
 public class TilingPreview extends JPanel {

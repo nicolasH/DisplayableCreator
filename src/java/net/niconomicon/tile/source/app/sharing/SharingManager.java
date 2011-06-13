@@ -13,7 +13,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * This class is designed to handle the activation of the Displayable server and its announcement.
  */
 public class SharingManager {

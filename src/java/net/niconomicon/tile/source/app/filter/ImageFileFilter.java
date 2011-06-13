@@ -11,7 +11,7 @@ import java.util.Set;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * 
  */
 public class ImageFileFilter extends FileFilter {

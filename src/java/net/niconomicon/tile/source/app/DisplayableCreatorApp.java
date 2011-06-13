@@ -18,7 +18,7 @@ import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * This is the Main class for the Displayable Creator GUI.
  */
 public class DisplayableCreatorApp {

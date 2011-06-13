@@ -11,7 +11,7 @@ import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
  */
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * 
  */
 public class ImageToDisplayable {

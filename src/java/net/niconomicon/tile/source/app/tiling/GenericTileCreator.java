@@ -16,7 +16,7 @@ import javax.imageio.stream.ImageInputStream;
 import net.niconomicon.tile.source.app.Ref;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * This class will eventually create tiles from an image into a provided container class, as soon as I get to it.
  */
 public class GenericTileCreator {

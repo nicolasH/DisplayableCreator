@@ -15,7 +15,7 @@ import javax.jmdns.ServiceInfo;
 import net.niconomicon.tile.source.app.Ref;
 
 /**
- * @author niko
+ * @author Nicolas Hoibian
  * This class handles the publishing of the DisplayableSharing service over the network. It uses JmDNS.
  * It starts a thread the automatically restarts the sharing when the loalhost address changes.
  */
