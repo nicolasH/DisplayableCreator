@@ -27,7 +27,7 @@ import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
  * @author Nicolas Hoibian
- * 
+ * A class used to view a Displayable - Handles the scrolling, zooming and other user interactions.
  */
 public class DisplayableViewer extends JPanel {
 

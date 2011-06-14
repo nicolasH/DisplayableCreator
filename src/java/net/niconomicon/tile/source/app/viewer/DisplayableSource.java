@@ -32,7 +32,8 @@ import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
- * @author Nicolas Hoibian Provides facilities to read a Displayable file.
+ * @author Nicolas Hoibian 
+ * Provides facilities to read a Displayable file. Allow to get tiles based on their coordinates.
  */
 public class DisplayableSource {
 
