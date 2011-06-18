@@ -17,7 +17,7 @@ import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
  * @author Nicolas Hoibian
- * 
+ * A class that represents a view of a Displayable - Only handles the painting.
  */
 public class DisplayableView extends JPanel {
 

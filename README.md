@@ -53,6 +53,10 @@ In the Displayable Creator:
  - Click on the looking glass icon to the right of the Displayable title.
  - You can expand the displayable window to fill your screen by clicking on the button with the 4 arrows going toward the corners. Clicking on it again will resize the window back to its previous size.
 
+The Displayator is now available in [the app store][appStore]! Yay!
+<!--
+ - Buy
+-->
 [java]:http://www.java.com
 [jnlp]:http://www.displayator.com/DisplayableCreator/DisplayableCreator.jnlp
 [disp]:http://www.displayator.com
@@ -62,3 +66,4 @@ In the Displayable Creator:
 [pdf-jr]:http://www.niconomicon.net/projects/java/pdf-jrasterizer/
 [pdf-jr-git]:https://github.com/nicolasH/pdf-jrasterizer
 [pdf-jr-jnlp]:http://www.niconomicon.net/tests/maven/net/niconomicon/pdf-jrasterizer/pdf-jrasterizer.jnlp
+[appStore]:http://itunes.apple.com/us/app/displayator/id438034770?mt=8&ls=1
