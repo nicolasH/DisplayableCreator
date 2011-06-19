@@ -5,7 +5,6 @@ package net.niconomicon.tile.source.app.sharing;
 
 import java.io.File;
 
-import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.DisplayableSource;
 
 /**
@@ -25,15 +24,18 @@ public class DisplayableInfos implements Comparable<DisplayableInfos> {
 		this.title = title;
 		this.location = path;
 		this.shouldShare = true;
+		InfoLoader loader = new InfoLoader();
+		loader.run();
 	}
 
-	public String getDescription(){
+	public String getDescription() {
 		return source.getDescription();
 	}
-	
-	public String getTitle(){
+
+	public String getTitle() {
 		return source.getTitle();
 	}
+
 	public class InfoLoader implements Runnable {
 		public void run() {
 			File f = new File(location);

@@ -25,7 +25,7 @@
 	<scm>
 		<developerConnection>Nicolas Hoibian</developerConnection>
 		<!-- Read only -->
-		<url>git://github.com/nicolasH/displayatorTileCreator.git</url>
+		<url>git://github.com/nicolasH/DisplayableCreator.git</url>
 	</scm>
 	<build>
 		<sourceDirectory>src/java/</sourceDirectory>

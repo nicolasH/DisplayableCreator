@@ -5,7 +5,6 @@ package net.niconomicon.tile.source.app.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -21,7 +20,6 @@ import javax.swing.JToolBar;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.actions.FullScreenResizer;
 import net.niconomicon.tile.source.app.viewer.actions.Resizer;
-import net.niconomicon.tile.source.app.viewer.actions.SingleTileLoader;
 import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 

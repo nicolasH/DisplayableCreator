@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -130,8 +131,6 @@ public class DisplayableCheckBoxTable extends JPanel {
 		model.updateDisplayableLocation(oldLocation, newLocation);
 	}
 
-	
-
 	class CustomTableModel extends DefaultTableModel {
 
 		List<DisplayableInfos> backstore;
@@ -168,6 +167,14 @@ public class DisplayableCheckBoxTable extends JPanel {
 				case colEdit:
 					return Ref.isInTmpLocation(i.location) ? ButtonForTable.text_save : ButtonForTable.text_edit;
 				}
+			}
+			return null;
+		}
+
+		public String getTooltipAt(int row) {
+			if (null != backstore && row < backstore.size()) {
+				DisplayableInfos i = backstore.get(row);
+				return i.tooltip();
 			}
 			return null;
 		}
@@ -299,6 +306,7 @@ public class DisplayableCheckBoxTable extends JPanel {
 					defaultForegroundColor = c.getForeground();
 				}
 			}
+
 			if (((CustomTableModel) table.getModel()).needsSaving(row)) {
 				c.setBackground(Color.orange);
 			} else {
@@ -307,6 +315,9 @@ public class DisplayableCheckBoxTable extends JPanel {
 				} else {
 					c.setBackground(defaultBackgroundColor);
 				}
+			}
+			if (c instanceof JComponent) {
+				((JComponent) c).setToolTipText(model.getTooltipAt(row));
 			}
 			return c;
 		}
