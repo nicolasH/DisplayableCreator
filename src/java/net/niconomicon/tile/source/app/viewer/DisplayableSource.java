@@ -32,8 +32,8 @@ import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
- * @author Nicolas Hoibian 
- * Provides facilities to read a Displayable file. Allow to get tiles based on their coordinates.
+ * @author Nicolas Hoibian Provides facilities to read a Displayable file. Allow to get tiles based on their
+ *         coordinates.
  */
 public class DisplayableSource {
 
@@ -152,12 +152,12 @@ public class DisplayableSource {
 				zl.tiles_x = rs.getLong("tiles_x");
 				zl.tiles_y = rs.getLong("tiles_y");
 				zl.z = rs.getInt("zoom");
-				System.out.println("Tiles for level " + zl.z + " : " + zl.tiles_x * zl.tiles_y);
+				// System.out.println("Tiles for level " + zl.z + " : " + zl.tiles_x * zl.tiles_y);
 				totalTiles += zl.tiles_x * zl.tiles_y;
 				levels.add(zl.z, zl);
 			}
 			ZoomLevel currentLevel = levels.get(levels.size() - 1);
-			System.out.println("Setting current level to " + currentLevel.z + " total tiles : " + totalTiles);
+			// System.out.println("Setting current level to " + currentLevel.z + " total tiles : " + totalTiles);
 			cache = new ConcurrentHashMap<String, BufferedImage>(totalTiles, 1.0f);
 			if (view != null) {
 				view.resetSizeEtc(currentLevel);

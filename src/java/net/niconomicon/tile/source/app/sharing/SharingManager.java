@@ -3,8 +3,10 @@
  */
 package net.niconomicon.tile.source.app.sharing;
 
+import java.io.IOException;
 import java.util.Collection;
 
+import net.niconomicon.tile.source.app.sharing.exporter.ArchiveExporter;
 import net.niconomicon.tile.source.app.sharing.server.DisplayableSharingServiceAnnouncer;
 import net.niconomicon.tile.source.app.sharing.server.jetty.JettyImageServerServlet;
 
@@ -13,8 +15,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
- * @author Nicolas Hoibian
- * This class is designed to handle the activation of the Displayable server and its announcement.
+ * @author Nicolas Hoibian This class is designed to handle the activation of the Displayable server and its
+ *         announcement.
  */
 public class SharingManager {
 
@@ -49,7 +51,12 @@ public class SharingManager {
 
 	public void setSharingList(Collection<String> sharedMaps) {
 		service.addImages(sharedMaps);
-		//restartAnnouncer();
+		// restartAnnouncer();
+	}
+
+	public void exportArchive(String destination) throws IOException {
+		ArchiveExporter.zipIt(service.getMappings(), destination);
+
 	}
 
 	public void startSharing() throws Exception {

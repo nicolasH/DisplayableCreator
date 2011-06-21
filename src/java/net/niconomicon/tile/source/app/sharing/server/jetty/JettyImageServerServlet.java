@@ -20,11 +20,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.sharing.exporter.ArchiveExporter;
 
 /**
- * @author Nicolas Hoibian
- * The servlet that is given to the Jetty Server instance to serve the Displayables, 
- * their thumbnails and miniatures, as well as the JSON and HTML description of the shared Displayables.
+ * @author Nicolas Hoibian The servlet that is given to the Jetty Server instance to serve the Displayables, their
+ *         thumbnails and miniatures, as well as the JSON and HTML description of the shared Displayables.
  */
 public class JettyImageServerServlet extends HttpServlet {
 
@@ -50,6 +50,10 @@ public class JettyImageServerServlet extends HttpServlet {
 		imaginaryMap = refs;
 	}
 
+	public Map<String, String> getMappings() {
+		return imaginaryMap;
+	}
+
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -60,7 +64,7 @@ public class JettyImageServerServlet extends HttpServlet {
 
 		if (request.equals("/" + Ref.sharing_jsonRef) || request.equals(Ref.URI_jsonRef)) {
 			String k = "/" + Ref.sharing_jsonRef;
-			//System.out.println("should be returning the Displayable Feed [" + imaginaryMap.get(k).length() + "]");
+			// System.out.println("should be returning the Displayable Feed [" + imaginaryMap.get(k).length() + "]");
 			try {
 				sendString(imaginaryMap.get(k), resp);
 				return;
@@ -70,7 +74,7 @@ public class JettyImageServerServlet extends HttpServlet {
 			}
 		}
 		if (request.equals("/index.css")) {
-			//System.out.println("should be returning the css.");
+			// System.out.println("should be returning the css.");
 			try {
 				sendCSS(resp);
 				return;
@@ -82,7 +86,7 @@ public class JettyImageServerServlet extends HttpServlet {
 
 		if (request.equals("/") || request.equals(Ref.URI_htmlRef)) {
 			request = Ref.URI_htmlRef;
-			//System.out.println("should be returning the html list [" + imaginaryMap.get(request).length() + "]");
+			// System.out.println("should be returning the html list [" + imaginaryMap.get(request).length() + "]");
 			try {
 				String resolvedAddressItem = Ref.app_handle_item + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
 				String resolvedAddressList = Ref.app_handle_list + req.getScheme() + "://" + req.getLocalAddr() + ":" + req.getLocalPort();
@@ -98,7 +102,7 @@ public class JettyImageServerServlet extends HttpServlet {
 			}
 		}
 
-		if(request.startsWith("/")){
+		if (request.startsWith("/")) {
 			request = request.substring(1);
 		}
 		if (null == imaginaryMap || !imaginaryMap.containsKey(request) || imaginaryMap.get(request) == null) {

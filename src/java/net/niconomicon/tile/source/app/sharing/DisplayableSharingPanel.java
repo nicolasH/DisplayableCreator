@@ -143,7 +143,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		// port number
 		// start sharing
 		JButton shareButton = new JButton("Start sharing");
-		widget = new SharingWidget(shareButton);
+		widget = new SharingWidget(shareButton,displayablesList);
 		this.add(widget, BorderLayout.SOUTH);
 
 		shareButton.addActionListener(new ActionListener() {

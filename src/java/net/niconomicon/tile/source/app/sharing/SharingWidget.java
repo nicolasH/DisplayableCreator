@@ -7,6 +7,8 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 
@@ -21,9 +23,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.sharing.exporter.ArchiveExporter;
 
 /**
  * This class manages the user interaction elements for the parameters of the "Displayable sharing" functionnality.
+ * 
  * @author Nicolas Hoibian
  * 
  */
@@ -37,10 +41,12 @@ public class SharingWidget extends JPanel {
 	JTextField sharingLocation;
 	JButton actionButton;
 
+	JButton exportButton;
+
 	Color defaultColor;
 	JSpinner portNumber;
 
-	public SharingWidget(JButton actionButton) {
+	public SharingWidget(JButton actionButton, DisplayableCheckBoxTable table) {
 		super(new GridBagLayout());
 		GridBagConstraints c;
 
@@ -57,6 +63,13 @@ public class SharingWidget extends JPanel {
 		sharingLocation.setEditable(false);
 		sharingLocation.setHorizontalAlignment(JLabel.CENTER);
 		defaultColor = sharingStatus.getBackground();
+
+		exportButton = new JButton("Export");
+		exportButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
 
 		JLabel l;
 		c = new GridBagConstraints();
@@ -97,10 +110,27 @@ public class SharingWidget extends JPanel {
 		c.gridx = 0;
 		c.gridwidth = 3;
 		c.weighty = 1.5;
-		
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		this.add(this.sharingLocation, c);
 
+		c = new GridBagConstraints();
+		c.gridy = 3;
+		c.gridx = 0;
+		c.gridwidth = 2;
+		c.weighty = 1.5;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		l = new JLabel("Zip the displayable and their associated files into a single file");
+		this.add(l, c);
+
+		c = new GridBagConstraints();
+		c.gridy = 3;
+		c.gridx = 2;
+		c.gridwidth = 1;
+		c.weighty = 1.5;
+
+		c.fill = GridBagConstraints.HORIZONTAL;
+		this.add(this.exportButton, c);
 	}
 
 	public void setStatus(STATUS status) throws InvocationTargetException, InterruptedException {
