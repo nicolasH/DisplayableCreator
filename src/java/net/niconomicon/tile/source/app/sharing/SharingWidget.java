@@ -6,24 +6,19 @@ package net.niconomicon.tile.source.app.sharing;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.sharing.exporter.ArchiveExporter;
 
 /**
  * This class manages the user interaction elements for the parameters of the "Displayable sharing" functionnality.
@@ -46,13 +41,14 @@ public class SharingWidget extends JPanel {
 	Color defaultColor;
 	JSpinner portNumber;
 
-	public SharingWidget(JButton actionButton, DisplayableCheckBoxTable table) {
+	public SharingWidget(JButton actionButton, JButton exportButton) {
 		super(new GridBagLayout());
 		GridBagConstraints c;
 
 		portNumber = new JSpinner(new SpinnerNumberModel(Ref.sharing_port, 1025, 65536, 1));
 
 		this.actionButton = actionButton;
+		this.exportButton = exportButton;
 		sharingStatus = new JLabel(" ... ");
 		sharingStatus.setHorizontalAlignment(JLabel.CENTER);
 		sharingStatus.setVerticalAlignment(JLabel.CENTER);
@@ -63,13 +59,6 @@ public class SharingWidget extends JPanel {
 		sharingLocation.setEditable(false);
 		sharingLocation.setHorizontalAlignment(JLabel.CENTER);
 		defaultColor = sharingStatus.getBackground();
-
-		exportButton = new JButton("Export");
-		exportButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-			}
-		});
 
 		JLabel l;
 		c = new GridBagConstraints();

@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.rmi.server.ExportException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -45,8 +46,8 @@ import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
- * @author Nicolas Hoibian
- * This class is designed to assemble and present the widgets related to the Displayable sharing functionality.
+ * @author Nicolas Hoibian This class is designed to assemble and present the widgets related to the Displayable sharing
+ *         functionality.
  */
 public class DisplayableSharingPanel extends JPanel implements TableModelListener {
 
@@ -97,7 +98,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 
 		if (sharingManager.isSharing()) {
 			sharingManager.setSharingList(displayablesList.getSelectedTilesSetFiles());
-			sharingManager.restartAnnouncer();			// update the list of shared documents
+			sharingManager.restartAnnouncer(); // update the list of shared documents
 		} else {
 			// don't care ;-)
 			return;
@@ -143,7 +144,8 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		// port number
 		// start sharing
 		JButton shareButton = new JButton("Start sharing");
-		widget = new SharingWidget(shareButton,displayablesList);
+		JButton exportButton = new JButton("Export dir");
+		widget = new SharingWidget(shareButton, exportButton);
 		this.add(widget, BorderLayout.SOUTH);
 
 		shareButton.addActionListener(new ActionListener() {
@@ -155,6 +157,12 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 				};
 				Thread t = new Thread(runn);
 				t.start();
+			}
+		});
+
+		exportButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sharingManager.exportArchive(DisplayableSharingPanel.this);
 			}
 		});
 
@@ -210,29 +218,29 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	}
 
 	public void switchSharing(boolean shouldPopup) {
-		//synchronized (widget) {
-			if (!currentlySharing) {
+		// synchronized (widget) {
+		if (!currentlySharing) {
+			try {
+				widget.setStatus(STATUS.ACTIVATING);
+			} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
+			if (startSharing(shouldPopup)) {
 				try {
-					widget.setStatus(STATUS.ACTIVATING);
+					widget.setStatus(STATUS.ACTIVE);
 				} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
-				if (startSharing(shouldPopup)) {
-					try {
-						widget.setStatus(STATUS.ACTIVE);
-					} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
-					currentlySharing = true;
-					return;
-				}
+				currentlySharing = true;
+				return;
 			}
-			// stopping sharing or start sharing failed.
-			try {
-				widget.setStatus(STATUS.DEACTIVATING);
-			} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
-			stopSharing();
-			try {
-				widget.setStatus(STATUS.DEACTIVATED);
-			} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
-			currentlySharing = false;
-		//}
+		}
+		// stopping sharing or start sharing failed.
+		try {
+			widget.setStatus(STATUS.DEACTIVATING);
+		} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
+		stopSharing();
+		try {
+			widget.setStatus(STATUS.DEACTIVATED);
+		} catch (InvocationTargetException ex) {} catch (InterruptedException ex) {}
+		currentlySharing = false;
+		// }
 	}
 
 	public boolean startSharing(boolean shouldPopup) {

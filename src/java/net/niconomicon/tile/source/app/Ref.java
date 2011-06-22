@@ -19,8 +19,9 @@ import java.util.prefs.Preferences;
 import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
 
 /**
- * @author Nicolas Hoibian
- * This class contains the reference fields. The default port, displayable file extension, json displayable description uri and generation functions, displayable html description uri and generation functions etc ... 
+ * @author Nicolas Hoibian This class contains the reference fields. The default port, displayable file extension, json
+ *         displayable description uri and generation functions, displayable html description uri and generation
+ *         functions etc ...
  */
 public final class Ref {
 
@@ -38,8 +39,8 @@ public final class Ref {
 	public static final String app_handle_list = "displayator-list:";
 
 	public static final String ext_db = ".disp";
-	public static final String ext_thumb = ".thumb";
-	public static final String ext_mini = ".mini";
+	public static final String ext_thumb = ".thumb.png";
+	public static final String ext_mini = ".mini.png";
 
 	public static final String layers_infos_table_name = "layers_infos";
 
@@ -86,6 +87,15 @@ public final class Ref {
 			end = fullPath.length();
 		}
 		return fullPath.substring(fullPath.lastIndexOf(File.separator) + 1, end);
+	}
+
+	/**
+	 * 
+	 * @param fullPath
+	 * @return the name of the file without its path but with its extension (if any)
+	 */
+	public static final String fileSansPath(String fullPath) {
+		return fullPath.substring(fullPath.lastIndexOf(File.separator) + 1);
 	}
 
 	/**
@@ -279,7 +289,7 @@ public final class Ref {
 			ResultSet rs = statement.executeQuery("select * from infos");
 			while (rs.next()) {
 				// read the result set
-				String name = fileName.contains(File.separator) ?  fileName.substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
+				String name = fileName.contains(File.separator) ? fileName.substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
 				name = name.replace(' ', '_');
 				String mini = name + Ref.ext_mini;
 				String thumb = name + Ref.ext_thumb;

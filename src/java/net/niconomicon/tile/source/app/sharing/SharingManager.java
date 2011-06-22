@@ -6,7 +6,9 @@ package net.niconomicon.tile.source.app.sharing;
 import java.io.IOException;
 import java.util.Collection;
 
-import net.niconomicon.tile.source.app.sharing.exporter.ArchiveExporter;
+import javax.swing.JComponent;
+
+import net.niconomicon.tile.source.app.sharing.exporter.DirectoryExporter;
 import net.niconomicon.tile.source.app.sharing.server.DisplayableSharingServiceAnnouncer;
 import net.niconomicon.tile.source.app.sharing.server.jetty.JettyImageServerServlet;
 
@@ -54,9 +56,8 @@ public class SharingManager {
 		// restartAnnouncer();
 	}
 
-	public void exportArchive(String destination) throws IOException {
-		ArchiveExporter.zipIt(service.getMappings(), destination);
-
+	public void exportArchive(JComponent parent) {
+		DirectoryExporter.showDialog(parent,service.getMappings());
 	}
 
 	public void startSharing() throws Exception {

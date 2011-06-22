@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.sharing.exporter.ArchiveExporter;
 
 /**
  * @author Nicolas Hoibian The servlet that is given to the Jetty Server instance to serve the Displayables, their
