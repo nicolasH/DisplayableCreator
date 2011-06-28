@@ -3,6 +3,7 @@
  */
 package net.niconomicon.tile.source.app.sharing.exporter;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -14,7 +15,9 @@ import java.util.Map.Entry;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 import net.niconomicon.tile.source.app.Ref;
 
@@ -26,20 +29,62 @@ public class DirectoryExporter {
 
 	public static void showDialog(JComponent parent, Map<String, String> nameToFiles) {
 		JFileChooser chooser = new JFileChooser();
+
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
 		boolean notDecided = true;
-		double weight = 0.0f;
+		long weight = 0;
 		int res0, res1, res2;
+		for (String file : nameToFiles.values()) {
+			File f = new File(file);
+			if (f.exists()) {
+				weight += f.length();
+			} else {
+				weight += file.length();
+			}
+		}
+		weight = weight / 100000;// 100kb
+		double w = weight / 10;
+		// String text =
+		// "Select a directory and it will copy the shared displayables into it for easy uploading to a web site. \n"
+		// +
+		// "The directory will contain an HTML web page describing each displayables as well as the miniature and thumbnail"
+		// +
+		// " of each displayable. It will also contain a JSON file providing the same descriptions in a Displayator-friendly way. \n"
+		// +
+		// "You can point an iPhone web browser at the HTML page. That page contains a link that, when tapped, will launch the Displayator "
+		// + "and make it open the list of Displayables availables in that page.\n"
+		// + "\n"
+		// + "If you upload this directory to a web host, you can share your displayables on the Internet.\n"
+		// + "\n" + "The size of the directory will be " + w + " MB.\n"
+		// + "\n Are you sure you want to continue ?";
+		String text =
+				"Select a directory and it will copy the shared displayables and associated files "
+						+ "there for easy uploading to a web site. \n" + "\n" + "The size of the directory will be "
+						+ w + " MB.\n" + "\n Are you sure you want to continue ?";
+
+		JTextArea area = new JTextArea(text);
+		area.setColumns(40);
+		area.setLineWrap(true);
+		area.setWrapStyleWord(true);
+		area.setBackground(chooser.getBackground());
+		area.setEditable(false);
+		String[] options = new String[] { "Create " + w + " MB directory", " Nevermind !" };
+
 		while (notDecided) {
-			res0 = JOptionPane
-					.showConfirmDialog(
-							parent,
-							"This will copy the selected displayable and their thumbnail, miniatures, the webpage and web feed to a new directory for easy uploading to a web site. Its size will be " + weight + " MB. Are you sure you want to continue ?");
-			if (res0 == JOptionPane.NO_OPTION || res0 == JOptionPane.CANCEL_OPTION) { return; }
+			res0 =
+					JOptionPane.showOptionDialog(parent, area, "Export all files in a new, " + w + " MB directory",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+			if (res0 != JOptionPane.YES_OPTION) { return; }
 			res1 = chooser.showSaveDialog(parent);
-			if (res1 == JFileChooser.CANCEL_OPTION) { return; }
-			if (chooser.getSelectedFile().exists()) {
-				res2 = JOptionPane.showConfirmDialog(parent, "Are you sure you want to overwrite this file?", "Overwrite file",
-						JOptionPane.YES_NO_OPTION);
+			if (res1 != JFileChooser.APPROVE_OPTION) { return; }
+			File f = chooser.getSelectedFile();
+			if (f.exists()) {
+				String message = "Are you sure you want to replace this file by a directory ?";
+				if (f.isDirectory()) {
+					message = "Are you sure you want to overwrite this directory ?";
+				}
+				res2 = JOptionPane.showConfirmDialog(parent, message, "Overwrite ?", JOptionPane.YES_NO_OPTION);
 				if (res2 == JOptionPane.NO_OPTION) {
 					continue;
 				}
@@ -48,7 +93,8 @@ public class DirectoryExporter {
 				copyFiles(chooser.getSelectedFile().getAbsolutePath(), nameToFiles);
 				notDecided = false;
 			} catch (IOException ex) {
-				JOptionPane.showMessageDialog(parent, ex, "Error while trying to write the zip file", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(parent, ex, "Error while trying to export the files into "
+						+ chooser.getSelectedFile().getAbsolutePath(), JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

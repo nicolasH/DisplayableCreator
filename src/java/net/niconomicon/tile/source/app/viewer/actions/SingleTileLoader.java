@@ -102,7 +102,7 @@ public class SingleTileLoader implements Runnable {
 				long x = rs.getLong(1);
 				long y = rs.getLong(2);
 				long z = rs.getLong(3);
-				System.out.println("found a tile for " + x + " " + y + " " + z);
+//				System.out.println("found a tile for " + x + " " + y + " " + z);
 				data = rs.getBytes(4);
 			}
 			rs.close();

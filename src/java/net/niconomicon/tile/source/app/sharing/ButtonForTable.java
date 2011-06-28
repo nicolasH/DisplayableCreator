@@ -91,6 +91,7 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 		lastRow = row;
+		System.out.println("last row : "+lastRow);
 		lastTable = table;
 
 		JButton b = new JButton();

@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -103,17 +104,27 @@ public class SharingWidget extends JPanel {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		this.add(this.sharingLocation, c);
 
+		JLabel empty = new JLabel();
+		empty.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.black));
+
 		c = new GridBagConstraints();
 		c.gridy = 3;
+		c.gridx = 0;
+		c.gridwidth = 3;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		this.add(empty, c);
+
+		c = new GridBagConstraints();
+		c.gridy = 4;
 		c.gridx = 0;
 		c.gridwidth = 2;
 		c.weighty = 1.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		l = new JLabel("Zip the displayable and their associated files into a single file");
+		l = new JLabel("Share the Displayables as a website...");
 		this.add(l, c);
 
 		c = new GridBagConstraints();
-		c.gridy = 3;
+		c.gridy = 4;
 		c.gridx = 2;
 		c.gridwidth = 1;
 		c.weighty = 1.5;
@@ -198,7 +209,9 @@ public class SharingWidget extends JPanel {
 		sharingStatus.setBackground(Color.GREEN);
 		String add = "http://" + host.getHostAddress() + ":" + getPort() + "/";
 		sharingStatus
-				.setToolTipText("If the list of Displayables does not appear quickly on your iPhone/iPod touch, try accessing " + add + " in your iPhone / iPod touch web browser");
-		sharingLocation.setText("The Displayables are also accessible in Safari at http://" + host.getHostAddress() + ":" + getPort() + "/");
+				.setToolTipText("If the list of Displayables does not appear quickly on your iPhone/iPod touch, try accessing "
+						+ add + " in your iPhone / iPod touch web browser");
+		sharingLocation.setText("The Displayables are also accessible in Safari at http://" + host.getHostAddress()
+				+ ":" + getPort() + "/");
 	}
 }

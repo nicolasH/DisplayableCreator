@@ -46,7 +46,16 @@ public class DisplayableInfos implements Comparable<DisplayableInfos> {
 	}
 
 	public int compareTo(DisplayableInfos o) {
-		return title.toLowerCase().compareTo(o.title.toLowerCase());
+		// return title.toLowerCase().compareTo(o.title.toLowerCase());
+		if (title.compareToIgnoreCase(o.title) == 0) {
+			return location.compareTo(o.location);
+		} else {
+			return title.compareToIgnoreCase(o.title);
+		}
+	}
+
+	public String toString() {
+		return "dispInfos : [" + location + "]{" + title + "}";
 	}
 
 	public String tooltip() {
@@ -59,6 +68,7 @@ public class DisplayableInfos implements Comparable<DisplayableInfos> {
 		s = s * 10;// 1.0045678 -> 10.04
 		int t = (int) s;
 		s = t / 10;
-		return "Weight : " + s + w + " Dimensions : " + source.getMaxInfo().width + " * " + source.getMaxInfo().height + " pixels";
+		return "Weight : " + s + w + " Dimensions : " + source.getMaxInfo().width + " * " + source.getMaxInfo().height
+				+ " pixels";
 	}
 }

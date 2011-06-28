@@ -101,8 +101,8 @@ public class DisplayableCheckBoxTable extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				int item = table.getSelectedRow();
 				if (item < 0) {
-					JOptionPane.showMessageDialog(DisplayableCheckBoxTable.this, "Please select a displayable", "No Displayable selected",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(DisplayableCheckBoxTable.this, "Please select a displayable",
+							"No Displayable selected", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				((CustomTableModel) table.getModel()).removeDisplayable(table.getSelectedRows());
@@ -115,6 +115,7 @@ public class DisplayableCheckBoxTable extends JPanel {
 	}
 
 	public void addData(Map<String, String> pathToTitle) {
+		System.out.println("Setting the displayables : " + pathToTitle.keySet());
 		model.addData(pathToTitle);
 	}
 
@@ -123,7 +124,7 @@ public class DisplayableCheckBoxTable extends JPanel {
 		model.addDisplayable(i);
 	}
 
-	public Collection<String> getSelectedTilesSetFiles() {
+	public Collection<String> getSelectedDisplayablesFiles() {
 		return model.getSelectedItems();
 	}
 
@@ -155,6 +156,7 @@ public class DisplayableCheckBoxTable extends JPanel {
 		public Object getValueAt(int row, int column) {
 			if (null != backstore && column < columnsTitles.length && row < backstore.size()) {
 				DisplayableInfos i = backstore.get(row);
+
 				switch (column) {
 				case -1:
 					return i.location;
@@ -241,7 +243,8 @@ public class DisplayableCheckBoxTable extends JPanel {
 			Arrays.sort(rows);
 			for (int i = rows.length - 1; i >= 0; i--) {
 				int k = rows[i];
-				System.out.println("Removed the selection : " + backstore.remove(k));
+				DisplayableInfos infos = backstore.remove(k);
+				knownPaths.remove(infos.location);
 			}
 			// Collections.sort(backstore);
 			fireTableDataChanged();

@@ -32,8 +32,8 @@ import net.niconomicon.tile.source.app.sharing.ResultStruct;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 
 /**
- * @author Nicolas Hoibian
- * This is the dialogs that pops up when the user wants to change a particular displayable informations.
+ * @author Nicolas Hoibian This is the dialogs that pops up when the user wants to change a particular displayable
+ *         informations.
  */
 public class SaveDialog extends JPanel {
 
@@ -114,8 +114,8 @@ public class SaveDialog extends JPanel {
 		c.gridx = x;
 		c.anchor = c.LINE_END;
 		option.add(new JLabel("Description :"), c);
-		
-		//////////////////////////
+
+		// ////////////////////////
 		// second, third and fourth columns : textfields label and buttons
 		x = 1;
 		y = 0;
@@ -168,7 +168,6 @@ public class SaveDialog extends JPanel {
 		c.fill = GridBagConstraints.BOTH;
 		c.anchor = c.NORTHWEST;
 		option.add(description, c);
-		
 
 		this.add(option, BorderLayout.CENTER);
 		// this.add(new JLabel("Save !"), BorderLayout.NORTH);
@@ -208,16 +207,17 @@ public class SaveDialog extends JPanel {
 		fillForm(currentLocation);
 		String res = "nah";
 		while (null != res) {
-			int result = JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null, new String[] { "Save", "Cancel" }, null);
+			int result =
+					JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE, null, new String[] { "Save", "Cancel" }, null);
 			if (JOptionPane.YES_OPTION == result) {
 				res = save(currentLocation);
 			} else {
 				res = null;
 			}
 			if (res != null) {
-				JOptionPane.showOptionDialog(parent, res, "Error", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[] { "Ok" },
-						null);
+				JOptionPane.showOptionDialog(parent, res, "Error", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE,
+						null, new String[] { "Ok" }, null);
 			}
 		}
 		ResultStruct ret = new ResultStruct();
@@ -231,7 +231,7 @@ public class SaveDialog extends JPanel {
 	}
 
 	public void fillForm(String currentLocation) {
-
+		System.out.println("current location : " + currentLocation);
 		newLocation = null;
 		try {
 			currentTitle = SQliteTileCreatorMultithreaded.getTitle(currentLocation);
@@ -243,6 +243,9 @@ public class SaveDialog extends JPanel {
 				if (Ref.isInTmpLocation(currentLocation)) {
 					// keep the lastIndex here because tmp file format should contain the '_'
 					suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf("_"));// + Ref.ext_db
+					this.where.setText(Ref.getDefaultDir());
+				} else {
+					this.where.setText(new File(currentLocation).getParent());
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -252,7 +255,7 @@ public class SaveDialog extends JPanel {
 			}
 
 			this.outputFileName.setText(suggestedFile);
-			this.where.setText(Ref.getDefaultDir());
+
 			// init dialog
 		} catch (SQLException e) {
 			// if the error message is "out of memory",
@@ -270,7 +273,8 @@ public class SaveDialog extends JPanel {
 		}
 		if (null == newPath || "null".equals(newPath) || newPath.length() == 0) { return "No path set, cannot save the file."; }
 		if (null == newName || "null".equals(newName) || newName.length() == 0) { return "No file name set. Cannot save the file"; }
-		if (newName.contains(File.separator)) { return "Invalid file name. It cannot contains [" + File.separator + "]. Change to save the file"; }
+		if (newName.contains(File.separator)) { return "Invalid file name. It cannot contains [" + File.separator
+				+ "]. Change to save the file"; }
 
 		if (null == title.getText() || "null".equals(title.getText())) { return "No title was found. Please give a title to save the file."; }
 		if (!currentTitle.equals(title.getText())) {
@@ -278,7 +282,7 @@ public class SaveDialog extends JPanel {
 			SQliteTileCreatorMultithreaded.updateTitle(originalFile, currentTitle, newTitle);
 		}
 
-		if (null != description.getText() && 	!currentDesc.equals(description.getText())) {
+		if (null != description.getText() && !currentDesc.equals(description.getText())) {
 			SQliteTileCreatorMultithreaded.updateDesc(originalFile, description.getText());
 		}
 
@@ -289,7 +293,8 @@ public class SaveDialog extends JPanel {
 		if (!originalFile.equals(newPath)) {
 			File f = new File(originalFile);
 			boolean ok = f.renameTo(new File(newPath));
-			if (!ok) { return "<html><body>Could not move or rename the file to <br/>[" + newPath + "]<br/><b> Try to change the name of the file or its location.</b></body></html>"; }
+			if (!ok) { return "<html><body>Could not move or rename the file to <br/>[" + newPath
+					+ "]<br/><b> Try to change the name of the file or its location.</b></body></html>"; }
 			newLocation = newPath;
 			System.out.println("Renamed " + originalFile + " to " + newLocation);
 		}

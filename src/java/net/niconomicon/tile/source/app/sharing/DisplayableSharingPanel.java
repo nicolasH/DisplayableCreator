@@ -59,13 +59,10 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 
 	SharingWidget widget;
 
-	// JButton shareButton;
-	// String rootDir = "/Users/niko/Sites/testApp/mapRepository";
 	Color defaultColor;
 
 	DisplayableViewer viewer;
 
-	// InetAddress localaddr;
 	Timer timer;
 
 	public DisplayableSharingPanel(DisplayableViewer viewer) {
@@ -92,12 +89,9 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 			_case = "INSERT";
 			break;
 		}
-		// System.out.println("Table changed. " + _case + " = " + e.getType() + " source " + e.getSource() + " row : " +
-		// e.getFirstRow() + " - " + e.getLastRow() + "  col :" + e.getColumn());
-		// System.out.println("heee haa");
 
+		sharingManager.setSharingList(displayablesList.getSelectedDisplayablesFiles());
 		if (sharingManager.isSharing()) {
-			sharingManager.setSharingList(displayablesList.getSelectedTilesSetFiles());
 			sharingManager.restartAnnouncer(); // update the list of shared documents
 		} else {
 			// don't care ;-)
@@ -144,7 +138,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		// port number
 		// start sharing
 		JButton shareButton = new JButton("Start sharing");
-		JButton exportButton = new JButton("Export dir");
+		JButton exportButton = new JButton("Export...");
 		widget = new SharingWidget(shareButton, exportButton);
 		this.add(widget, BorderLayout.SOUTH);
 
@@ -162,7 +156,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 
 		exportButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sharingManager.exportArchive(DisplayableSharingPanel.this);
+				sharingManager.exportDisplayables(DisplayableSharingPanel.this);
 			}
 		});
 
@@ -212,7 +206,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		}
 		displayablesList.addData(fileToTitle);
 		if (sharingManager.isSharing()) {
-			sharingManager.setSharingList(displayablesList.getSelectedTilesSetFiles());
+			sharingManager.setSharingList(displayablesList.getSelectedDisplayablesFiles());
 			sharingManager.restartAnnouncer();
 		}
 	}
@@ -245,8 +239,9 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 
 	public boolean startSharing(boolean shouldPopup) {
 		// HashSet<String> sharedDB = new HashSet<String>();
-		Collection<String> sharedMaps = displayablesList.getSelectedTilesSetFiles();
-		System.out.println("should start sharing the maps, with " + (shouldPopup ? "popup" : "no popup") + " in case of problem");
+		Collection<String> sharedMaps = displayablesList.getSelectedDisplayablesFiles();
+		System.out.println("should start sharing the maps, with " + (shouldPopup ? "popup" : "no popup")
+				+ " in case of problem");
 		// generate the xml;
 		try {
 			sharingManager.setPort(widget.getPort());
@@ -261,12 +256,10 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 				ex1.printStackTrace();
 			}
 			if (shouldPopup) {
-				JOptionPane
-						.showConfirmDialog(
-								this,
-								"<html><body>Error while starting the sharing component on port [" + widget.getPort() + "]: <br/><i>" + ex
-										.getMessage() + "</i></body></html>", "Error creating starting the sharing component",
-								JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showConfirmDialog(this, "<html><body>Error while starting the sharing component on port ["
+						+ widget.getPort() + "]: <br/><i>" + ex.getMessage() + "</i></body></html>",
+						"Error creating starting the sharing component", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.ERROR_MESSAGE);
 			}
 			ex.printStackTrace();
 			return false;

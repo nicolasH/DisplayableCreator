@@ -6,6 +6,8 @@ package net.niconomicon.tile.source.app;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -29,11 +31,13 @@ public final class Ref {
 	public static final String storingDirectoryKey = "DisplayableStoringDirectoryKey";
 	public static final String sharing_serviceName = "DisplayableSharingService";
 
-	public static final String sharing_jsonRef = "json";
-	public static final String sharing_htmlRef = "displayables.html";
+	public static final String sharing_jsonRef = "displayables.json";
+	public static final String sharing_htmlRef = "index.html";
+
+	public static final String sharing_cssRef = "displayableList.css";
 
 	public static final String URI_jsonRef = "/displayables.json";
-	public static final String URI_htmlRef = "/displayables.html";
+	public static final String URI_htmlRef = "/index.html";
 
 	public static final String app_handle_item = "displayator-image:";
 	public static final String app_handle_list = "displayator-list:";
@@ -56,7 +60,21 @@ public final class Ref {
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
 
-	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" + "<link rel=\"stylesheet\" href=\"/index.css\"/ type=\"text/css\" />";
+	public static final String head =
+			"<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">"
+					+ "<link rel=\"stylesheet\" href=\""
+					+ sharing_cssRef
+					+ "\" type=\"text/css\" />"
+					+ "<script type=\"text/javascript\">"
+					+ "function expandLinks(){"
+					+ "var links = document.getElementsByTagName('a');\n"
+					+ "for (var i=0;\n i < links.length;\n i++) {"
+					+ "    if(links[i].href.indexOf(\"displayator-list:\") == 0){"
+					+ "        links[i].href = links[i].href.replace(\"displayator-list:\",\"displayator-list:\"+document.location);\n"
+					+ "    }"
+					+ "    if(links[i].href.indexOf(\"displayator-image:\") == 0){"
+					+ "       links[i].href = links[i].href.replace(\"displayator-image:\",\"displayator-image:\"+document.location);\n"
+					+ "       }" + " }" + " }" + "</script>" + "</head>\n";
 
 	public static File tmpFile;
 	static {
@@ -139,7 +157,9 @@ public final class Ref {
 	public static String[] getAbsolutePathOfDBFilesInDirectory(File dir) {
 		String[] files = dir.list(Ref.ext_db_filter);
 		for (int i = 0; i < files.length; i++) {
-			files[i] = dir.getAbsolutePath() + (dir.getAbsolutePath().endsWith(File.separator) ? files[i] : File.separator + files[i]);
+			files[i] =
+					dir.getAbsolutePath()
+							+ (dir.getAbsolutePath().endsWith(File.separator) ? files[i] : File.separator + files[i]);
 		}
 		return files;
 	}
@@ -150,12 +170,14 @@ public final class Ref {
 			if (!f.exists()) {
 				System.out.println("file directory [" + saveDirectory + "] does not exists");
 				if (!f.mkdir()) {
-					System.out.println("Could not create directory [" + saveDirectory + "] Gonna return the tmp directory");
+					System.out.println("Could not create directory [" + saveDirectory
+							+ "] Gonna return the tmp directory");
 					saveDirectory = null;
 				}
 			}
 			if (!f.isDirectory()) { // finer
-				System.out.println("File is not a directory [" + saveDirectory + "] going to return the temporary directory.");
+				System.out.println("File is not a directory [" + saveDirectory
+						+ "] going to return the temporary directory.");
 				saveDirectory = null;
 			}
 		}
@@ -177,22 +199,22 @@ public final class Ref {
 	public static void extractThumbsAndMiniToTmpFile(Map<String, String> maps) {
 		for (String key : maps.keySet()) {
 			String file = maps.get(key);
-			System.out.println("Extracting for Key : [" + key + "]");// + " value : "+ maps.get(key));
-			if (key.endsWith(Ref.ext_db) || key.endsWith(Ref.sharing_htmlRef) || key.endsWith(Ref.sharing_jsonRef)) {
+			// System.out.println("Extracting for Key : [" + key + "]");// + " value : "+ maps.get(key));
+			if (!key.endsWith(Ref.ext_mini) && !key.endsWith(Ref.ext_thumb)) {
 				continue;
 			}
-			System.out.println("Really trying to open (k=[" + key + "]) => " + file);
+			// System.out.println("Really trying to open (k=[" + key + "]) => " + file);
 			try {
 				String query = "";
 				String field = "";
 
 				if (key.endsWith(Ref.ext_mini)) {
-					System.out.println("Extracting mini from the map :" + file);
+					// System.out.println("Extracting mini from the map :" + file);
 					query = "select " + Ref.infos_miniature + " from infos";
 					field = Ref.infos_miniature;
 				}
 				if (key.endsWith(Ref.ext_thumb)) {
-					System.out.println("Extracting thumb from the map :" + file);
+					// System.out.println("Extracting thumb from the map :" + file);
 					query = "select " + Ref.infos_thumb + " from infos";
 					field = Ref.infos_thumb;
 				}
@@ -202,6 +224,7 @@ public final class Ref {
 				Statement statement = connection.createStatement();
 				statement.setQueryTimeout(5); // set timeout to 30 sec.
 
+				// System.out.println("Query : " + query);
 				ResultSet rs = statement.executeQuery(query);
 				while (rs.next()) {
 					File temp = File.createTempFile(key, "tmp");
@@ -210,7 +233,7 @@ public final class Ref {
 					oStream.write(rs.getBytes(field));
 					oStream.close();
 					maps.put(key, temp.getAbsolutePath());
-					System.out.println("Wrote " + key + " into " + temp.getAbsolutePath());
+					// System.out.println("Wrote " + key + " into " + temp.getAbsolutePath());
 					break;
 				}
 
@@ -240,12 +263,13 @@ public final class Ref {
 		StringBuffer html = new StringBuffer();
 		json.append("[");
 		html.append("<html>" + head + "<body>");
-		html.append("<div class=\"\"><a href=\"" + app_handle_list + URI_jsonRef + "\">Open this list with the Displayator app</a></div>");
+		html.append("<div class=\"\"><a href=\"" + app_handle_list + URI_jsonRef
+				+ "\">Open this list with the Displayator app</a></div>");
 		for (String mapFileName : maps) {
 			try {
 				File f = new File(mapFileName);
 				long size = f.length();
-				System.out.println("trying to open the file :" + mapFileName + " To generate the json and html.");
+				// System.out.println("trying to open the file :" + mapFileName + " To generate the json and html.");
 				Connection connection = DriverManager.getConnection("jdbc:sqlite:" + mapFileName);
 				connection.setReadOnly(true);
 				String[] descriptions = generateDescriptionsForConnection(connection, size, mapFileName, urlToFile);
@@ -259,13 +283,26 @@ public final class Ref {
 		}
 		json.deleteCharAt(json.length() - 1);
 		json.append("]");
-		System.out.println(json.toString());
 		urlToFile.put("/" + sharing_jsonRef, json.toString());
-
+		html.append("<script type=\"text/javascript\">expandLinks();</script>");
 		html.append("</body></html>");
-		urlToFile.put("/" + sharing_htmlRef, html.toString());
+		urlToFile.put(sharing_htmlRef, html.toString());
 		// System.out.println(html.toString());
 		return urlToFile;
+	}
+
+	private static String convertToHex(byte[] data) {
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < data.length; i++) {
+			int halfbyte = (data[i] >>> 4) & 0x0F;
+			int two_halfs = 0;
+			do {
+				if ((0 <= halfbyte) && (halfbyte <= 9)) buf.append((char) ('0' + halfbyte));
+				else buf.append((char) ('a' + (halfbyte - 10)));
+				halfbyte = data[i] & 0x0F;
+			} while (two_halfs++ < 1);
+		}
+		return buf.toString();
 	}
 
 	/**
@@ -289,8 +326,20 @@ public final class Ref {
 			ResultSet rs = statement.executeQuery("select * from infos");
 			while (rs.next()) {
 				// read the result set
-				String name = fileName.contains(File.separator) ? fileName.substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
-				name = name.replace(' ', '_');
+				// String name =
+				// fileName.contains(File.separator) ? fileName
+				// .substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
+				MessageDigest md;
+				String name = fileName.replaceAll(File.separator, "_");
+				try {
+					md = MessageDigest.getInstance("SHA");
+					// name = new String(
+					byte[] bytes = md.digest(fileName.getBytes());
+					name = convertToHex(bytes);
+				} catch (NoSuchAlgorithmException ex) {
+					ex.printStackTrace();
+				}
+
 				String mini = name + Ref.ext_mini;
 				String thumb = name + Ref.ext_thumb;
 				// name = name + Ref.ext_db;
@@ -299,17 +348,19 @@ public final class Ref {
 				urlToFile.put(mini, fileName);
 				urlToFile.put(thumb, fileName);
 
+				// Extra / to work around a bug in the displayator app where the JSON part does not handle relative uris
+				// correctly.
 				String title = rs.getString(Ref.infos_title);
 				String s = "{";
-				s += "\"title\":\"" + title + "\",";
-				s += "\"source\":\"" + name + "\",";
-				s += "\"thumb\":\"" + thumb + "\",";
-				s += "\"preview\":\"" + mini + "\",";
-				s += "\"weight\":" + weight + ",";
-				s += "\"width\":" + rs.getLong(Ref.infos_width) + ",";
-				s += "\"height\":" + rs.getLong(Ref.infos_height) + ",";
+				s += "\"title\":\"" + title + "\",\n";
+				s += "\"source\":\"/" + name + "\",\n";
+				s += "\"thumb\":\"/" + thumb + "\",\n";
+				s += "\"preview\":\"/" + mini + "\",\n";
+				s += "\"weight\":" + weight + ",\n";
+				s += "\"width\":" + rs.getLong(Ref.infos_width) + ",\n";
+				s += "\"height\":" + rs.getLong(Ref.infos_height) + ",\n";
 				s += "\"description\":\"" + rs.getString(Ref.infos_description) + "\"";
-				s += "},";
+				s += "},\n";
 				ret += s;
 
 				String urlInfos = "title=" + title;
@@ -323,17 +374,23 @@ public final class Ref {
 
 				String li = "\t\t\t<li>";
 				String li_ = "</li>\n";
-				String html = "<div class=\"item\"><a href=\"" + mini + "\"><img src=\"" + thumb + "\" align=\"right\"/></a><b>" + title + "</b>";
+				String html =
+						"<div class=\"item\"><a href=\"" + mini + "\"><img src=\"" + thumb
+								+ "\" align=\"right\"/></a><b>" + title + "</b>";
 				// html += "\n\t\t<a href=\"" + mini + "\"><img src=\"" + thumb + "\"></a>\n\t\t";
 				html += "<br><a href=\"" + mini + "\">See the miniature</a>";
-				html += "<br/>Download and view <a href=\"" + app_handle_item + name + "?" + urlInfos + "\" >original size with displayator</a>";
+				html +=
+						"<br/>Download and view <a href=\"" + app_handle_item + name + "?" + urlInfos
+								+ "\" >original size with displayator</a>";
 				html += "  or download <a href=\"" + name + "\" >as a file</a>.<br/>";
 				html += "\n\t<ul>\n";
-				html += li + "Weight : " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB." + li_;
-				html += li + "Size : " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px." + li_;
+				html += li + "Weight: " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB." + li_;
+				html +=
+						li + "Size: " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px."
+								+ li_;
 				String dsc = rs.getString(Ref.infos_description);
 				if (null != dsc && dsc.length() > 0 && !dsc.equalsIgnoreCase("no description")) {
-					html += li + "description:" + dsc + li_;
+					html += li + "Description: " + dsc + li_;
 				}
 				html += "</ul>\n";
 				html += "</div>\n";

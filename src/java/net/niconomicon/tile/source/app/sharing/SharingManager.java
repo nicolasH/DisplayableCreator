@@ -52,11 +52,10 @@ public class SharingManager {
 	}
 
 	public void setSharingList(Collection<String> sharedMaps) {
-		service.addImages(sharedMaps);
-		// restartAnnouncer();
+		service.setSharedDisplayables(sharedMaps);
 	}
 
-	public void exportArchive(JComponent parent) {
+	public void exportDisplayables(JComponent parent) {
 		DirectoryExporter.showDialog(parent,service.getMappings());
 	}
 

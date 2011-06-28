@@ -104,7 +104,7 @@ public class DisplayableCreatorInputPanel extends JLayeredPane implements Tiling
 		int y = 0;
 		int x = 0;
 
-		JLabel l = new JLabel("Drag and drop image or ");
+		JLabel l = new JLabel("Drag and drop an image or ");
 		c = new GridBagConstraints();
 		c.gridy = y;
 		c.gridx = x;
