@@ -263,7 +263,7 @@ public final class Ref {
 		StringBuffer html = new StringBuffer();
 		json.append("[");
 		html.append("<html>" + head + "<body>");
-		html.append("<div class=\"\"><a href=\"" + app_handle_list + URI_jsonRef
+		html.append("<div class=\"feed\"><a href=\"" + app_handle_list + URI_jsonRef
 				+ "\">Open this list with the Displayator app</a></div>");
 		for (String mapFileName : maps) {
 			try {
@@ -375,8 +375,8 @@ public final class Ref {
 				String li = "\t\t\t<li>";
 				String li_ = "</li>\n";
 				String html =
-						"<div class=\"item\"><a href=\"" + mini + "\"><img src=\"" + thumb
-								+ "\" align=\"right\"/></a><b>" + title + "</b>";
+						"<div class=\"item\"><table><tr><td><a href=\"" + mini + "\"><img src=\"" + thumb
+								+ "\" align=\"right\"/></a></td><td><div class=\"content\"><b>" + title + "</b>";
 				// html += "\n\t\t<a href=\"" + mini + "\"><img src=\"" + thumb + "\"></a>\n\t\t";
 				html += "<br><a href=\"" + mini + "\">See the miniature</a>";
 				html +=
@@ -393,7 +393,7 @@ public final class Ref {
 					html += li + "Description: " + dsc + li_;
 				}
 				html += "</ul>\n";
-				html += "</div>\n";
+				html += "</div></td></tr></table></div>\n";
 				h += html;
 
 			}

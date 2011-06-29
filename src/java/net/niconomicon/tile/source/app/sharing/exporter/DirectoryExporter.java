@@ -3,7 +3,6 @@
  */
 package net.niconomicon.tile.source.app.sharing.exporter;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,7 +14,6 @@ import java.util.Map.Entry;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
@@ -59,9 +57,10 @@ public class DirectoryExporter {
 		// + "\n" + "The size of the directory will be " + w + " MB.\n"
 		// + "\n Are you sure you want to continue ?";
 		String text =
-				"Select a directory and it will copy the shared displayables and associated files "
-						+ "there for easy uploading to a web site. \n" + "\n" + "The size of the directory will be "
-						+ w + " MB.\n" + "\n Are you sure you want to continue ?";
+				"Select a directory and the shared displayables will be copied into it, as well as an html index "
+						+ "and a json representation of the list. You can then upload this directory to a web site for easy" +
+								" internet sharing of your displayables." + "\n"
+						+ "The size of the directory will be " + w + " MB.";
 
 		JTextArea area = new JTextArea(text);
 		area.setColumns(40);

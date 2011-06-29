@@ -1,4 +1,9 @@
-/* @override http://127.0.0.1:8889/index.css */
+/* @override 
+	http://127.0.0.1:8889/index.css
+	http://192.168.1.5:8889/displayableList.css
+	http://192.168.1.5/~niko/displayables/displayableList.css
+*/
+
 /* Used to style the html list of shared Displayables. */
 body {
 	margin: -0px;
@@ -6,23 +11,37 @@ body {
 	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
 	font-size: 0.8em;
 }
+div.feed{
+	margin: 1em;
+}
+div.feed a{
+	font-weight: bold;
+	font-size: 1.5em;
+}
+
 .item{
-	border-top: 1px solid #8a8a8a;
+	border-top: 1px dashed #8a8a8a;
 	line-height: 1.3 em;
-	padding-top: 6px;
-	padding-bottom: 6px;
-	
+	padding-top: 0.4em;
+	padding-bottom: 0.4em;
+}
+.content{
+	margin-left: -0px;
 }
 img{
-	float:right;
-	padding: 10px;
+	padding-top: 2em;
+	padding-bottom: 2em;
+	padding: 1em;
+	clear: left;
 }
 b{
 	text-align: left;
 	font-weight: bold;
-	font-variant: small-caps;
 }
 ul{
-	padding-left: 25px;
-	margin:4px;	
+	padding-left: 0em;
+	margin: 0em;
+}
+li{
+	margin-left: 2em;
 }

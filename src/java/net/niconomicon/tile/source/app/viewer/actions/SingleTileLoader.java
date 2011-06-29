@@ -43,7 +43,9 @@ public class SingleTileLoader implements Runnable {
 		if (displayableSource.hasImage(coord)) { return; }
 		try {
 			Statement statement = displayable.createStatement();
-			ResultSet rs = statement.executeQuery("select * from tiles_0_0 where z=" + coord.z + " and y=" + coord.y + " and x=" + coord.x);
+			ResultSet rs =
+					statement.executeQuery("select * from tiles_0_0 where z=" + coord.z + " and y=" + coord.y
+							+ " and x=" + coord.x);
 			while (rs.next()) {
 				count++;
 				long x = rs.getLong(1);
@@ -78,19 +80,19 @@ public class SingleTileLoader implements Runnable {
 	 * is TYPE_CUSTOM
 	 */
 	public static final int[] imageTypes = new int[] { BufferedImage.TYPE_CUSTOM, // 0
-	BufferedImage.TYPE_INT_RGB, // 1
-	BufferedImage.TYPE_INT_ARGB, // 2
-	BufferedImage.TYPE_INT_ARGB_PRE,// 3
-	BufferedImage.TYPE_INT_BGR, // 4
-	BufferedImage.TYPE_3BYTE_BGR, // 5 //png
-	BufferedImage.TYPE_4BYTE_ABGR, // 6 //png
-	BufferedImage.TYPE_4BYTE_ABGR_PRE,// 7 //png?
-	BufferedImage.TYPE_USHORT_565_RGB, // 8
-	BufferedImage.TYPE_USHORT_555_RGB, // 9
-	BufferedImage.TYPE_BYTE_GRAY, // 10
-	BufferedImage.TYPE_USHORT_GRAY,// 11
-	BufferedImage.TYPE_BYTE_BINARY,// 12
-	BufferedImage.TYPE_BYTE_INDEXED }; // 13
+			BufferedImage.TYPE_INT_RGB, // 1
+			BufferedImage.TYPE_INT_ARGB, // 2
+			BufferedImage.TYPE_INT_ARGB_PRE,// 3
+			BufferedImage.TYPE_INT_BGR, // 4
+			BufferedImage.TYPE_3BYTE_BGR, // 5 //png
+			BufferedImage.TYPE_4BYTE_ABGR, // 6 //png
+			BufferedImage.TYPE_4BYTE_ABGR_PRE,// 7 //png?
+			BufferedImage.TYPE_USHORT_565_RGB, // 8
+			BufferedImage.TYPE_USHORT_555_RGB, // 9
+			BufferedImage.TYPE_BYTE_GRAY, // 10
+			BufferedImage.TYPE_USHORT_GRAY,// 11
+			BufferedImage.TYPE_BYTE_BINARY,// 12
+			BufferedImage.TYPE_BYTE_INDEXED }; // 13
 
 	public static int getPossibleType(Connection conn) {
 		int type = -1;
@@ -102,7 +104,7 @@ public class SingleTileLoader implements Runnable {
 				long x = rs.getLong(1);
 				long y = rs.getLong(2);
 				long z = rs.getLong(3);
-//				System.out.println("found a tile for " + x + " " + y + " " + z);
+				// System.out.println("found a tile for " + x + " " + y + " " + z);
 				data = rs.getBytes(4);
 			}
 			rs.close();

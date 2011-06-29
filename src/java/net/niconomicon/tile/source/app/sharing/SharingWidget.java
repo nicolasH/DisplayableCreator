@@ -120,7 +120,7 @@ public class SharingWidget extends JPanel {
 		c.gridwidth = 2;
 		c.weighty = 1.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		l = new JLabel("Share the Displayables as a website...");
+		l = new JLabel("Export the shared Displayables list as a website...");
 		this.add(l, c);
 
 		c = new GridBagConstraints();
