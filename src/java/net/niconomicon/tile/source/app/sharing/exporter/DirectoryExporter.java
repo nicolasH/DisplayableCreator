@@ -58,9 +58,9 @@ public class DirectoryExporter {
 		// + "\n Are you sure you want to continue ?";
 		String text =
 				"Select a directory and the shared displayables will be copied into it, as well as an html index "
-						+ "and a json representation of the list. You can then upload this directory to a web site for easy" +
-								" internet sharing of your displayables." + "\n"
-						+ "The size of the directory will be " + w + " MB.";
+						+ "and a json representation of the list (+thumbnails and miniatures). You can then upload this directory to a web site for easy"
+						+ " internet sharing of your displayables." + "\n" + "The size of the directory will be " + w
+						+ " MB.";
 
 		JTextArea area = new JTextArea(text);
 		area.setColumns(40);
@@ -72,8 +72,9 @@ public class DirectoryExporter {
 
 		while (notDecided) {
 			res0 =
-					JOptionPane.showOptionDialog(parent, area, "Export all files in a new, " + w + " MB directory",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+					JOptionPane.showOptionDialog(parent, area, "Export " + nameToFiles.size() + " files in a new, " + w
+							+ " MB directory", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+							options[1]);
 			if (res0 != JOptionPane.YES_OPTION) { return; }
 			res1 = chooser.showSaveDialog(parent);
 			if (res1 != JFileChooser.APPROVE_OPTION) { return; }
@@ -81,7 +82,7 @@ public class DirectoryExporter {
 			if (f.exists()) {
 				String message = "Are you sure you want to replace this file by a directory ?";
 				if (f.isDirectory()) {
-					message = "Are you sure you want to overwrite this directory ?";
+					message = "Continuing might overwrite existing files in this directory.";
 				}
 				res2 = JOptionPane.showConfirmDialog(parent, message, "Overwrite ?", JOptionPane.YES_NO_OPTION);
 				if (res2 == JOptionPane.NO_OPTION) {

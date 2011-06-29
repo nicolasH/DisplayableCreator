@@ -56,7 +56,7 @@ public class SharingManager {
 	}
 
 	public void exportDisplayables(JComponent parent) {
-		DirectoryExporter.showDialog(parent,service.getMappings());
+		DirectoryExporter.showDialog(parent, service.getMappings());
 	}
 
 	public void startSharing() throws Exception {

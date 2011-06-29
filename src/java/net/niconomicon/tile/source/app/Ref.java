@@ -86,6 +86,15 @@ public final class Ref {
 		}
 	}
 
+	public static MessageDigest md;
+	static {
+		try {
+			md = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	public static final boolean isInTmpLocation(String currentLocation) {
 		if (currentLocation != null && tmpFile.getParent().compareTo(Ref.pathSansFileSansSep(currentLocation)) == 0) {
 			return true;
@@ -263,8 +272,8 @@ public final class Ref {
 		StringBuffer html = new StringBuffer();
 		json.append("[");
 		html.append("<html>" + head + "<body>");
-		html.append("<div class=\"feed\"><a href=\"" + app_handle_list + URI_jsonRef
-				+ "\">Open this list with the Displayator app</a></div>");
+		html.append("<div class=\"feed\">Tap on the link to <a href=\"" + app_handle_list + URI_jsonRef
+				+ "\">open this list with the Displayator app</a>.</div>");
 		for (String mapFileName : maps) {
 			try {
 				File f = new File(mapFileName);
@@ -291,9 +300,9 @@ public final class Ref {
 		return urlToFile;
 	}
 
-	private static String convertToHex(byte[] data) {
+	private static String convertToHex(byte[] data, int count) {
 		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < data.length; i++) {
+		for (int i = 0; i < Math.min(count, data.length); i++) {
 			int halfbyte = (data[i] >>> 4) & 0x0F;
 			int two_halfs = 0;
 			do {
@@ -329,20 +338,16 @@ public final class Ref {
 				// String name =
 				// fileName.contains(File.separator) ? fileName
 				// .substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
-				MessageDigest md;
 				String name = fileName.replaceAll(File.separator, "_");
-				try {
-					md = MessageDigest.getInstance("SHA");
+				if (md != null) {
 					// name = new String(
 					byte[] bytes = md.digest(fileName.getBytes());
-					name = convertToHex(bytes);
-				} catch (NoSuchAlgorithmException ex) {
-					ex.printStackTrace();
+					name = Ref.fileSansDot(fileName) + "_" + convertToHex(bytes, 6);
 				}
 
 				String mini = name + Ref.ext_mini;
 				String thumb = name + Ref.ext_thumb;
-				// name = name + Ref.ext_db;
+				name = name + Ref.ext_db;
 
 				urlToFile.put(name, fileName);
 				urlToFile.put(mini, fileName);

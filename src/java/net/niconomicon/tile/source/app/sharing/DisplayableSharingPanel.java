@@ -5,6 +5,7 @@ package net.niconomicon.tile.source.app.sharing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +35,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.TableModelEvent;
@@ -102,7 +104,19 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 	public JPanel createDirSelectionPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
-		p.add(new JLabel("Locate Displayables for sharing : "), BorderLayout.WEST);
+
+		JTextArea explanation = new JTextArea();
+		explanation.setBorder(null);
+		explanation.setBackground(p.getBackground());
+		explanation.setEditable(false);
+		explanation.setWrapStyleWord(true);
+		explanation.setLineWrap(true);
+		explanation.setColumns(30);
+		explanation.setFont(explanation.getFont().deriveFont(Font.ITALIC));
+		explanation.setText("Share your displayables over the network to download them on your iPhone or iPod touch.");
+
+		p.add(explanation, BorderLayout.NORTH);
+		p.add(new JLabel("Locate Displayables for sharing & viewing : "), BorderLayout.WEST);
 		JButton b = new JButton("Choose Displayables");
 		b.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -257,7 +271,8 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 			}
 			if (shouldPopup) {
 				JOptionPane.showConfirmDialog(this, "<html><body>Error while starting the sharing component on port ["
-						+ widget.getPort() + "]: <br/><i>" + ex.getMessage() + "</i></body></html>",
+						+ widget.getPort() + "]: <br/><i>" + ex.getMessage()
+						+ "</i><br/>You might want to change the port.</body></html>",
 						"Error creating starting the sharing component", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.ERROR_MESSAGE);
 			}
@@ -296,7 +311,7 @@ public class DisplayableSharingPanel extends JPanel implements TableModelListene
 		for (String string : maps) {
 			try {
 				String fileName = rootDir + string;
-				System.out.println("trying to open the map : " + fileName);
+//				System.out.println("trying to open the map : " + fileName);
 				Connection mapDB = DriverManager.getConnection("jdbc:sqlite:" + fileName);
 				mapDB.setReadOnly(true);
 				Statement statement = mapDB.createStatement();

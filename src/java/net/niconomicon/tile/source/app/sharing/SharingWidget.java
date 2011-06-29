@@ -4,10 +4,10 @@
 package net.niconomicon.tile.source.app.sharing;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 
@@ -16,8 +16,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.border.Border;
 
 import net.niconomicon.tile.source.app.Ref;
 
@@ -34,9 +35,10 @@ public class SharingWidget extends JPanel {
 	}
 
 	JLabel sharingStatus;
-	JTextField sharingLocation;
-	JButton actionButton;
+	JTextArea sharingLocation;
+	JTextArea exportText;
 
+	JButton actionButton;
 	JButton exportButton;
 
 	Color defaultColor;
@@ -54,11 +56,25 @@ public class SharingWidget extends JPanel {
 		sharingStatus.setHorizontalAlignment(JLabel.CENTER);
 		sharingStatus.setVerticalAlignment(JLabel.CENTER);
 
-		sharingLocation = new JTextField(" ... ");
+		sharingLocation = new JTextArea(" ... ");
 		sharingLocation.setBorder(null);
 		sharingLocation.setOpaque(false);
 		sharingLocation.setEditable(false);
-		sharingLocation.setHorizontalAlignment(JLabel.CENTER);
+		sharingLocation.setWrapStyleWord(true);
+		sharingLocation.setLineWrap(true);
+		sharingLocation.setColumns(30);
+		// sharingLocation.setSize(300, 0);
+		// sharingLocation.setPreferredSize(new Dimension(300, 50));
+
+		exportText = new JTextArea(" ... ");
+		exportText.setBorder(null);
+		exportText.setOpaque(false);
+		exportText.setEditable(false);
+		exportText.setWrapStyleWord(true);
+		exportText.setLineWrap(true);
+		exportText.setColumns(20);
+		// exportText.setSize(280, 0);
+		// exportText.setPreferredSize(new Dimension(280, 30));
 		defaultColor = sharingStatus.getBackground();
 
 		JLabel l;
@@ -102,10 +118,13 @@ public class SharingWidget extends JPanel {
 		c.weighty = 1.5;
 
 		c.fill = GridBagConstraints.HORIZONTAL;
+		sharingLocation.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 		this.add(this.sharingLocation, c);
 
 		JLabel empty = new JLabel();
-		empty.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.black));
+		Border emptyBorder = BorderFactory.createEmptyBorder(5, 0, 5, 0);
+		Border lineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.DARK_GRAY);
+		empty.setBorder(BorderFactory.createCompoundBorder(emptyBorder, lineBorder));
 
 		c = new GridBagConstraints();
 		c.gridy = 3;
@@ -120,8 +139,8 @@ public class SharingWidget extends JPanel {
 		c.gridwidth = 2;
 		c.weighty = 1.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		l = new JLabel("Export the shared Displayables list as a website...");
-		this.add(l, c);
+		exportText.setText("Export the shared Displayables list as a website...");
+		this.add(exportText, c);
 
 		c = new GridBagConstraints();
 		c.gridy = 4;
@@ -203,15 +222,20 @@ public class SharingWidget extends JPanel {
 			sharingLocation.setText(" ");
 			sharingStatus.setOpaque(true);
 			sharingStatus.setBackground(Color.ORANGE);
+			exportText.setText("Export the shared Displayables as a website ...");
 			return;
 		}
 		sharingStatus.setOpaque(true);
 		sharingStatus.setBackground(Color.GREEN);
 		String add = "http://" + host.getHostAddress() + ":" + getPort() + "/";
 		sharingStatus
-				.setToolTipText("If the list of Displayables does not appear quickly on your iPhone/iPod touch, try accessing "
+				.setToolTipText("If the list of Displayables does not appear quickly in the Displayator app your iPhone/iPod touch, try accessing "
 						+ add + " in your iPhone / iPod touch web browser");
-		sharingLocation.setText("The Displayables are also accessible in Safari at http://" + host.getHostAddress()
-				+ ":" + getPort() + "/");
+		sharingLocation.setFont(sharingLocation.getFont().deriveFont(Font.ITALIC));
+		sharingLocation
+				.setText("Open Displayator on your iPhone and select \"Download Displayables\" to transfer the Displayable to your iOS device. "
+						+ "You can also see the list of shared Displayabe at " + add + " in Safari on your iOS device.");
+		exportText.setText("Export the shared Displayables as a website (similar to the one at " + add + ")...");
+
 	}
 }
