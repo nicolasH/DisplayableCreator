@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class JettyImageServerServlet extends HttpServlet {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		System.out.println("CSS : " + cssContent);
+//		System.out.println("CSS : " + cssContent);
 
 	}
 
@@ -74,7 +75,9 @@ public class JettyImageServerServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String request = req.getRequestURI();
-		//System.out.println("URI : " + request);
+//		System.out.println("URI : " + request);
+		request = URLDecoder.decode(request, "UTF-8");
+//		System.out.println("Decoded URI : " + request);
 		String key = request;
 		// to work around a bug in the displayator app where the JSON part does not handle relative uris correctly.
 		if (key.startsWith("//")) {

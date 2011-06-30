@@ -13,6 +13,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -134,6 +136,25 @@ public final class Ref {
 	}
 
 	/**
+	 * 
+	 * @param string
+	 * @return a safe string with all the accents removed and punctuation characters replaced by '-'
+	 */
+	public static String cleanFilename(String string) {
+		return Normalizer.normalize(string.toLowerCase(), Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+				.replaceAll("\\p{Punct}", "-").replaceAll("\\p{Blank}", "-").replaceAll("\\p{Cntrl}", "-").replaceAll("-{2,}", "-");
+	}
+
+	/**
+	 * 
+	 * @param string
+	 * @return a safe string with all the accents removed
+	 */
+	public static String cleanName(String string) {
+		return Normalizer.normalize(string.toLowerCase(), Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+	}
+
+	/**
 	 * @param fullPath
 	 * @return the files parent directory excluding the last file separator
 	 */
@@ -149,6 +170,10 @@ public final class Ref {
 		return getKey(coord.x, coord.y, coord.z);
 	}
 
+	/**
+	 * 
+	 * @return The directory to which a Displayable was stored last.
+	 */
 	public static String getDefaultDir() {
 		return Preferences.userNodeForPackage(Ref.class).get(Ref.storingDirectoryKey, null);
 	}
@@ -290,7 +315,10 @@ public final class Ref {
 				ex.printStackTrace();
 			}
 		}
-		json.deleteCharAt(json.length() - 1);
+
+		if (json.lastIndexOf(",") > 0) {
+			json.deleteCharAt(json.lastIndexOf(","));
+		}
 		json.append("]");
 		urlToFile.put("/" + sharing_jsonRef, json.toString());
 		html.append("<script type=\"text/javascript\">expandLinks();</script>");
@@ -344,6 +372,7 @@ public final class Ref {
 					byte[] bytes = md.digest(fileName.getBytes());
 					name = Ref.fileSansDot(fileName) + "_" + convertToHex(bytes, 6);
 				}
+				name = Ref.cleanFilename(name);
 
 				String mini = name + Ref.ext_mini;
 				String thumb = name + Ref.ext_thumb;
@@ -356,6 +385,7 @@ public final class Ref {
 				// Extra / to work around a bug in the displayator app where the JSON part does not handle relative uris
 				// correctly.
 				String title = rs.getString(Ref.infos_title);
+				title = cleanName(title);
 				String s = "{";
 				s += "\"title\":\"" + title + "\",\n";
 				s += "\"source\":\"/" + name + "\",\n";
@@ -407,9 +437,7 @@ public final class Ref {
 			// it probably means no database file is found
 			System.err.println(e.getMessage());
 		}
-
 		// /////////////////////////////
-
 		return new String[] { ret, h };
 	}
 

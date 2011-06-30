@@ -11,12 +11,9 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.prefs.Preferences;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -242,7 +239,11 @@ public class SaveDialog extends JPanel {
 			try {
 				if (Ref.isInTmpLocation(currentLocation)) {
 					// keep the lastIndex here because tmp file format should contain the '_'
+					// ///////////////////////////////////////////////////////////
+
+					// ///////////////////////////////////////////////////////////
 					suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf("_"));// + Ref.ext_db
+					Ref.cleanFilename(suggestedFile);
 					this.where.setText(Ref.getDefaultDir());
 				} else {
 					this.where.setText(new File(currentLocation).getParent());
