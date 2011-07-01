@@ -42,7 +42,7 @@ public class DirectoryExporter {
 			}
 		}
 		weight = weight / 100000;// 100kb
-		double w = weight / 10;
+		double w = weight / 10.0;
 		// String text =
 		// "Select a directory and it will copy the shared displayables into it for easy uploading to a web site. \n"
 		// +
