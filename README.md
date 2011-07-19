@@ -19,7 +19,8 @@ iPhone screen resolution. The homepage of the Displayator app is at
 For transferring the Displayable to the iDevice, the app uses the
 Multicast DNS standard (a.k.a mDNS, 'bonjour', formerly known as
 'rendezvous') and a webserver, as implemented in respectively
-[jmDNS][jmdns] and [jetty][jetty].
+[jmDNS][jmdns] and [jetty][jetty]. It also use Google's [gson][]
+library for the JSON creation.
 
 
 You can run the latest version of it [from the displayator
@@ -125,4 +126,4 @@ The Displayator is now available in [the app store][appStore]! Yay!
 [pdf-jr-git]:https://github.com/nicolasH/pdf-jrasterizer
 [pdf-jr-jnlp]:http://www.niconomicon.net/tests/maven/net/niconomicon/pdf-jrasterizer/pdf-jrasterizer.jnlp
 [appStore]:http://itunes.apple.com/us/app/displayator/id438034770?mt=8&ls=1
-
+[gson]:http://code.google.com/p/google-gson/

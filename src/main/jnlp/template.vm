@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jnlp spec="1.0+" codebase="http://www.displayator.com/DisplayableCreator/">
     <information>
-        <title>Displayable Creator</title>
+        <title>Displayable Creator - 1.1.2</title>
         <vendor>Nicolas Hoibian</vendor>
         <description>This app is meant to create Displayables for the Displayator iPad, iPhone & iPod touch app</description>
         <description kind="short">DisplayableCreator</description>

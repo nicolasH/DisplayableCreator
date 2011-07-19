@@ -20,6 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
+import com.google.gson.Gson;
+
+import net.niconomicon.tile.source.app.sharing.DisplayableInfos;
+import net.niconomicon.tile.source.app.sharing.exporter.DisplayableInfosForJSON;
 import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
 
 /**
@@ -142,7 +146,8 @@ public final class Ref {
 	 */
 	public static String cleanFilename(String string) {
 		return Normalizer.normalize(string.toLowerCase(), Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-				.replaceAll("\\p{Punct}", "-").replaceAll("\\p{Blank}", "-").replaceAll("\\p{Cntrl}", "-").replaceAll("-{2,}", "-");
+				.replaceAll("\\p{Punct}", "-").replaceAll("\\p{Blank}", "-").replaceAll("\\p{Cntrl}", "-")
+				.replaceAll("-{2,}", "-");
 	}
 
 	/**
@@ -328,7 +333,7 @@ public final class Ref {
 		return urlToFile;
 	}
 
-	private static String convertToHex(byte[] data, int count) {
+	public static String convertToHex(byte[] data, int count) {
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < Math.min(count, data.length); i++) {
 			int halfbyte = (data[i] >>> 4) & 0x0F;
@@ -361,6 +366,7 @@ public final class Ref {
 			Statement statement = mapDB.createStatement();
 			statement.setQueryTimeout(30); // set timeout to 30 sec.
 			ResultSet rs = statement.executeQuery("select * from infos");
+			Gson serializer = new Gson();
 			while (rs.next()) {
 				// read the result set
 				// String name =
@@ -385,17 +391,14 @@ public final class Ref {
 				// Extra / to work around a bug in the displayator app where the JSON part does not handle relative uris
 				// correctly.
 				String title = rs.getString(Ref.infos_title);
-				title = cleanName(title);
-				String s = "{";
-				s += "\"title\":\"" + title + "\",\n";
-				s += "\"source\":\"/" + name + "\",\n";
-				s += "\"thumb\":\"/" + thumb + "\",\n";
-				s += "\"preview\":\"/" + mini + "\",\n";
-				s += "\"weight\":" + weight + ",\n";
-				s += "\"width\":" + rs.getLong(Ref.infos_width) + ",\n";
-				s += "\"height\":" + rs.getLong(Ref.infos_height) + ",\n";
-				s += "\"description\":\"" + rs.getString(Ref.infos_description) + "\"";
-				s += "},\n";
+				// title = cleanName(title);
+				long width = rs.getLong(Ref.infos_width);
+				long height = rs.getLong(Ref.infos_height);
+				String description = rs.getString(Ref.infos_description);
+				DisplayableInfosForJSON disp =
+						new DisplayableInfosForJSON(title, name, thumb, mini, weight, width, height, description);
+				String s = DisplayableInfosForJSON.toJSON(serializer, disp);
+				s += ",\n";
 				ret += s;
 
 				String urlInfos = "title=" + title;
@@ -403,9 +406,9 @@ public final class Ref {
 				urlInfos += "&thumb=" + thumb;
 				urlInfos += "&preview=" + mini;
 				urlInfos += "&weight=" + weight;
-				urlInfos += "&width=" + rs.getLong(Ref.infos_width);
-				urlInfos += "&height=" + rs.getLong(Ref.infos_height);
-				urlInfos += "&description=" + rs.getString(Ref.infos_description);
+				urlInfos += "&width=" + width;
+				urlInfos += "&height=" + height;
+				urlInfos += "&description=" + description;
 
 				String li = "\t\t\t<li>";
 				String li_ = "</li>\n";

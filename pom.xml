@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.niconomicon</groupId>
 	<artifactId>displayable-creator</artifactId>
-	<version>1.1.1</version>
+	<version>1.1.2</version>
 	<url>http://www.niconomicon.net/tests/maven/net/niconomicon/DisplayableCreator</url>
 	<dependencies>
 		<dependency>
@@ -21,6 +21,11 @@
 			<artifactId>jmdns</artifactId>
 			<version>3.4.0</version>
 		</dependency>
+                <dependency>
+                  <groupId>com.google.code.gson</groupId>
+                  <artifactId>gson</artifactId>
+                  <version>1.7.1</version>
+                </dependency>
 	</dependencies>
 	<scm>
 		<developerConnection>Nicolas Hoibian</developerConnection>
