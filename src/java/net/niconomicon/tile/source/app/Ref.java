@@ -15,16 +15,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import com.google.gson.Gson;
-
-import net.niconomicon.tile.source.app.sharing.DisplayableInfos;
 import net.niconomicon.tile.source.app.sharing.exporter.DisplayableInfosForJSON;
 import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
+
+import com.google.gson.Gson;
 
 /**
  * @author Nicolas Hoibian This class contains the reference fields. The default port, displayable file extension, json
@@ -444,4 +445,24 @@ public final class Ref {
 		return new String[] { ret, h };
 	}
 
+	public static List<String> getDisplayableTitles(String absolutePathOfDisplayable) {
+		List<String> titles = new ArrayList<String>();
+		try {
+			Connection mapDB = DriverManager.getConnection("jdbc:sqlite:" + absolutePathOfDisplayable);
+			mapDB.setReadOnly(true);
+			Statement statement = mapDB.createStatement();
+			statement.setQueryTimeout(30); // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("select " + Ref.infos_title + " from infos");
+			while (rs.next()) {
+				String name = rs.getString(Ref.infos_title);
+				System.out.println("name : " + name);
+				titles.add(name);
+			}
+			if (mapDB != null) mapDB.close();
+		} catch (Exception ex) {
+			System.err.println("ex for displayable at " + absolutePathOfDisplayable);
+			ex.printStackTrace();
+		}
+		return titles;
+	}
 }
