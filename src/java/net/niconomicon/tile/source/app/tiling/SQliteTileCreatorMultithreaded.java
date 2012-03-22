@@ -116,10 +116,10 @@ public class SQliteTileCreatorMultithreaded {
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(3); // set timeout to 30 sec.
 
+			statement.executeUpdate("drop table if exists tile_info");
 			statement.executeUpdate("drop table if exists infos");
-			statement.executeUpdate("drop table if exists tile_infos");
-			statement.executeUpdate("drop table if exists level_infos");
-			statement.executeUpdate("drop table if exists tiles_" + tilesetKey);
+			statement.executeUpdate("drop table if exists layers_infos");
+			statement.executeUpdate("drop table if exists tiles_" + tilesetKey+"_"+layerKey);
 			//
 			statement
 					.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB, flippedVertically BOOL , javaImageType INT)");
