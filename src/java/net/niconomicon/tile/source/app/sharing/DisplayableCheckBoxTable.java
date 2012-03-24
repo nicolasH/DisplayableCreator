@@ -30,7 +30,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.SaveDialog;
+import net.niconomicon.tile.source.app.input.SaveDialog;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**
@@ -39,7 +39,8 @@ import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
  */
 public class DisplayableCheckBoxTable extends JPanel {
 
-	private final String[] columnsTitles = new String[] { "Share", "Title", "Edit", "View" };
+	private final String[] columnsTitles = new String[] { "Share", "Title",
+			"Edit", "View" };
 
 	CustomTableModel model;
 	boolean sharingDefaut = true;
@@ -65,17 +66,22 @@ public class DisplayableCheckBoxTable extends JPanel {
 		model = new CustomTableModel();
 
 		table.setModel(model);
-		table.getColumnModel().getColumn(colCheckBox).setPreferredWidth(colWidthShare);
-		table.getColumnModel().getColumn(colCheckBox).setMinWidth(colWidthShare);
-		table.getColumnModel().getColumn(colCheckBox).setMaxWidth(colWidthShare);
+		table.getColumnModel().getColumn(colCheckBox)
+				.setPreferredWidth(colWidthShare);
+		table.getColumnModel().getColumn(colCheckBox)
+				.setMinWidth(colWidthShare);
+		table.getColumnModel().getColumn(colCheckBox)
+				.setMaxWidth(colWidthShare);
 
 		table.getColumnModel().getColumn(colTitle).setPreferredWidth(200);
 
-		table.getColumnModel().getColumn(colEdit).setPreferredWidth(colWidthEdit);
+		table.getColumnModel().getColumn(colEdit)
+				.setPreferredWidth(colWidthEdit);
 		table.getColumnModel().getColumn(colEdit).setMinWidth(colWidthEdit);
 		table.getColumnModel().getColumn(colEdit).setMaxWidth(colWidthEdit);
 
-		table.getColumnModel().getColumn(colView).setPreferredWidth(colWidthView);
+		table.getColumnModel().getColumn(colView)
+				.setPreferredWidth(colWidthView);
 		table.getColumnModel().getColumn(colView).setMinWidth(colWidthView);
 		table.getColumnModel().getColumn(colView).setMaxWidth(colWidthView);
 
@@ -91,31 +97,34 @@ public class DisplayableCheckBoxTable extends JPanel {
 		table.getColumnModel().getColumn(colEdit).setCellEditor(b1);
 		table.getColumnModel().getColumn(colEdit).setCellRenderer(b1);
 
-		// ButtonForTable b2 = new ButtonForTable("remove");
-		// this.getColumnModel().getColumn(colRemove).setCellEditor(b2);
-		// this.getColumnModel().getColumn(colRemove).setCellRenderer(b2);
-		// Add the scroll pane to this panel.
-		// this.add(scrollPane,BorderLayout.CENTER);
 		JButton removeButton = new JButton("Remove selected Displayable(s)");
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int item = table.getSelectedRow();
 				if (item < 0) {
-					JOptionPane.showMessageDialog(DisplayableCheckBoxTable.this, "Please select a displayable",
-							"No Displayable selected", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(
+							DisplayableCheckBoxTable.this,
+							"Please select a displayable",
+							"No Displayable selected",
+							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				((CustomTableModel) table.getModel()).removeDisplayable(table.getSelectedRows());
+				((CustomTableModel) table.getModel()).removeDisplayable(table
+						.getSelectedRows());
 			}
 		});
-		this.add(new JScrollPane(table), BorderLayout.CENTER);
+		table.setSize(330, 100);
+		JScrollPane sp = new JScrollPane(table);
+		sp.setMaximumSize(new Dimension(330,200));
+		this.add(sp, BorderLayout.CENTER);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
 		this.add(removeButton, BorderLayout.SOUTH);
 	}
 
 	public void addData(Map<String, String> pathToTitle) {
-		System.out.println("Setting the displayables : " + pathToTitle.keySet());
+		System.out
+				.println("Setting the displayables : " + pathToTitle.keySet());
 		model.addData(pathToTitle);
 	}
 
@@ -149,12 +158,15 @@ public class DisplayableCheckBoxTable extends JPanel {
 			return columnsTitles.length;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see javax.swing.table.DefaultTableModel#getValueAt(int, int)
 		 */
 		@Override
 		public Object getValueAt(int row, int column) {
-			if (null != backstore && column < columnsTitles.length && row < backstore.size()) {
+			if (null != backstore && column < columnsTitles.length
+					&& row < backstore.size()) {
 				DisplayableInfos i = backstore.get(row);
 
 				switch (column) {
@@ -167,7 +179,8 @@ public class DisplayableCheckBoxTable extends JPanel {
 				case colView:
 					return ButtonForTable.text_view;
 				case colEdit:
-					return Ref.isInTmpLocation(i.location) ? ButtonForTable.text_save : ButtonForTable.text_edit;
+					return Ref.isInTmpLocation(i.location) ? ButtonForTable.text_save
+							: ButtonForTable.text_edit;
 				}
 			}
 			return null;
@@ -190,8 +203,12 @@ public class DisplayableCheckBoxTable extends JPanel {
 		}
 
 		public void setValueAt(Object aValue, int row, int column) {
-			if (column == colView) { return; }
-			if (column == colEdit) { return; }
+			if (column == colView) {
+				return;
+			}
+			if (column == colEdit) {
+				return;
+			}
 
 			if (column == -1 && aValue != null && row < backstore.size()) {
 				String oldL = backstore.get(row).location;
@@ -200,29 +217,37 @@ public class DisplayableCheckBoxTable extends JPanel {
 					backstore.get(row).location = (String) aValue;
 					knownPaths.add(backstore.get(row).location);
 				}
-				// visible data did not change unless the it was a temporary file.
-				if (!(Ref.isInTmpLocation(oldL) && Ref.isInTmpLocation(backstore.get(row).location))) { return; }
+				// visible data did not change unless the it was a temporary
+				// file.
+				if (!(Ref.isInTmpLocation(oldL) && Ref
+						.isInTmpLocation(backstore.get(row).location))) {
+					return;
+				}
 			}
 			// visible data did change.
 			if (column == colTitle && aValue != null && row < backstore.size()) {
 				backstore.get(row).title = (String) aValue;
 			}
 			if (column == colCheckBox) {
-				backstore.get(row).shouldShare = ((Boolean) aValue).booleanValue();
+				backstore.get(row).shouldShare = ((Boolean) aValue)
+						.booleanValue();
 			}
 			Collections.sort(backstore);
 			fireTableDataChanged();
 		}
 
 		public int getRowCount() {
-			if (null == backstore) { return 0; }
+			if (null == backstore) {
+				return 0;
+			}
 			return backstore.size();
 		}
 
 		public void addData(Map<String, String> pathToTitle) {
 			// backstore.clear();
 			for (Entry<String, String> elem : pathToTitle.entrySet()) {
-				DisplayableInfos info = new DisplayableInfos(elem.getKey(), elem.getValue());
+				DisplayableInfos info = new DisplayableInfos(elem.getKey(),
+						elem.getValue());
 				if (!knownPaths.contains(info.location)) {
 					knownPaths.add(info.location);
 					backstore.add(info);
@@ -250,7 +275,8 @@ public class DisplayableCheckBoxTable extends JPanel {
 			fireTableDataChanged();
 		}
 
-		public void updateDisplayableLocation(String oldLocation, String newlocation) {
+		public void updateDisplayableLocation(String oldLocation,
+				String newlocation) {
 			DisplayableInfos i;
 			for (DisplayableInfos info : backstore) {
 				if (info.location.contentEquals(oldLocation)) {
@@ -273,14 +299,23 @@ public class DisplayableCheckBoxTable extends JPanel {
 		}
 
 		public boolean isCellEditable(int row, int column) {
-			return null != backstore && row < backstore.size() && column < columnsTitles.length && column != 1;
+			return null != backstore && row < backstore.size()
+					&& column < columnsTitles.length && column != 1;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == 0) { return Boolean.class; }
-			if (columnIndex == 1) { return String.class; }
-			if (columnIndex == 2) { return String.class; }
-			if (columnIndex == 3) { return String.class; }
+			if (columnIndex == 0) {
+				return Boolean.class;
+			}
+			if (columnIndex == 1) {
+				return String.class;
+			}
+			if (columnIndex == 2) {
+				return String.class;
+			}
+			if (columnIndex == 3) {
+				return String.class;
+			}
 			return super.getColumnClass(columnIndex);
 		}
 	}
@@ -292,8 +327,11 @@ public class DisplayableCheckBoxTable extends JPanel {
 		Color defaultBackgroundColorSelected;
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+			Component c = super.getTableCellRendererComponent(table, value,
+					isSelected, hasFocus, row, column);
 			if (isSelected) {
 				if (defaultBackgroundColorSelected == null) {
 					defaultBackgroundColorSelected = c.getBackground();

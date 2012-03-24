@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.niconomicon.tile.source.app;
+package net.niconomicon.tile.source.app.input;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.sharing.ResultStruct;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 

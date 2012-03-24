@@ -72,7 +72,7 @@ public class SharingManager {
 	}
 
 	public void stopSharing() throws Exception {
-		if (server != null) {
+		if (server != null && server.isRunning()) {
 			server.stop();
 		}
 		if (sharingAnnouncer != null) {

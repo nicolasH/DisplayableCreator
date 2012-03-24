@@ -9,15 +9,13 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
-import net.niconomicon.tile.source.app.DisplayableCreatorInputPanel;
+import net.niconomicon.tile.source.app.input.DragAndDropManager;
 
 /**
  * @author Nicolas Hoibian
@@ -25,12 +23,15 @@ import net.niconomicon.tile.source.app.DisplayableCreatorInputPanel;
  */
 public class FileDropHandler extends TransferHandler {
 
-	DisplayableCreatorInputPanel panel;
-	ImageFileFilter filter;
+	// DisplayableCreatorInputPanel panel;
+	DragAndDropManager manager;
+	ImageFileFilter filter_image;
+	DisplayableFilter filter_disp;
 
-	public FileDropHandler(DisplayableCreatorInputPanel p) {
-		this.panel = p;
-		filter = new ImageFileFilter();
+	public FileDropHandler(DragAndDropManager manager) {
+		this.manager = manager;
+		filter_image = new ImageFileFilter();
+		filter_disp = new DisplayableFilter();
 	}
 
 	/**
@@ -61,35 +62,53 @@ public class FileDropHandler extends TransferHandler {
 	public boolean importData(JComponent comp, Transferable t) {
 		DataFlavor[] flavors = t.getTransferDataFlavors();
 		System.out.println("Trying to import:" + t);
-		System.out.println("... which has " + flavors.length + " flavors.");
+		System.out.println("... which has " + flavors.length + " flavors." + flavors);
+		boolean returnVal = false;
 		for (int i = 0; i < flavors.length; i++) {
 			DataFlavor flavor = flavors[i];
-			try {
-				if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-					System.out.println("importData: FileListFlavor");
-
-					List l = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-					Iterator iter = l.iterator();
-					while (iter.hasNext()) {
-						File file = (File) iter.next();
-						System.out.println("GOT FILE: " + file.getCanonicalPath());
-						if (filter.accept(file)) {
-							panel.setImageFileToTile(file);
-							return true;
-						}
-						System.out.println("Rejected the file");
+			if (flavor.equals(DataFlavor.javaFileListFlavor)) {
+				try {
+					System.out.println("importData: FileListFlavor"+t.getTransferData(DataFlavor.javaFileListFlavor));
+					List<File> fileList = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+					for (File file : fileList) {
+						System.out.println("importing file:"+file);
+						returnVal = addFile(file);
+						System.out.println("Return val for accepting the file:"+returnVal);
 						// Now do something with the file...
 					}
-					// return true;
+				} catch (IOException ex) {
+					System.err.println("IOError getting data: " + ex);
+				} catch (UnsupportedFlavorException e) {
+					System.err.println("Unsupported Flavor: " + e);
 				}
-			} catch (IOException ex) {
-				System.err.println("IOError getting data: " + ex);
-			} catch (UnsupportedFlavorException e) {
-				System.err.println("Unsupported Flavor: " + e);
 			}
 		}
+		manager.wakeProcessors();
 		// If you get here, I didn't like the flavor.
-		Toolkit.getDefaultToolkit().beep();
+		//Toolkit.getDefaultToolkit().beep();
+		return returnVal;
+	}
+
+	public boolean addFile(File file) throws IOException{
+		boolean returnVal = false;
+		if (file.isDirectory()) {
+			for (String fName : file.list()) {
+				File fileToCheck = new File(fName);
+				returnVal = returnVal || addFile(fileToCheck);
+				System.out.println((returnVal? "Found Files in ":"Rejected")+file.getCanonicalPath() );
+			}
+			return returnVal;
+		}
+		if (filter_image.accept(file)) {
+			System.out.println("GOT IMAGE: " + file.getCanonicalPath());
+			manager.addImageToTile(file);
+			return true;
+		}
+		if (filter_disp.accept(file)) {
+			System.out.println("GOT DISPLAYABLE: " + file.getCanonicalPath());
+			manager.addDisplayable(file);
+			return true;
+		}
 		return false;
 	}
 }

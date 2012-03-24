@@ -15,7 +15,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.SaveDialog;
+import net.niconomicon.tile.source.app.input.SaveDialog;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 
