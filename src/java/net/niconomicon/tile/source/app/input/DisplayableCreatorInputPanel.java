@@ -11,7 +11,6 @@ import javax.imageio.IIOException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -25,7 +24,8 @@ import net.niconomicon.tile.source.app.filter.FileDropHandler;
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
 import net.niconomicon.tile.source.app.tiling.Inhibitor;
-import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
+import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorMoreParallel;
+import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorParallel;
 import net.niconomicon.tile.source.app.tiling.TilingStatusReporter;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
@@ -53,7 +53,7 @@ public class DisplayableCreatorInputPanel extends JPanel implements
 	DisplayableSharingPanel sharingPanel;
 	TilingPreview preview;
 
-	SQliteTileCreatorMultithreaded creator;
+	SQLiteDisplayableCreatorMoreParallel creator;
 
 	File temp;
 
@@ -74,7 +74,7 @@ public class DisplayableCreatorInputPanel extends JPanel implements
 	public DisplayableCreatorInputPanel(DisplayableSharingPanel sharingP) {
 		super(new GridLayout(0, 1));
 		this.sharingPanel = sharingP;
-		creator = new SQliteTileCreatorMultithreaded();
+		creator = new SQLiteDisplayableCreatorMoreParallel();
 
 		imageFilter = new ImageFileFilter();
 

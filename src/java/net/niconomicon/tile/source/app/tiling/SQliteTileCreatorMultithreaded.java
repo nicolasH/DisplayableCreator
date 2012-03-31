@@ -24,6 +24,7 @@ import javax.imageio.stream.ImageInputStream;
 import javax.swing.JProgressBar;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.tiling.original.TileSerializeJob;
 
 public class SQliteTileCreatorMultithreaded {
 	Connection connection;

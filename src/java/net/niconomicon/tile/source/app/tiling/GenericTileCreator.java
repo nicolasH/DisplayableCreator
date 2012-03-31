@@ -16,34 +16,36 @@ import javax.imageio.stream.ImageInputStream;
 import net.niconomicon.tile.source.app.Ref;
 
 /**
- * @author Nicolas Hoibian
- * This class will eventually create tiles from an image into a provided container class, as soon as I get to it.
+ * @author Nicolas Hoibian This class will eventually create tiles from an image
+ *         into a provided container class, as soon as I get to it.
  */
 public class GenericTileCreator {
 
 	public static final int defaultTileSize = 192;
 	public static final String defaultTileType = "png";
 
-	SQliteTileCreatorMultithreaded creator;
+	//SQLiteDisplayableCreatorParallel creator;
 
 	public GenericTileCreator() {
-		creator = new SQliteTileCreatorMultithreaded();
+		//creator = new SQLiteDisplayableCreatorParallel();
 	}
 
-	public void createTileSource(String sourcePath, String destFile, String title) throws Exception {
-
-		System.out.println("Processing " + creator.title);
-		creator.title = title;
-		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null, 4, true,null);
-		creator.finalizeFile();
-
-	}
+//	public void createTileSource(String sourcePath, String destFile, String title) throws Exception {
+//
+//		System.out.println("Processing " + creator.title);
+//		creator.title = title;
+//		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null, 4, true, null);
+//		creator.finalizeFile();
+//
+//	}
 
 	public static void createTiles(String pathToSource, String pathToDestination, int tileSize, String tileType) throws IOException {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 
-		if (pathToSource == null || pathToDestination == null) { return; }
+		if (pathToSource == null || pathToDestination == null) {
+			return;
+		}
 		// the pathTo file includes the fileName.
 		File originalFile = new File(pathToSource);
 		String fileSansExt = Ref.fileSansDot(pathToSource);
@@ -56,7 +58,8 @@ public class GenericTileCreator {
 		byte[] miniBytes = getMiniatureBytes(img, 320, 480, tileType);
 		System.out.println("writing the miniature");
 
-		// FileOutputStream miniOut = new FileOutputStream(new File("mini.png"));
+		// FileOutputStream miniOut = new FileOutputStream(new
+		// File("mini.png"));
 		// miniOut.write(miniBytes);
 		// miniOut.close();
 		return;

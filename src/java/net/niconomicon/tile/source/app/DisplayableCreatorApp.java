@@ -6,7 +6,6 @@ package net.niconomicon.tile.source.app;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -16,6 +15,7 @@ import javax.swing.border.TitledBorder;
 
 import net.niconomicon.tile.source.app.input.DisplayableCreatorInputPanel;
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
+import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorParallel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
