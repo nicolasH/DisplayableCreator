@@ -31,9 +31,7 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 
-		if (destinationFile == null || pathToFile == null) {
-			return;
-		}
+		if (destinationFile == null || pathToFile == null) { return; }
 		// the pathTo file includes the fileName.
 		File originalFile = new File(pathToFile);
 		String fileSansDot = Ref.fileSansDot(pathToFile);
@@ -52,14 +50,10 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		// System.out.flush();
 		start = System.nanoTime();
 
-		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
-			return;
-		}
+		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) { return; }
 		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
 		img = ImageIO.read(inStream);
-		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
-			return;
-		}
+		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) { return; }
 		// //////////////////////////////
 
 		stop = System.nanoTime();
@@ -105,13 +99,14 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		addLevelInfos(fileSansDot, mapID, zoom, width, height, nbX, nbY, 0, 0);
 
 		start = System.nanoTime();
-		Map<Point, TileJobShrink> shrinked = writeOriginalLevel(img, tileSize, flipVertically, tileType, serialPool, parallelPool, insertTile);
+		Map<Point, TileJobShrink> shrinked = writeShrunkLevel(img, null, scaledWidth, scaledHeight, zoom, tileSize, flipVertically, tileType,
+				serialPool, parallelPool, insertTile, zoom != aaMaxZoom);
 		System.out.println(" ... waiting up to 30 minutes for original tiles to be cut and shrunk ...");
 		parallelPool.shutdown();
 		parallelPool.awaitTermination(30, TimeUnit.MINUTES);
 		stop = System.nanoTime();
 		System.out.println("Clipping and shrinking for z=0 took : " + ((double) (stop - start) / 1000000) + " ms");
-		
+		img = null;
 		// Still the original size
 		while (scaledWidth > minimumDimension || scaledHeight > minimumDimension) {
 			if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
@@ -127,18 +122,18 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 			nbX = (int) Math.ceil((double) scaledWidth / tileSize);
 			nbY = (int) Math.ceil((double) scaledHeight / tileSize);
 			zoom++;
-			shrinked = writeShrunkLevel(shrinked, scaledWidth, scaledHeight, zoom, tileSize, flipVertically, tileType, serialPool, parallelPool,
-					insertTile,zoom != aaMaxZoom);
+			shrinked = writeShrunkLevel(null, shrinked, scaledWidth, scaledHeight, zoom, tileSize, flipVertically, tileType, serialPool,
+					parallelPool, insertTile, zoom != aaMaxZoom);
 			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
-			
+
 			System.out.println(" ... waiting up to 30 minutes for original tiles to be cut and shrunk ...");
 			parallelPool.shutdown();
 			parallelPool.awaitTermination(30, TimeUnit.MINUTES);
 			stop = System.nanoTime();
-			System.out.println("Clipping and shrinking for z="+zoom+" took : " + ((double) (stop - start) / 1000000) + " ms");
-			
+			System.out.println("Clipping and shrinking for z=" + zoom + " took : " + ((double) (stop - start) / 1000000) + " ms");
+
 		}
-		
+
 		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
 			parallelPool.shutdownNow();
 			serialPool.shutdownNow();
@@ -162,31 +157,44 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 
 	// Later version: return the original border tiles.
 	/**
-	 * This will add tile operation to the parallel pool , connect them to their
+	 * This will add tile operation to the parallel pool, connect them to their
 	 * tile job shrink operation and return the map of shrink jobs.
 	 * 
 	 * @param image
+	 * @param currentLayer
+	 * @param width
+	 * @param height
+	 * @param zoom
 	 * @param tileSize
 	 * @param flipVertically
 	 * @param tileType
 	 * @param serialPool
 	 * @param parallelPool
 	 * @param insertTile
+	 * @param shrinkThisLevelToo
 	 * @return
 	 */
-	public static Map<Point, TileJobShrink> writeOriginalLevel(BufferedImage image, int tileSize, boolean flipVertically, String tileType,
-			Executor serialPool, Executor parallelPool, PreparedStatement insertTile) {
+	public static Map<Point, TileJobShrink> writeShrunkLevel(BufferedImage image, Map<Point, TileJobShrink> currentLayer, int width, int height,
+			int zoom, int tileSize, boolean flipVertically, String tileType, Executor serialPool, Executor parallelPool,
+			PreparedStatement insertTile, boolean shrinkThisLevelToo) {
 
-		int width = image.getWidth();
-		int height = image.getHeight();
-		int zoom = 0;
 		Map<Point, Set<TileJobClipFlipSaveSerialize>> buckets = new HashMap<Point, Set<TileJobClipFlipSaveSerialize>>();
-		Map<Point, Rectangle> clips = FastClipper.getClips(width, height, tileSize, true);
+		Map<Point, Rectangle> clips;
+		if (zoom > 0) {
+			clips = FastClipper.getClips(width, height, tileSize, false);
+		} else {
+			clips = FastClipper.getClips(width, height, tileSize, true);
+		}
 		for (Point p : clips.keySet()) {
 			Rectangle clip = clips.get(p);
-
 			TileJobWrite writeJob = new TileJobWrite(p.x, p.y, zoom, insertTile);
-			TileJobClipFlipSaveSerialize job = new TileJobClipFlipSaveSerialize(image, clip, flipVertically, tileSize, tileType, serialPool, writeJob);
+			TileJobClipFlipSaveSerialize job;
+			if (zoom > 0) {
+				TileJobShrink thisTile = currentLayer.get(p);
+				job = new TileJobClipFlipSaveSerialize(thisTile.finalTile, clip, flipVertically, tileSize, tileType, serialPool, writeJob);
+			} else {
+				job = new TileJobClipFlipSaveSerialize(image, clip, flipVertically, tileSize, tileType, serialPool, writeJob);
+			}
 			Point bucket = new Point(p.x / 2, p.y / 2);
 
 			Set<TileJobClipFlipSaveSerialize> slot;
@@ -199,52 +207,12 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 			slot.add(job);
 		}
 
-		// Tiling and shrinking the original level
-		Map<Point, TileJobShrink> shrinks = new HashMap<Point, TileJobShrink>();
-		for (Point p : buckets.keySet()) {
-			Set<TileJobClipFlipSaveSerialize> set = buckets.get(p);
-			TileJobShrink shrinkJob = new TileJobShrink(p.x, p.y, (long) zoom + 1, parallelPool, tileSize, null);
-			shrinkJob.subTiles = set.size();
-			for (TileJobClipFlipSaveSerialize job : set) {
-				job.shrink = shrinkJob;
-				parallelPool.execute(job);
-			}
-			shrinks.put(p, shrinkJob);
-		}
-		return shrinks;
-	}
-
-	public static Map<Point, TileJobShrink> writeShrunkLevel(Map<Point, TileJobShrink> currentLayer, int width, int height, int zoom, int tileSize,
-			boolean flipVertically, String tileType, Executor serialPool, Executor parallelPool, PreparedStatement insertTile,
-			boolean shrinkThisLevelToo) {
-
-		Map<Point, Set<TileJobClipFlipSaveSerialize>> buckets = new HashMap<Point, Set<TileJobClipFlipSaveSerialize>>();
-		Map<Point, Rectangle> clips = FastClipper.getClips(width, height, tileSize, false);
-		for (Point p : clips.keySet()) {
-			Rectangle clip = clips.get(p);
-			TileJobShrink thisTile = currentLayer.get(p);
-			TileJobWrite writeJob = new TileJobWrite(p.x, p.y, zoom, insertTile);
-			TileJobClipFlipSaveSerialize job = new TileJobClipFlipSaveSerialize(thisTile.finalTile, clip, flipVertically, tileSize, tileType,
-					serialPool, writeJob);
-			Point bucket = new Point(p.x / 2, p.y / 2);
-
-			Set<TileJobClipFlipSaveSerialize> slot;
-			if (!buckets.containsKey(bucket)) {
-				slot = new HashSet<TileJobClipFlipSaveSerialize>();
-				buckets.put(bucket, slot);
-			} else {
-				slot = buckets.get(bucket);
-			}
-			slot.add(job);
-		}
-
-		// Tiling and shrinking the original level
 		Map<Point, TileJobShrink> shrinks = null;
 		if (shrinkThisLevelToo) {
 			shrinks = new HashMap<Point, TileJobShrink>();
 			for (Point p : buckets.keySet()) {
 				Set<TileJobClipFlipSaveSerialize> set = buckets.get(p);
-				TileJobShrink shrinkJob = new TileJobShrink( p.x,  p.y, (long) zoom + 1, parallelPool, tileSize, null);
+				TileJobShrink shrinkJob = new TileJobShrink(p.x, p.y, (long) zoom + 1, parallelPool, tileSize, null);
 				shrinkJob.subTiles = set.size();
 				for (TileJobClipFlipSaveSerialize job : set) {
 					job.shrink = shrinkJob;
