@@ -32,9 +32,7 @@ public class SQLiteDisplayableCreatorParallel extends SQliteTileCreatorMultithre
 		// writing to an SQLite DB : 1 Thread max
 		ExecutorService serialPool = Executors.newFixedThreadPool(1);
 
-		if (destinationFile == null || pathToFile == null) {
-			return;
-		}
+		if (destinationFile == null || pathToFile == null) { return; }
 		// the pathTo file includes the fileName.
 		File originalFile = new File(pathToFile);
 		String fileSansDot = Ref.fileSansDot(pathToFile);
@@ -53,14 +51,10 @@ public class SQLiteDisplayableCreatorParallel extends SQliteTileCreatorMultithre
 		// System.out.flush();
 		start = System.nanoTime();
 
-		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
-			return;
-		}
+		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) { return; }
 		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
 		img = ImageIO.read(inStream);
-		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) {
-			return;
-		}
+		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) { return; }
 		// //////////////////////////////
 
 		stop = System.nanoTime();
@@ -103,7 +97,7 @@ public class SQLiteDisplayableCreatorParallel extends SQliteTileCreatorMultithre
 				serialPool.shutdownNow();
 				return;
 			}
-			if (!miniatureCreated && (scaledWidth / 2 < 320 || scaledHeight / 2 < 430)) {
+			if (!miniatureCreated && (scaledWidth / 2 < MINIATURE_SIZE || scaledHeight / 2 < MINIATURE_SIZE)) {
 				start = System.nanoTime();
 				mini = GenericTileCreator.getMiniatureBytes(img, 320, 430, tileType);
 				thumb = GenericTileCreator.getMiniatureBytes(img, 47, 47, tileType);

@@ -3,7 +3,6 @@
  */
 package net.niconomicon.tile.source.app.sharing;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import javax.swing.JComponent;

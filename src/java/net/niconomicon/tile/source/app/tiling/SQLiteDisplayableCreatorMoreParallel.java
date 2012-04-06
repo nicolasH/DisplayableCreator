@@ -1,9 +1,11 @@
 package net.niconomicon.tile.source.app.tiling;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -53,6 +55,7 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) { return; }
 		ImageInputStream inStream = ImageIO.createImageInputStream(originalFile);
 		img = ImageIO.read(inStream);
+		int imageType = img.getType();
 		if (null != inhibitor && inhibitor.hasRunInhibitionBeenRequested()) { return; }
 		// //////////////////////////////
 
@@ -72,8 +75,6 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		int scaledHeight = height;
 		int zoom = 0;
 		// //////////////////////
-		Image xxx = null;
-		// //////////////////////////
 		// Creating Tiles.
 		BufferedImage otherBuffer = null;
 		scaledWidth = width;
@@ -99,8 +100,8 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		addLevelInfos(fileSansDot, mapID, zoom, width, height, nbX, nbY, 0, 0);
 
 		start = System.nanoTime();
-		Map<Point, TileJobShrink> shrinked = writeShrunkLevel(img, null, scaledWidth, scaledHeight, zoom, tileSize, flipVertically, tileType,
-				serialPool, parallelPool, insertTile, zoom != aaMaxZoom);
+		Map<Point, TileJobShrink> shrinked = writeLevel(img, null, scaledWidth, scaledHeight, zoom, tileSize, flipVertically, tileType, serialPool,
+				parallelPool, insertTile, zoom != aaMaxZoom);
 		System.out.println(" ... waiting up to 30 minutes for original tiles to be cut and shrunk ...");
 		parallelPool.shutdown();
 		parallelPool.awaitTermination(30, TimeUnit.MINUTES);
@@ -117,13 +118,26 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 			start = System.nanoTime();
 			parallelPool = Executors.newFixedThreadPool(nThreads);
 
+			if (!miniatureCreated && (scaledWidth / 2 < MINIATURE_WIDTH || scaledHeight / 2 < MINIATURE_HEIGHT)) {
+				start = System.nanoTime();
+				Dimension src = new Dimension(scaledWidth/2, scaledHeight/2);
+				Dimension dst = GenericTileCreator.getRecommendedDim(src, new Dimension(MINIATURE_WIDTH, MINIATURE_HEIGHT));
+
+				BufferedImage small = GenericTileCreator.assembleAndShrinkMiniature(shrinked, src, dst, imageType, tileSize, tileType);
+				thumb = GenericTileCreator.getMiniatureBytes(small, 47, 47, tileType);
+				ByteArrayOutputStream byteStorage = new ByteArrayOutputStream();
+				ImageIO.write(small, tileType, byteStorage);
+				mini = byteStorage.toByteArray();
+				stop = System.nanoTime();
+				miniatureCreated = true;
+			}
 			scaledWidth = (int) Math.ceil(scaledWidth * ZOOM_FACTOR);
 			scaledHeight = (int) Math.ceil(scaledHeight * ZOOM_FACTOR);
 			nbX = (int) Math.ceil((double) scaledWidth / tileSize);
 			nbY = (int) Math.ceil((double) scaledHeight / tileSize);
 			zoom++;
-			shrinked = writeShrunkLevel(null, shrinked, scaledWidth, scaledHeight, zoom, tileSize, flipVertically, tileType, serialPool,
-					parallelPool, insertTile, zoom != aaMaxZoom);
+			shrinked = writeLevel(null, shrinked, scaledWidth, scaledHeight, zoom, tileSize, flipVertically, tileType, serialPool, parallelPool,
+					insertTile, zoom != aaMaxZoom);
 			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
 
 			System.out.println(" ... waiting up to 30 minutes for original tiles to be cut and shrunk ...");
@@ -174,9 +188,9 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 	 * @param shrinkThisLevelToo
 	 * @return
 	 */
-	public static Map<Point, TileJobShrink> writeShrunkLevel(BufferedImage image, Map<Point, TileJobShrink> currentLayer, int width, int height,
-			int zoom, int tileSize, boolean flipVertically, String tileType, Executor serialPool, Executor parallelPool,
-			PreparedStatement insertTile, boolean shrinkThisLevelToo) {
+	public static Map<Point, TileJobShrink> writeLevel(BufferedImage image, Map<Point, TileJobShrink> currentLayer, int width, int height, int zoom,
+			int tileSize, boolean flipVertically, String tileType, Executor serialPool, Executor parallelPool, PreparedStatement insertTile,
+			boolean shrinkThisLevelToo) {
 
 		Map<Point, Set<TileJobClipFlipSaveSerialize>> buckets = new HashMap<Point, Set<TileJobClipFlipSaveSerialize>>();
 		Map<Point, Rectangle> clips;
@@ -230,4 +244,5 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		}
 		return shrinks;
 	}
+
 }

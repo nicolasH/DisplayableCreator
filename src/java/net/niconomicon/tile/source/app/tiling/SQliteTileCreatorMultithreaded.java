@@ -29,7 +29,9 @@ import net.niconomicon.tile.source.app.tiling.original.TileSerializeJob;
 public class SQliteTileCreatorMultithreaded {
 	Connection connection;
 
-	public static final double MINIATURE_SIZE = 960;
+	public static final double MINIATURE_SIZE = 480;
+	public static final int MINIATURE_WIDTH = 320;
+	public static final int MINIATURE_HEIGHT = 480;
 
 	public static double ZOOM_FACTOR = 0.5;
 	// public static int TILE_SIZE = 256;
@@ -84,8 +86,9 @@ public class SQliteTileCreatorMultithreaded {
 	public PreparedStatement insertTile;
 
 	/**
-	 * This method will open the file as a sqlite db and drop then create the tables used for storing a Displayable.
-	 * //An archive is a collection of Displayable. a Displayable is a collection of layers. a layer has an area
+	 * This method will open the file as a sqlite db and drop then create the
+	 * tables used for storing a Displayable. //An archive is a collection of
+	 * Displayable. a Displayable is a collection of layers. a layer has an area
 	 * 
 	 * @param archivePath
 	 */
@@ -120,15 +123,18 @@ public class SQliteTileCreatorMultithreaded {
 			statement.executeUpdate("drop table if exists tile_info");
 			statement.executeUpdate("drop table if exists infos");
 			statement.executeUpdate("drop table if exists layers_infos");
-			statement.executeUpdate("drop table if exists tiles_" + tilesetKey+"_"+layerKey);
+			statement.executeUpdate("drop table if exists tiles_" + tilesetKey + "_" + layerKey);
 			//
 			statement
 					.executeUpdate("CREATE TABLE tile_info (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB, flippedVertically BOOL , javaImageType INT)");
 			statement
-					.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, " + "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
-			// currently the layer name should be the same as the map name, as only one layer is supported
+					.executeUpdate("CREATE TABLE infos (title STRING, mapKey LONG, description STRING, author STRING, source STRING, date STRING, zindex LONG, "
+							+ "width LONG, height LONG," + "miniature BLOB,thumb BLOB)");
+			// currently the layer name should be the same as the map name, as
+			// only one layer is supported
 			statement
-					.executeUpdate("CREATE TABLE layers_infos (" + "layerName STRING, mapKey LONG, zindex LONG, zoom  LONG, width LONG,height LONG, tiles_x LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
+					.executeUpdate("CREATE TABLE layers_infos ("
+							+ "layerName STRING, mapKey LONG, zindex LONG, zoom  LONG, width LONG,height LONG, tiles_x LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
 			statement.executeUpdate("CREATE TABLE tiles_" + tilesetKey + "_" + layerKey + " (x LONG , y LONG, z LONG, data BLOB)");
 			// Prepare most frequently used statement;
 			String insertTiles = "insert into tiles_" + tilesetKey + "_" + layerKey + " values( ?, ?, ?, ?)";
@@ -143,8 +149,9 @@ public class SQliteTileCreatorMultithreaded {
 	}
 
 	/**
-	 * This method will write the info about the Displayable (name, author, title , size etc...) and call the commit and
-	 * close method on the db connection.
+	 * This method will write the info about the Displayable (name, author,
+	 * title , size etc...) and call the commit and close method on the db
+	 * connection.
 	 */
 	public void finalizeFile() {
 		addInfos(name, author, source, title, description, zIndex, sourceWidth, sourceHeigth, mini, thumb);
@@ -242,7 +249,8 @@ public class SQliteTileCreatorMultithreaded {
 		return s;
 	}
 
-	public void addInfos(String name, String author, String source, String title, String description, int zindex, int width, int height, byte[] mini, byte[] thumb) {
+	public void addInfos(String name, String author, String source, String title, String description, int zindex, int width, int height, byte[] mini,
+			byte[] thumb) {
 		long mapID = 0;
 
 		String stat = "INSERT INTO infos VALUES(?,?,?,?,?,?,?,?,?,?,?)";
@@ -323,11 +331,19 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
-	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, TilingStatusReporter progressIndicator, int nThreads, boolean flipVertically, Inhibitor inhibitor) throws IOException, InterruptedException {
+	public void calculateTiles(String destinationFile, String pathToFile, int tileSize, String tileType, TilingStatusReporter progressIndicator,
+			int nThreads, boolean flipVertically, Inhibitor inhibitor) throws IOException, InterruptedException {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 		ExecutorService serialPool = Executors.newFixedThreadPool(nThreads);
-		ExecutorService plumberPool = Executors.newFixedThreadPool(1);// writing to a SQLite DB : 1 thread max :-(
+		ExecutorService plumberPool = Executors.newFixedThreadPool(1);// writing
+																		// to a
+																		// SQLite
+																		// DB :
+																		// 1
+																		// thread
+																		// max
+																		// :-(
 
 		if (destinationFile == null || pathToFile == null) { return; }
 		// the pathTo file includes the fileName.
@@ -490,7 +506,8 @@ public class SQliteTileCreatorMultithreaded {
 		createIndexOnTileTable(connection, tilesetKey, layerKey);
 		System.out.println("tiles created");
 		stop = System.nanoTime();
-		// System.out.println("scaled_image_" + zoom + ": " + ((double) (stop - start) / 1000000) + " ms");
+		// System.out.println("scaled_image_" + zoom + ": " + ((double) (stop -
+		// start) / 1000000) + " ms");
 		System.out.println("tiles created : Delta serializing / writing : " + ((double) (stop - start) / 1000000) + " ms");
 		doneCalculating = true;
 	}
@@ -504,7 +521,8 @@ public class SQliteTileCreatorMultithreaded {
 		}
 	}
 
-	public void setTileInfo(long mapID, String tileType, long tileWidth, long tileHeight, InputStream emptyTile, boolean verticallyFlipped, int bufferedImageTileType) {
+	public void setTileInfo(long mapID, String tileType, long tileWidth, long tileHeight, InputStream emptyTile, boolean verticallyFlipped,
+			int bufferedImageTileType) {
 		try {
 			PreparedStatement st = connection.prepareStatement("insert into tile_info values (?, ?, ?, ?, ?, ?, ?)");
 			st.setLong(1, mapID);

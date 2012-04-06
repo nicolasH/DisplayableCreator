@@ -3,17 +3,23 @@
  */
 package net.niconomicon.tile.source.app.tiling;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.tiling.moreParallel.TileJobShrink;
 
 /**
  * @author Nicolas Hoibian This class will eventually create tiles from an image
@@ -24,28 +30,28 @@ public class GenericTileCreator {
 	public static final int defaultTileSize = 192;
 	public static final String defaultTileType = "png";
 
-	//SQLiteDisplayableCreatorParallel creator;
+	// SQLiteDisplayableCreatorParallel creator;
 
 	public GenericTileCreator() {
-		//creator = new SQLiteDisplayableCreatorParallel();
+		// creator = new SQLiteDisplayableCreatorParallel();
 	}
 
-//	public void createTileSource(String sourcePath, String destFile, String title) throws Exception {
-//
-//		System.out.println("Processing " + creator.title);
-//		creator.title = title;
-//		creator.calculateTiles(destFile, sourcePath, defaultTileSize, defaultTileType, null, 4, true, null);
-//		creator.finalizeFile();
-//
-//	}
+	// public void createTileSource(String sourcePath, String destFile, String
+	// title) throws Exception {
+	//
+	// System.out.println("Processing " + creator.title);
+	// creator.title = title;
+	// creator.calculateTiles(destFile, sourcePath, defaultTileSize,
+	// defaultTileType, null, 4, true, null);
+	// creator.finalizeFile();
+	//
+	// }
 
 	public static void createTiles(String pathToSource, String pathToDestination, int tileSize, String tileType) throws IOException {
 		System.out.println("calculating tiles...");
 		long mapID = 0;
 
-		if (pathToSource == null || pathToDestination == null) {
-			return;
-		}
+		if (pathToSource == null || pathToDestination == null) { return; }
 		// the pathTo file includes the fileName.
 		File originalFile = new File(pathToSource);
 		String fileSansExt = Ref.fileSansDot(pathToSource);
@@ -63,6 +69,44 @@ public class GenericTileCreator {
 		// miniOut.write(miniBytes);
 		// miniOut.close();
 		return;
+	}
+
+	public static Dimension getRecommendedDim(Dimension src, Dimension target) {
+		double f = Math.min((float) target.width / (float) src.width, (float) target.height / (float) src.height);
+
+		double w = src.width * f;
+		double h = src.height * f;
+
+		return new Dimension((int) w, (int) h);
+	}
+
+	public static BufferedImage assembleAndShrinkMiniature(Map<Point, TileJobShrink> sources, Dimension src, Dimension dst, int imageType,
+			int tileSize, String pictureType) throws IOException {
+		int bW = (int) Math.ceil((double) src.width / tileSize) * tileSize;
+		int bH = (int) Math.ceil((double) src.height / tileSize) * tileSize;
+
+		BufferedImage buffer = new BufferedImage(bW, bH, imageType);
+		System.out.println("Going to assemble the tiles into a buffer of " + src);
+		// now to paste the tiles on the canvas:
+		for (Point p : sources.keySet()) {
+			int localX = p.x * tileSize;
+			int localY = p.y * tileSize;
+			System.out.println("paste x:" + localX + " y:" + localY);
+			try {
+				TileJobShrink s = sources.get(p);
+				FastClipper.fastPaste(s.finalTile, buffer, localX, localY, false);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		buffer = FastClipper.fastClip(buffer, new Rectangle(src));
+		Image img = buffer.getScaledInstance(dst.width, dst.height, Image.SCALE_SMOOTH);
+		BufferedImage mini = new BufferedImage(dst.width, dst.height, imageType);
+		Graphics2D g = mini.createGraphics();
+		g.drawImage(img, 0, 0, null);
+		g.dispose();
+
+		return mini;
 	}
 
 	public static byte[] getMiniatureBytes(BufferedImage sourceImage, int miniMaxWidth, int miniMaxHeight, String pictureType) throws IOException {

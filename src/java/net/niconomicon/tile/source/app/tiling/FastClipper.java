@@ -136,6 +136,7 @@ public class FastClipper {
 		return dst;
 	}
 
+
 	public static BufferedImage fastPaste(final BufferedImage src, final BufferedImage dst, int xOffset, int yOffset, boolean isFlippedVertically) {
 
 		Object srcbuf = null;

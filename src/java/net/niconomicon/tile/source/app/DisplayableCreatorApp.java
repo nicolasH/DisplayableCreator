@@ -32,8 +32,7 @@ public class DisplayableCreatorApp {
 	public static int ThreadCount = 4;
 
 	public DisplayableCreatorApp() {
-		ThreadCount = Math.max(Runtime.getRuntime().availableProcessors() * 2,
-				ThreadCount);
+		ThreadCount = Math.max(Runtime.getRuntime().availableProcessors() * 2, ThreadCount);
 		init();
 	}
 
@@ -44,27 +43,25 @@ public class DisplayableCreatorApp {
 		tileCreatorPanel = new DisplayableCreatorInputPanel(mapSharingPanel);
 		Font font = new Font(null, Font.BOLD, 16);
 		Border etch = BorderFactory.createEtchedBorder();
-		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch,
-				"Create a Displayable", TitledBorder.DEFAULT_JUSTIFICATION,
+		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch, "Create a Displayable", TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, font));
-		mapSharingPanel.setBorder(BorderFactory.createTitledBorder(etch,
-				"Share Displayables", TitledBorder.DEFAULT_JUSTIFICATION,
+		mapSharingPanel.setBorder(BorderFactory.createTitledBorder(etch, "Share Displayables", TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, font));
-		
+
 		GridBagConstraints c_top = new GridBagConstraints();
 		c_top.gridx = 0;
 		c_top.gridy = 0;
 		c_top.gridwidth = 1;
-		c_top.gridheight =3;
+		c_top.gridheight = 3;
 		c_top.fill = GridBagConstraints.BOTH;
-		
+
 		GridBagConstraints c_bottom = new GridBagConstraints();
 		c_bottom.gridx = 0;
 		c_bottom.gridy = 4;
 		c_bottom.gridwidth = 1;
-		c_bottom.gridheight =5;
+		c_bottom.gridheight = 5;
 		c_bottom.fill = GridBagConstraints.BOTH;
-		
+
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(tileCreatorPanel, BorderLayout.NORTH);
 		p.add(mapSharingPanel, BorderLayout.CENTER);
@@ -85,6 +82,7 @@ public class DisplayableCreatorApp {
 			}
 		});
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
+		mapSharingPanel.startSharing(false);
 	}
 
 	public static void main(String[] args) {
