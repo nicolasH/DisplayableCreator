@@ -25,7 +25,6 @@ import net.niconomicon.tile.source.app.filter.ImageFileFilter;
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
 import net.niconomicon.tile.source.app.tiling.Inhibitor;
 import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorMoreParallel;
-import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorParallel;
 import net.niconomicon.tile.source.app.tiling.TilingStatusReporter;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
@@ -36,7 +35,7 @@ import net.niconomicon.tile.source.app.viewer.TilingPreview;
 public class DisplayableCreatorInputPanel extends JPanel implements
 		TilingStatusReporter {
 
-	public static final int TILE_SIZE = 192;
+	public static final int TILE_SIZE = 256;
 	public static final String TILE_TYPE = "png";
 
 	public static final String USER_HOME = "user.home";
