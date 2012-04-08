@@ -193,7 +193,7 @@ public class ImageQueueList extends JTable {
 			iconLoader = IconsLoader.getIconsLoader();
 		}
 
-		public static final String tooltip_text_remove = "Click to not create a displayable from this image";
+		public static final String tooltip_text_remove = "Click to cancel the creation of a displayable from this image";
 
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,

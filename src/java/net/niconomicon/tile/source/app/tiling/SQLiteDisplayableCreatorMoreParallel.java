@@ -1,7 +1,6 @@
 package net.niconomicon.tile.source.app.tiling;
 
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -76,7 +75,6 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		int zoom = 0;
 		// //////////////////////
 		// Creating Tiles.
-		BufferedImage otherBuffer = null;
 		scaledWidth = width;
 		scaledHeight = height;
 
@@ -91,7 +89,6 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		}
 		boolean miniatureCreated = false;
 		int bufferedImageTileType = img.getType();
-		Map<Point, TileJobShrink> shrunk = new HashMap<Point, TileJobShrink>();
 
 		ExecutorService parallelPool = Executors.newFixedThreadPool(nThreads);
 		// writing to an SQLite DB : 1 Thread max
