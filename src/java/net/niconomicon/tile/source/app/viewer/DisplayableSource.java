@@ -3,6 +3,7 @@
  */
 package net.niconomicon.tile.source.app.viewer;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -38,8 +39,6 @@ import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 public class DisplayableSource {
 
 	Connection mapDB;
-	public static final int tileSize = 192;
-
 	String title;
 	String description;
 
@@ -48,6 +47,7 @@ public class DisplayableSource {
 	PreparedStatement tilesInRange;
 	DisplayableView view;
 	int type = -1;
+	Dimension tileSize = null;
 	ConcurrentLinkedQueue<TileCoord> neededTiles;
 	Map<String, BufferedImage> cache;
 
@@ -139,7 +139,8 @@ public class DisplayableSource {
 			mapDB = DriverManager.getConnection("jdbc:sqlite:" + tileSourcePath);
 			mapDB.setReadOnly(true);
 			type = SingleTileLoader.getPossibleType(mapDB);
-
+			tileSize = SingleTileLoader.getTileSize(mapDB);
+			
 			Statement statement = mapDB.createStatement();
 			// zoom = 0;
 			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name);

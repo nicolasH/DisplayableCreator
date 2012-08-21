@@ -16,16 +16,16 @@ import javax.swing.JPanel;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
- * @author Nicolas Hoibian
- * A class that represents a view of a Displayable - Only handles the painting.
+ * @author Nicolas Hoibian A class that represents a view of a Displayable -
+ *         Only handles the painting.
  */
 public class DisplayableView extends JPanel {
 
 	Connection mapDB;
-	public static final int tileSize = 192;
 
 	List<ZoomLevel> levels;
 
+	Dimension tileSize;
 	ZoomLevel currentLevel;
 
 	DisplayableSource displayableSource;
@@ -36,6 +36,7 @@ public class DisplayableView extends JPanel {
 
 	public void setDisplayable(DisplayableSource source) {
 		displayableSource = source;
+		tileSize = source.tileSize;
 		levels = source.getILevelInfos();
 		currentLevel = levels.get(levels.size() - 1);
 		revalidate();
@@ -44,17 +45,21 @@ public class DisplayableView extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (null == displayableSource) { return;/* Component shown but displayable not yet set.*/}
+		if (null == displayableSource) { return;/*
+												 * Component shown but
+												 * displayable not yet set.
+												 */}
 
 		// System.out.println("paintComponent");
 		Graphics2D g2 = (Graphics2D) g;
 		Rectangle r = g2.getClipBounds();
-		int tileXa = r.x / tileSize;
-		int tileXb = tileXa + (int) (((double) r.width / (double) tileSize)) + 2;
-		int tileYa = r.y / tileSize;
-		int tileYb = tileYa + (int) (((double) r.height / (double) tileSize)) + 1;
+		int tileXa = r.x / tileSize.width;
+		int tileXb = tileXa + (int) (((double) r.width / (double) tileSize.width)) + 2;
+		int tileYa = r.y / tileSize.height;
+		int tileYb = tileYa + (int) (((double) r.height / (double) tileSize.height)) + 1;
 
-		// System.out.println("Painting between " + tileXa + "," + tileYa + "and " + tileXb + ", " + tileYb);
+		// System.out.println("Painting between " + tileXa + "," + tileYa +
+		// "and " + tileXb + ", " + tileYb);
 		try {
 			int macYb = ((int) currentLevel.tiles_x - 1 - tileYa);
 			int macYa = ((int) currentLevel.tiles_y - 1 - tileYb);
@@ -67,7 +72,7 @@ public class DisplayableView extends JPanel {
 				for (int y = macYa; y < macYb + 1; y++) {
 					BufferedImage tile = displayableSource.getImage(x, y, currentLevel.z);
 					if (null != tile) {
-						g2.drawImage(tile, x * tileSize, (y) * tileSize, null);
+						g2.drawImage(tile, x * tileSize.width, (y) * tileSize.height, null);
 					}
 				}
 			}
@@ -117,7 +122,7 @@ public class DisplayableView extends JPanel {
 	public void repaintTile(long x, long y, long z) {
 		if (currentLevel.z == z) {
 			// System.out.println("repainting " + x + " " + y + " " + z);
-			repaint((int) x * tileSize, (int) y * tileSize, tileSize, tileSize);
+			repaint((int) x * tileSize.width, (int) y * tileSize.height, tileSize.width, tileSize.height);
 		}
 	}
 
