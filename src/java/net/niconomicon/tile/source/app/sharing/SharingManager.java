@@ -4,6 +4,7 @@
 package net.niconomicon.tile.source.app.sharing;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.JComponent;
 
@@ -16,8 +17,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
- * @author Nicolas Hoibian This class is designed to handle the activation of the Displayable server and its
- *         announcement.
+ * @author Nicolas Hoibian This class is designed to handle the activation of
+ *         the Displayable server and its announcement.
  */
 public class SharingManager {
 
@@ -30,7 +31,6 @@ public class SharingManager {
 	public SharingManager() {
 		sharingAnnouncer = sharingAnnouncer.getInstance();
 		service = new JettyImageServerServlet();
-
 		context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		context.addServlet(new ServletHolder(service), "/*");

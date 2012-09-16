@@ -134,13 +134,13 @@ public class ButtonForTable extends AbstractCellEditor implements TableCellRende
 			fileLocation = (String) lastTable.getValueAt(lastRow, -1);
 			System.out.println("Showing save Dialog : last row : " + lastRow + " file : " + fileLocation);
 			ResultStruct newInfos = saveDialog.showDialog(lastTable, fileLocation);
-			if (newInfos.newLocation != null) {
-				lastTable.setValueAt(newInfos.newLocation, lastRow, -1);
+			if (newInfos.movedDispFile != null) {
+				lastTable.setValueAt(newInfos.movedDispFile, lastRow, -1);
 			}
 			if (newInfos.newTitle != null) {
 				lastTable.setValueAt(newInfos.newTitle, lastRow, DisplayableCheckBoxTable.colTitle);
 			}
-			if (null != newInfos.newLocation && !Ref.isInTmpLocation(newInfos.newLocation)) {
+			if (null != newInfos.movedDispFile && !Ref.isInTmpLocation(newInfos.movedDispFile.getAbsolutePath())) {
 				this.fireEditingStopped();
 			}
 

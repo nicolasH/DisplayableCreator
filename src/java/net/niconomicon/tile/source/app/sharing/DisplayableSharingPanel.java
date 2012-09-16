@@ -8,19 +8,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,10 +18,8 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 
-import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.DisplayablesSource;
 import net.niconomicon.tile.source.app.sharing.SharingWidget.STATUS;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
@@ -40,88 +27,32 @@ import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
  * @author Nicolas Hoibian This class is designed to assemble and present the
  *         widgets related to the Displayable sharing functionality.
  */
-public class DisplayableSharingPanel extends JPanel implements
-		TableModelListener {
+public class DisplayableSharingPanel extends JPanel {
 
 	boolean currentlySharing = false;
 	SharingManager sharingManager;
-
-	DisplayableCheckBoxTable displayablesList;
 
 	SharingWidget widget;
 
 	Color defaultColor;
 
 	DisplayableViewer viewer;
-
+DisplayablesSource displayablesSource;
 	Timer timer;
 
-	public DisplayableSharingPanel(DisplayableViewer viewer) {
+	public DisplayableSharingPanel(DisplayableViewer viewer, DisplayablesSource dispList) {
 		this.viewer = viewer;
+		this.displayablesSource = dispList;
 		init();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.event.TableModelListener#tableChanged(javax.swing.event.
-	 * TableModelEvent)
-	 */
-	public void tableChanged(TableModelEvent e) {
-
-		int i = e.getType();
-
-		String _case = "";
-		switch (i) {
-		case TableModelEvent.DELETE:
-			_case = "DELETE";
-			break;
-		case TableModelEvent.UPDATE:
-			_case = "UPDATE";
-			break;
-		case TableModelEvent.INSERT:
-			_case = "INSERT";
-			break;
-		}
-
-		sharingManager.setSharingList(displayablesList
-				.getSelectedDisplayablesFiles());
-		if (sharingManager.isSharing()) {
-			sharingManager.restartAnnouncer(); // update the list of shared
-												// documents
-		} else {
-			// don't care ;-)
-			return;
-		}
-	}
-
-	public static JComponent createDirSelectionPanel(JPanel parent) {
-		JTextArea explanation = new JTextArea();
-		explanation.setBorder(null);
-		explanation.setEditable(false);
-		explanation.setBackground(parent.getBackground());
-		explanation.setWrapStyleWord(true);
-		explanation.setLineWrap(true);
-		explanation.setColumns(30);
-		explanation.setFont(explanation.getFont().deriveFont(Font.ITALIC));
-		explanation
-				.setText("Share your displayables over the network to download them on your iPhone or iPod touch.");
-		return explanation;
 	}
 
 	public void init() {
 
 		sharingManager = new SharingManager();
-		displayablesList = new DisplayableCheckBoxTable(viewer);
 		timer = new Timer();
-
-		displayablesList.table.getModel().addTableModelListener(this);
 
 		this.setLayout(new BorderLayout());
 		this.add(createDirSelectionPanel(this), BorderLayout.NORTH);
-		// shared files
-		// //////////////////////////////////////////
-		this.add(displayablesList, BorderLayout.CENTER);
 		// //////////////////////////////////////////
 		// port number
 		// start sharing
@@ -150,52 +81,23 @@ public class DisplayableSharingPanel extends JPanel implements
 
 		long delta = 10000;
 		timer.scheduleAtFixedRate(new LocalHostChecker(), delta, delta);
+		Thread t = new Thread(new DisplayableMonitor());
+		t.start();
 
 	}
 
-	public static List<String> getDBFilesInSubDirectory(File dir) {
-		List<String> dbFiles = new ArrayList<String>();
-		dbFiles.addAll(Arrays.asList(Ref
-				.getAbsolutePathOfDBFilesInDirectory(dir)));
-		for (File d : dir.listFiles()) {
-			if (d.isDirectory()) {
-				dbFiles.addAll(getDBFilesInSubDirectory(d));
-			}
-		}
-		return dbFiles;
+	public static JComponent createDirSelectionPanel(JPanel parent) {
+		JTextArea explanation = new JTextArea();
+		explanation.setBorder(null);
+		explanation.setEditable(false);
+		explanation.setBackground(parent.getBackground());
+		explanation.setWrapStyleWord(true);
+		explanation.setLineWrap(true);
+		explanation.setColumns(30);
+		explanation.setFont(explanation.getFont().deriveFont(Font.ITALIC));
+		explanation.setText("Share your displayables over the network to download them on your iPhone or iPod touch.");
+		return explanation;
 	}
-
-//	public void setSelectedFiles(File[] files) {
-//		if (null == files) {
-//			return;
-//		}// clear ?
-//		List<String> dbFiles = new ArrayList<String>();
-//		for (File f : files) {
-//			if (f.isDirectory()) {
-//				dbFiles.addAll(getDBFilesInSubDirectory(f));
-//			} else {
-//				if (f.getAbsolutePath().endsWith(Ref.ext_db)) {
-//					dbFiles.add(f.getAbsolutePath());
-//				}
-//			}
-//		}
-//		Collections.sort(dbFiles);
-//		Map<String, String> fileToTitle = new HashMap<String, String>();
-//		for (String path : dbFiles) {
-//			try {
-//				fileToTitle.put(path,
-//						SQliteTileCreatorMultithreaded.getTitle(path));
-//			} catch (SQLException ex) {
-//				ex.printStackTrace();
-//			}
-//		}
-//		displayablesList.addData(fileToTitle);
-//		if (sharingManager.isSharing()) {
-//			sharingManager.setSharingList(displayablesList
-//					.getSelectedDisplayablesFiles());
-//			sharingManager.restartAnnouncer();
-//		}
-//	}
 
 	public void switchSharing(boolean shouldPopup) {
 		// synchronized (widget) {
@@ -233,14 +135,11 @@ public class DisplayableSharingPanel extends JPanel implements
 
 	public boolean startSharing(boolean shouldPopup) {
 		// HashSet<String> sharedDB = new HashSet<String>();
-		Collection<String> sharedMaps = displayablesList
-				.getSelectedDisplayablesFiles();
-		System.out.println("should start sharing the maps, with "
-				+ (shouldPopup ? "popup" : "no popup") + " in case of problem");
+		System.out.println("should start sharing the maps, with " + (shouldPopup ? "popup" : "no popup") + " in case of problem");
 		// generate the xml;
 		try {
 			sharingManager.setPort(widget.getPort());
-			sharingManager.setSharingList(sharedMaps);
+			sharingManager.setSharingList(displayablesSource.getDisplayables());
 			sharingManager.startSharing();
 			// sharingManager.startSharing();
 		} catch (Exception ex) {
@@ -251,17 +150,9 @@ public class DisplayableSharingPanel extends JPanel implements
 				ex1.printStackTrace();
 			}
 			if (shouldPopup) {
-				JOptionPane
-						.showConfirmDialog(
-								this,
-								"<html><body>Error while starting the sharing component on port ["
-										+ widget.getPort()
-										+ "]: <br/><i>"
-										+ ex.getMessage()
-										+ "</i><br/>You might want to change the port.</body></html>",
-								"Error creating starting the sharing component",
-								JOptionPane.DEFAULT_OPTION,
-								JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showConfirmDialog(this, "<html><body>Error while starting the sharing component on port [" + widget.getPort()
+						+ "]: <br/><i>" + ex.getMessage() + "</i><br/>You might want to change the port.</body></html>",
+						"Error creating starting the sharing component", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
 			}
 			ex.printStackTrace();
 			return false;
@@ -275,50 +166,6 @@ public class DisplayableSharingPanel extends JPanel implements
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	/**
-	 * 
-	 * @param fileLocation
-	 *            This can be a temporary file.
-	 */
-	public void addDisplayableToShare(String fileLocation, String title) {
-		displayablesList.addDisplayable(fileLocation, title);
-	}
-
-	public void updateDisplayableLocation(String oldLocation, String newLocation) {
-		displayablesList.updateLocation(oldLocation, newLocation);
-	}
-
-	public Map<String, String> getDisplayableList(String rootDir, String[] maps) {
-		Map<String, String> fileToName = new HashMap<String, String>();
-		if (!rootDir.endsWith(File.separator)) {
-			rootDir += File.separator;
-		}
-		for (String string : maps) {
-			try {
-				String fileName = rootDir + string;
-				// System.out.println("trying to open the map : " + fileName);
-				Connection mapDB = DriverManager.getConnection("jdbc:sqlite:"
-						+ fileName);
-				mapDB.setReadOnly(true);
-				Statement statement = mapDB.createStatement();
-				statement.setQueryTimeout(30); // set timeout to 30 sec.
-				ResultSet rs = statement.executeQuery("select "
-						+ Ref.infos_title + " from infos");
-				while (rs.next()) {
-					String name = rs.getString(Ref.infos_title);
-					System.out.println("name : " + name);
-					fileToName.put(fileName, name);
-				}
-				if (mapDB != null)
-					mapDB.close();
-			} catch (Exception ex) {
-				System.err.println("ex for map : " + string);
-				ex.printStackTrace();
-			}
-		}
-		return fileToName;
 	}
 
 	public class LocalHostChecker extends TimerTask {
@@ -336,6 +183,28 @@ public class DisplayableSharingPanel extends JPanel implements
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
+			}
+		}
+	}
+
+	private class DisplayableMonitor implements Runnable {
+		public void run() {
+			while (true) {
+				synchronized (displayablesSource.getDisplayablesLock()) {
+					System.out.println("Gonna sleep on the displayable lock");
+					try {
+						displayablesSource.getDisplayablesLock().wait();
+						System.out.println("Stopped waiting on the displayable lock");
+					} catch (Exception ex) {
+						System.out.println("Exeption");
+						ex.printStackTrace();
+					} finally {
+						// something happened to the displayableList
+						System.out.println("Finally");
+						sharingManager.setSharingList(displayablesSource.getDisplayables());
+						sharingManager.restartAnnouncer();
+					}
+				}
 			}
 		}
 	}

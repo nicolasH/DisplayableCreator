@@ -3,6 +3,7 @@
  */
 package net.niconomicon.tile.source.app.viewer.actions;
 
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -43,22 +44,23 @@ public class SingleTileLoader implements Runnable {
 		if (displayableSource.hasImage(coord)) { return; }
 		try {
 			Statement statement = displayable.createStatement();
-			ResultSet rs =
-					statement.executeQuery("select * from tiles_0_0 where z=" + coord.z + " and y=" + coord.y
-							+ " and x=" + coord.x);
+			ResultSet rs = statement.executeQuery("select * from tiles_0_0 where z=" + coord.z + " and y=" + coord.y + " and x=" + coord.x);
 			while (rs.next()) {
 				count++;
 				long x = rs.getLong(1);
 				long y = rs.getLong(2);
 				long z = rs.getLong(3);
-				// System.out.println("found a tile for " + x + " " + y + " " + z);
+				// System.out.println("found a tile for " + x + " " + y + " " +
+				// z);
 				byte[] data = rs.getBytes(4);
 				// cache.put(Ref.getKey(x, y, z), data);
 				try {
 					BufferedImage t = ImageIO.read(new ByteArrayInputStream(data));
-					// System.out.println("Getting type for loaded tile : : " + t.getType());
+					// System.out.println("Getting type for loaded tile : : " +
+					// t.getType());
 					t = FastClipper.fastClip(t, new Rectangle(0, 0, t.getWidth(), t.getHeight()), true, tileType);
-					// System.out.println("key : " + key + " data " + t + " cache " + cache);
+					// System.out.println("key : " + key + " data " + t +
+					// " cache " + cache);
 					displayableSource.setImage(x, y, z, t);
 					// int tileSize = DisplayableView.tileSize;
 				} catch (Exception ex) {
@@ -70,14 +72,15 @@ public class SingleTileLoader implements Runnable {
 			ex.printStackTrace();
 		}
 		// stop = System.currentTimeMillis();
-		// System.out.println("Loading done (count = " + count + " time : " + (stop - start) + " ) for z = " + coord.z +
+		// System.out.println("Loading done (count = " + count + " time : " +
+		// (stop - start) + " ) for z = " + coord.z +
 		// " y = " + coord.y + " x = " + coord.x);
 
 	}
 
 	/**
-	 * Possible workaround for a bug found on windows 7 + Java 1.6.0_17 b04 where the type of a tile loaded from the db
-	 * is TYPE_CUSTOM
+	 * Possible workaround for a bug found on windows 7 + Java 1.6.0_17 b04
+	 * where the type of a tile loaded from the db is TYPE_CUSTOM
 	 */
 	public static final int[] imageTypes = new int[] { BufferedImage.TYPE_CUSTOM, // 0
 			BufferedImage.TYPE_INT_RGB, // 1
@@ -94,6 +97,26 @@ public class SingleTileLoader implements Runnable {
 			BufferedImage.TYPE_BYTE_BINARY,// 12
 			BufferedImage.TYPE_BYTE_INDEXED }; // 13
 
+	public static Dimension getTileSize(Connection conn) {
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("select * from tile_info");
+			// (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG,
+			// emptyTile BLOB, flippedVertically
+			// BOOL
+			// , javaImageType INT)");
+			while (rs.next()) {
+				int width = rs.getInt("tileWidth");
+				int height = rs.getInt("tileHeight");
+				rs.close();
+				return new Dimension(width, height);
+			}
+		} catch (SQLException ex) {
+			// then continue
+		}
+		return new Dimension(0, 0);
+	}
+
 	public static int getPossibleType(Connection conn) {
 		int type = -1;
 		byte[] data = null;
@@ -104,11 +127,13 @@ public class SingleTileLoader implements Runnable {
 				long x = rs.getLong(1);
 				long y = rs.getLong(2);
 				long z = rs.getLong(3);
-				// System.out.println("found a tile for " + x + " " + y + " " + z);
+				// System.out.println("found a tile for " + x + " " + y + " " +
+				// z);
 				data = rs.getBytes(4);
 			}
 			rs.close();
-		} catch (Exception ex) {}
+		} catch (Exception ex) {
+		}
 		if (data != null) {
 			BufferedImage t = null;
 			try {
@@ -121,7 +146,8 @@ public class SingleTileLoader implements Runnable {
 				try {
 					Statement statement = conn.createStatement();
 					ResultSet rs = statement.executeQuery("select * from tile_info");
-					// (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight LONG, emptyTile BLOB, flippedVertically
+					// (mapKey LONG, tileExt STRING, tileWidth LONG, tileHeight
+					// LONG, emptyTile BLOB, flippedVertically
 					// BOOL
 					// , javaImageType INT)");
 					while (rs.next()) {

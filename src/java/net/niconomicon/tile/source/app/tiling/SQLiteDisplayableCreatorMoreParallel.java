@@ -75,8 +75,6 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		int zoom = 0;
 		// //////////////////////
 		// Creating Tiles.
-		scaledWidth = width;
-		scaledHeight = height;
 
 		int minimumDimension = 320;
 		int aaMaxZoom = 0;

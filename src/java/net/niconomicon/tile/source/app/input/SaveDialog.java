@@ -48,7 +48,7 @@ public class SaveDialog extends JPanel {
 
 	String currentTitle = "";
 	String currentDesc = "";
-	String newLocation = null;
+	File latestDispFile = null;
 	String newTitle = null;
 
 	public SaveDialog() {
@@ -196,31 +196,31 @@ public class SaveDialog extends JPanel {
 	/**
 	 * 
 	 * @param parent
-	 * @param currentLocation
+	 * @param currentPath
 	 * @return [newLocation,newTitle]
 	 */
-	public ResultStruct showDialog(Component parent, String currentLocation) {
-		newLocation = null;
+	public ResultStruct showDialog(Component parent, String currentPath) {
+		latestDispFile = null;
 		newTitle = null;
-		fillForm(currentLocation);
-		String res = "nah";
-		while (null != res) {
+		fillForm(currentPath);
+		String errorResponse = "nah";
+		while (null != errorResponse) {
 			int result =
 					JOptionPane.showOptionDialog(parent, this, "Save Displayable", JOptionPane.YES_NO_OPTION,
 							JOptionPane.QUESTION_MESSAGE, null, new String[] { "Save", "Cancel" }, null);
 			if (JOptionPane.YES_OPTION == result) {
-				res = save(currentLocation);
+				errorResponse = save(currentPath);
 			} else {
-				res = null;
+				errorResponse = null;
 			}
-			if (res != null) {
-				JOptionPane.showOptionDialog(parent, res, "Error", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE,
+			if (errorResponse != null) {
+				JOptionPane.showOptionDialog(parent, errorResponse, "Error", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE,
 						null, new String[] { "Ok" }, null);
 			}
 		}
 		ResultStruct ret = new ResultStruct();
-		if (currentLocation != newLocation) {
-			ret.newLocation = newLocation;
+		if (latestDispFile != null && currentPath != latestDispFile.getAbsolutePath()) {
+			ret.movedDispFile = latestDispFile;
 		}
 		if (currentTitle != newTitle) {
 			ret.newTitle = newTitle;
@@ -230,7 +230,6 @@ public class SaveDialog extends JPanel {
 
 	public void fillForm(String currentLocation) {
 		System.out.println("current location : " + currentLocation);
-		newLocation = null;
 		try {
 			currentTitle = SQliteTileCreatorMultithreaded.getTitle(currentLocation);
 			currentDesc = SQliteTileCreatorMultithreaded.getDesc(currentLocation);
@@ -240,11 +239,8 @@ public class SaveDialog extends JPanel {
 			try {
 				if (Ref.isInTmpLocation(currentLocation)) {
 					// keep the lastIndex here because tmp file format should contain the '_'
-					// ///////////////////////////////////////////////////////////
-
-					// ///////////////////////////////////////////////////////////
 					suggestedFile = suggestedFile.substring(0, suggestedFile.lastIndexOf("_"));// + Ref.ext_db
-					Ref.cleanFilename(suggestedFile);
+					suggestedFile = Ref.cleanFilename(suggestedFile);
 					this.where.setText(Ref.getDefaultDir());
 				} else {
 					this.where.setText(new File(currentLocation).getParent());
@@ -293,12 +289,14 @@ public class SaveDialog extends JPanel {
 		newPath += newName;
 
 		if (!originalFile.equals(newPath)) {
+			System.out.println("original file path:"+originalFile);
+			System.out.println("new file path:"+newPath);
 			File f = new File(originalFile);
 			boolean ok = f.renameTo(new File(newPath));
 			if (!ok) { return "<html><body>Could not move or rename the file to <br/>[" + newPath
 					+ "]<br/><b> Try to change the name of the file or its location.</b></body></html>"; }
-			newLocation = newPath;
-			System.out.println("Renamed " + originalFile + " to " + newLocation);
+			latestDispFile = new File(newPath);
+			System.out.println("Renamed " + originalFile + " to " + latestDispFile.getAbsolutePath());
 		}
 		// success !
 		return null;

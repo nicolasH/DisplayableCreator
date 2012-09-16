@@ -156,11 +156,9 @@ public class SQliteTileCreatorMultithreaded {
 		try {
 			connection.commit();
 			connection.close();
-			System.out.println("");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		// add source, author,date , thumb
 	}
 
 	/**

@@ -9,11 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
-import net.niconomicon.tile.source.app.Ref;
-import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
 
 /**
  * @author Nicolas Hoibian
@@ -21,105 +17,43 @@ import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
  */
 public class DragAndDropManager {
 
-	Queue<File> images = new LinkedList<File>();
-	Queue<File> displayables = new LinkedList<File>();
-	DisplayableSharingPanel pDisp;
+	Queue<File> files = new LinkedList<File>();
 	DisplayableCreatorInputPanel pCrea;
 
-	// Thread threadImages;
-	// Thread threadDisp;
-	// DisplayableProcessor processorDisp;
-	// ImageProcessor processorImages;
-
-	public DragAndDropManager(DisplayableSharingPanel pDisp,
-			DisplayableCreatorInputPanel pCrea) {
-		this.pDisp = pDisp;
+	public DragAndDropManager(DisplayableCreatorInputPanel pCrea) {
 		this.pCrea = pCrea;
-		System.out.println("disp:" + pDisp + " - crea " + pCrea);
-		Thread threadDisp = new Thread(new DisplayableProcessor(displayables));
-		Thread threadImages = new Thread(new ImageProcessor(images));
+		System.out.println("Crea " + pCrea);
 
-		threadDisp.start();
+		Thread threadImages = new Thread(new FileProcessor(files));
+
 		threadImages.start();
 	}
 
-	public void addImageToTile(File f) {
-		synchronized (images) {
-			images.add(f);
+	public void addFile(File f) {
+		synchronized (files) {
+			files.add(f);
 		}
 	}
 
 	public void wakeProcessors() {
-		synchronized (images) {
-			images.notify();
-		}
-		synchronized (displayables) {
-			displayables.notify();
+		synchronized (files) {
+			files.notify();
 		}
 	}
 
-	public void addDisplayable(File f) {
-		synchronized (displayables) {
-			displayables.add(f);
-		}
-	}
-
-	/*
-	 * The rest is some smal threads and runnable
-	 */
-
-	private class DisplayableProcessor extends FileProcessor {
-		public DisplayableProcessor(Queue queue) {
-			super(queue);
-		}
-
-		public void processFile(File f) {
-			System.out.println("processing " + f);
-			List<String> titles = Ref.getDisplayableTitles(f.getAbsolutePath());
-			if (titles.size() > 0) {
-				SwingUtilities.invokeLater(new addDisplayableToGUI(titles
-						.get(0), f.getAbsolutePath()));
-			}
-		}
-	}
-
-	private class ImageProcessor extends FileProcessor {
-		public ImageProcessor(Queue queue) {
-			super(queue);
-		}
-
-		public void processFile(File file) {
-			SwingUtilities.invokeLater(new addImageToDisplayableCreationQueue(
-					file));
-		}
-	}
-
-	private class addImageToDisplayableCreationQueue implements Runnable {
+	private class addFileToQueue implements Runnable {
 		File file;
 
-		public addImageToDisplayableCreationQueue(File f) {
+		public addFileToQueue(File f) {
 			this.file = f;
 		}
 
 		public void run() {
-			pCrea.queueImageForDisplayableCreation(file);
+			pCrea.addFile(file);
 		}
 	}
 
-	private class addDisplayableToGUI implements Runnable {
-		String title, path;
-
-		public addDisplayableToGUI(String title, String path) {
-			this.title = title;
-			this.path = path;
-		}
-
-		public void run() {
-			pDisp.addDisplayableToShare(path, title);
-		}
-	}
-
-	private abstract class FileProcessor implements Runnable {
+	private class FileProcessor implements Runnable {
 		Queue queue;
 
 		public FileProcessor(Queue l) {
@@ -129,12 +63,11 @@ public class DragAndDropManager {
 		public void run() {
 			while (true) {
 				synchronized (queue) {
-					List tmpList = new ArrayList();
 					boolean hasElements = queue.size() > 0;
 					while (hasElements) {
 						File f = (File) queue.poll();
 						if (f != null) {
-							processFile(f);
+							SwingUtilities.invokeLater(new addFileToQueue(f));
 						} else {
 							hasElements = false;
 						}
@@ -147,7 +80,5 @@ public class DragAndDropManager {
 				}
 			}
 		}
-
-		public abstract void processFile(File f);
 	}
 }

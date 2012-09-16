@@ -55,7 +55,7 @@ public class SharingWidget extends JPanel {
 		sharingStatus.setHorizontalAlignment(JLabel.CENTER);
 		sharingStatus.setVerticalAlignment(JLabel.CENTER);
 
-		sharingLocation = new JTextArea(" ... ");
+		sharingLocation = new JTextArea();//new JTextArea(" ... ");
 		sharingLocation.setBorder(null);
 		sharingLocation.setOpaque(false);
 		sharingLocation.setEditable(false);
@@ -230,10 +230,10 @@ public class SharingWidget extends JPanel {
 		sharingStatus
 				.setToolTipText("If the list of Displayables does not appear quickly in the Displayator app your iPhone/iPod touch, try accessing "
 						+ add + " in your iPhone / iPod touch web browser");
-		sharingLocation.setFont(sharingLocation.getFont().deriveFont(Font.ITALIC));
-		sharingLocation
-				.setText("Open Displayator on your iPhone and select \"Download Displayables\" to transfer the Displayable to your iOS device. "
-						+ "You can also see the list of shared Displayabe at " + add + " in Safari on your iOS device.");
+//		sharingLocation.setFont(sharingLocation.getFont().deriveFont(Font.ITALIC));
+//		sharingLocation
+//				.setText("Open Displayator on your iPhone and select \"Download Displayables\" to transfer the Displayable to your iOS device. "
+//						+ "You can also see the list of shared Displayable at " + add + " in Safari on your iOS device.");
 		exportText.setText("Export the shared Displayables as a website (similar to the one at " + add + ")...");
 
 	}

@@ -47,14 +47,14 @@ String tooltip="";
 
 		if (fullScreen) {
 			fullScreen = false;
-			icon = IconsLoader.getIconsLoader().ic_wExp_24;
+			icon = IconsLoader.getIconsLoader().ic_windowExpand_24;
 			tooltip = "Make the Displayable view fullscreen";
 			pos = framePreFullPos;
 			dim = framePreFullDim;
 
 		} else {
 			fullScreen = true;
-			icon = IconsLoader.getIconsLoader().ic_wCon_24;
+			icon = IconsLoader.getIconsLoader().ic_windowContract_24;
 			tooltip = "Return the Displayable view to its previous size";
 			framePreFullDim = frame.getSize();
 			framePreFullPos = frame.getLocation();

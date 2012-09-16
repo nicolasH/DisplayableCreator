@@ -3,13 +3,11 @@
  */
 package net.niconomicon.tile.source.app.filter;
 
-import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -35,7 +33,8 @@ public class FileDropHandler extends TransferHandler {
 	}
 
 	/**
-	 * @see javax.swing.TransferHandler#canImport(javax.swing.JComponent, java.awt.datatransfer.DataFlavor[])
+	 * @see javax.swing.TransferHandler#canImport(javax.swing.JComponent,
+	 *      java.awt.datatransfer.DataFlavor[])
 	 */
 	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
 		for (int i = 0; i < arg1.length; i++) {
@@ -57,7 +56,8 @@ public class FileDropHandler extends TransferHandler {
 	/**
 	 * Do the actual import.
 	 * 
-	 * @see javax.swing.TransferHandler#importData(javax.swing.JComponent, java.awt.datatransfer.Transferable)
+	 * @see javax.swing.TransferHandler#importData(javax.swing.JComponent,
+	 *      java.awt.datatransfer.Transferable)
 	 */
 	public boolean importData(JComponent comp, Transferable t) {
 		DataFlavor[] flavors = t.getTransferDataFlavors();
@@ -68,12 +68,12 @@ public class FileDropHandler extends TransferHandler {
 			DataFlavor flavor = flavors[i];
 			if (flavor.equals(DataFlavor.javaFileListFlavor)) {
 				try {
-					System.out.println("importData: FileListFlavor"+t.getTransferData(DataFlavor.javaFileListFlavor));
+					System.out.println("importData: FileListFlavor" + t.getTransferData(DataFlavor.javaFileListFlavor));
 					List<File> fileList = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
 					for (File file : fileList) {
-						System.out.println("importing file:"+file);
+						System.out.println("importing file:" + file);
 						returnVal = addFile(file);
-						System.out.println("Return val for accepting the file:"+returnVal);
+						System.out.println("Return val for accepting the file:" + returnVal);
 						// Now do something with the file...
 					}
 				} catch (IOException ex) {
@@ -85,28 +85,23 @@ public class FileDropHandler extends TransferHandler {
 		}
 		manager.wakeProcessors();
 		// If you get here, I didn't like the flavor.
-		//Toolkit.getDefaultToolkit().beep();
+		// Toolkit.getDefaultToolkit().beep();
 		return returnVal;
 	}
 
-	public boolean addFile(File file) throws IOException{
+	public boolean addFile(File file) throws IOException {
 		boolean returnVal = false;
 		if (file.isDirectory()) {
 			for (String fName : file.list()) {
 				File fileToCheck = new File(fName);
 				returnVal = returnVal || addFile(fileToCheck);
-				System.out.println((returnVal? "Found Files in ":"Rejected")+file.getCanonicalPath() );
+				System.out.println((returnVal ? "Found Files in " : "Rejected") + file.getCanonicalPath());
 			}
 			return returnVal;
 		}
-		if (filter_image.accept(file)) {
-			System.out.println("GOT IMAGE: " + file.getCanonicalPath());
-			manager.addImageToTile(file);
-			return true;
-		}
-		if (filter_disp.accept(file)) {
-			System.out.println("GOT DISPLAYABLE: " + file.getCanonicalPath());
-			manager.addDisplayable(file);
+		if (filter_image.accept(file) || filter_disp.accept(file)) {
+			System.out.println("GOT something: " + file.getCanonicalPath());
+			manager.addFile(file);
 			return true;
 		}
 		return false;

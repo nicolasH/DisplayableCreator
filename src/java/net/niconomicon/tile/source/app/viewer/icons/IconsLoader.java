@@ -16,9 +16,16 @@ public class IconsLoader {
 	public ImageIcon ic_itouch_24_h;
 	public ImageIcon ic_itouch_24_v;
 	// public ImageIcon ic_itouch_24;
-	public ImageIcon ic_wExp_24;
-	public ImageIcon ic_wCon_24;
+	public ImageIcon ic_windowExpand_24;
+	public ImageIcon ic_windowContract_24;
 
+	public ImageIcon ic_delete_16;
+	public ImageIcon ic_delete_24;
+	public ImageIcon ic_stop_16;
+	public ImageIcon ic_stop_24;
+	public ImageIcon ic_remove_16;
+	public ImageIcon ic_remove_24;
+	
 	public ImageIcon ic_edit_16;
 	public ImageIcon ic_edit_24;
 	public ImageIcon ic_save_16;
@@ -49,9 +56,22 @@ public class IconsLoader {
 		ic_itouch_24_v = new ImageIcon(url);
 
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "windowContract24.png");
-		ic_wCon_24= new ImageIcon(url);
+		ic_windowContract_24= new ImageIcon(url);
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "windowExpand24.png");
-		ic_wExp_24= new ImageIcon(url);
+		ic_windowExpand_24= new ImageIcon(url);
+
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "Delete16.gif");
+		ic_delete_16 = new ImageIcon(url);
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "Delete24.gif");
+		ic_delete_24 = new ImageIcon(url);
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "Stop16.gif");
+		ic_stop_16 = new ImageIcon(url);
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "Stop24.gif");
+		ic_stop_24 = new ImageIcon(url);
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "Remove16.gif");
+		ic_remove_16 = new ImageIcon(url);
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "Remove24.gif");
+		ic_remove_24 = new ImageIcon(url);
 
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "Edit16.gif");
 		ic_edit_16 = new ImageIcon(url);
@@ -73,5 +93,6 @@ public class IconsLoader {
 		ic_zoomOut_16 = new ImageIcon(url);
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "ZoomOut24.gif");
 		ic_zoomOut_24 = new ImageIcon(url);
+		
 	}
 }

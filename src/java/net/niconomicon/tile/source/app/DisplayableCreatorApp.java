@@ -14,7 +14,9 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import net.niconomicon.tile.source.app.input.DisplayableCreatorInputPanel;
+import net.niconomicon.tile.source.app.input.QueueListView;
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
+import net.niconomicon.tile.source.app.sharing.SharingWidget;
 import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorParallel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
@@ -39,12 +41,15 @@ public class DisplayableCreatorApp {
 	private void init() {
 		JFrame f = new JFrame("Displayable Creator");
 		displayableViewer = DisplayableViewer.createInstance();
-		mapSharingPanel = new DisplayableSharingPanel(displayableViewer);
-		tileCreatorPanel = new DisplayableCreatorInputPanel(mapSharingPanel);
+		QueueListView queue = new QueueListView(displayableViewer);
+		mapSharingPanel = new DisplayableSharingPanel(displayableViewer, queue);
+		tileCreatorPanel = new DisplayableCreatorInputPanel(queue);
+
 		Font font = new Font(null, Font.BOLD, 16);
 		Border etch = BorderFactory.createEtchedBorder();
 		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch, "Create a Displayable", TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, font));
+
 		mapSharingPanel.setBorder(BorderFactory.createTitledBorder(etch, "Share Displayables", TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, font));
 

@@ -62,9 +62,9 @@ public class DisplayableViewer extends JPanel {
 		sp.setMinimumSize(new Dimension(340, 340));
 		this.add(sp, BorderLayout.CENTER);
 
-		this.setMinimumSize(new Dimension(400, 400));
+		this.setMinimumSize(new Dimension(320, 320));
 		viewerFrame.setContentPane(this);
-		viewerFrame.setMinimumSize(new Dimension(340, 340));
+		viewerFrame.setMinimumSize(new Dimension(300, 300));
 		viewerFrame.setLocation(400, 200);
 		viewerFrame.setSize(340, 500);
 		this.setPreferredSize(new Dimension(340, 340));
@@ -101,7 +101,7 @@ public class DisplayableViewer extends JPanel {
 		toolBar.add(b);
 
 		toolBar.addSeparator();
-		b = new JButton(loader.ic_wExp_24);
+		b = new JButton(loader.ic_windowExpand_24);
 		b.setToolTipText("Make the Displayable view fullscreen");
 		b.addActionListener(new FullScreenResizer(viewerFrame, b, toolBar));
 		toolBar.add(b);
