@@ -74,11 +74,14 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 		sp.setMinimumSize(new Dimension(QueueListItem.minWidth, 0));
 		queueFrame.setContentPane(sp);
 		queueFrame.setTitle("Image queue & Displayable(s) list");
-		queueFrame.pack();
+
 		Dimension dim = new Dimension(QueueListItem.minWidth, QueueListItem.minHeight * 4);
 		queueFrame.setPreferredSize(dim);
 		queueFrame.setSize(dim);
 		queueFrame.setMinimumSize(new Dimension(dim.width, QueueListItem.minHeight));
+		queueFrame.pack();
+		queueFrame.setLocation(400,100);
+		
 		
 		this.add(input, BorderLayout.NORTH);
 		// this.add(sp, BorderLayout.CENTER);

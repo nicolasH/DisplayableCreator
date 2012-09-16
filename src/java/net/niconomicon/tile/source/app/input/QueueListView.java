@@ -1,6 +1,5 @@
 package net.niconomicon.tile.source.app.input;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
@@ -12,14 +11,11 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import net.niconomicon.tile.source.app.DisplayablesSource;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
-import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 
 public class QueueListView extends JPanel implements DisplayablesSource {
 
@@ -53,6 +49,9 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 		saveDialog = new SaveDialog();
 		this.setSize(QueueListItem.minWidth, 400);
 		this.setMinimumSize(new Dimension(QueueListItem.minWidth, QueueListItem.minHeight));
+		JLabel empty = new JLabel("<html>&mdash; ~ &mdash;</html>",JLabel.CENTER);
+		empty.setMaximumSize(new Dimension(Short.MAX_VALUE, 50));
+		this.add(empty, 0);
 	}
 
 	/**
@@ -171,24 +170,25 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 			QueueListView.this.getParent().validate();
 			QueueListView.this.revalidate();
 			panelToRemove.requestRunInhibition();
+			panelToRemove = null;
 		}
 	}
 
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		JPanel main = new JPanel(new BorderLayout());
-		JLabel top = new JLabel("Drop images and displayables here");
-		top.setMinimumSize(new Dimension(150, 100));
-		top.setPreferredSize(new Dimension(150, 100));
-		top.setMaximumSize(new Dimension(150, 100));
-
-		main.add(top, BorderLayout.NORTH);
-		main.add(new JScrollPane(new QueueListView(null)), BorderLayout.CENTER);
-		main.add(new JLabel("Fancy sharing stuff here"), BorderLayout.SOUTH);
-		frame.setContentPane(main);
-		frame.pack();
-		frame.setSize(340, 600);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-	}
+//	public static void main(String[] args) {
+//		JFrame frame = new JFrame();
+//		JPanel main = new JPanel(new BorderLayout());
+//		JLabel top = new JLabel("Drop images and displayables here");
+//		top.setMinimumSize(new Dimension(150, 100));
+//		top.setPreferredSize(new Dimension(150, 100));
+//		top.setMaximumSize(new Dimension(150, 100));
+//
+//		main.add(top, BorderLayout.NORTH);
+//		main.add(new JScrollPane(new QueueListView(null)), BorderLayout.CENTER);
+//		main.add(new JLabel("Fancy sharing stuff here"), BorderLayout.SOUTH);
+//		frame.setContentPane(main);
+//		frame.pack();
+//		frame.setSize(340, 600);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.setVisible(true);
+//	}
 }
