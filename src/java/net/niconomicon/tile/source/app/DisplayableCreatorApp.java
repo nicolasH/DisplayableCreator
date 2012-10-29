@@ -64,12 +64,12 @@ public class DisplayableCreatorApp {
 		c_bottom.gridx = 0;
 		c_bottom.gridy = 4;
 		c_bottom.gridwidth = 1;
-		c_bottom.gridheight = 5;
+		c_bottom.gridheight = 2;
 		c_bottom.fill = GridBagConstraints.BOTH;
 
 		JPanel p = new JPanel(new BorderLayout());
-		p.add(tileCreatorPanel, BorderLayout.NORTH);
-		p.add(mapSharingPanel, BorderLayout.CENTER);
+		p.add(tileCreatorPanel, BorderLayout.CENTER);
+		p.add(mapSharingPanel, BorderLayout.SOUTH);
 		f.setContentPane(p);
 		f.pack();
 		f.setSize(350, 500);

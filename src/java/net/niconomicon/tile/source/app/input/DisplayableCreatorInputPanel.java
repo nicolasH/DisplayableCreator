@@ -1,27 +1,37 @@
 package net.niconomicon.tile.source.app.input;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.imageio.IIOException;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
 
 import net.niconomicon.tile.source.app.DisplayableCreatorApp;
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.filter.FileDropHandler;
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
-import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
 import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorMoreParallel;
 import net.niconomicon.tile.source.app.tiling.TilingStatusReporter;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
+import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 
 /**
  * @author Nicolas Hoibian
@@ -65,8 +75,6 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 
 		imageFilter = new ImageFileFilter();
 
-		input = initInputPanel();
-
 		this.queueListView = queueListView;
 
 		queueFrame = new JFrame("List");
@@ -80,33 +88,53 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 		queueFrame.setSize(dim);
 		queueFrame.setMinimumSize(new Dimension(dim.width, QueueListItem.minHeight));
 		queueFrame.pack();
-		queueFrame.setLocation(400,100);
-		
-		
-		this.add(input, BorderLayout.NORTH);
+		queueFrame.setLocation(400, 100);
+
 		// this.add(sp, BorderLayout.CENTER);
+		initInputPanel();
 		this.setPreferredSize(new Dimension(300, 200));
 		tilerThread = new Thread(new Tiler());
 		tilerThread.start();
 
 	}
 
-	public JPanel initInputPanel() {
+	public void initInputPanel() {
 
-		JPanel input = new JPanel(new BorderLayout());
-
-		JLabel l = new JLabel("Drag and drop images or displayables here");
-		input.add(l, BorderLayout.CENTER);
-
+		JLabel dragndropText = new JLabel("<html><body>Drop images here</body></html>",SwingConstants.CENTER);		
+//		JLabel dragndropText = new JLabel("Drag & drop images here",SwingConstants.CENTER);		
+//		dragndropText.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		dragndropText.setForeground(Color.DARK_GRAY);
+		dragndropText.setFont(dragndropText.getFont().deriveFont(Font.ITALIC,24f));
+		dragndropText.setAlignmentX(CENTER_ALIGNMENT);
+		dragndropText.setAlignmentY(CENTER_ALIGNMENT);
+		
+		this.add(dragndropText, BorderLayout.CENTER);
+		// JLabel image = new JLabel();
+		// this.add(image, BorderLayout.NORTH);
+		JPanel bottom = new JPanel();
+		JButton showList = new JButton(IconsLoader.getIconsLoader().ic_list_24);
+		showList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				queueFrame.setVisible(true);
+			}
+		});
+		
+		JButton showPrefs = new JButton(IconsLoader.getIconsLoader().ic_settings_24);
+		JToggleButton sharing = new JToggleButton(IconsLoader.getIconsLoader().ic_sharingOff_24);
+		sharing.setBackground(Color.orange);
+		bottom.add(showList);
+		bottom.add(showPrefs);
+		bottom.add(sharing);
+		
+		this.add(bottom, BorderLayout.SOUTH);
 		FileDropHandler handler = new FileDropHandler(new DragAndDropManager(this));
 
-		l.setTransferHandler(handler);
-		input.setTransferHandler(handler);
-		l.setMinimumSize(new Dimension(150, 50));
-		l.setPreferredSize(new Dimension(150, 50));
-		l.setMaximumSize(new Dimension(150, 50));
+		dragndropText.setTransferHandler(handler);
+		this.setTransferHandler(handler);
+		dragndropText.setMinimumSize(new Dimension(150, 50));
+		dragndropText.setPreferredSize(new Dimension(150, 50));
+		dragndropText.setMaximumSize(new Dimension(150, 50));
 
-		return input;
 	}
 
 	public void resetTilingStatus() {

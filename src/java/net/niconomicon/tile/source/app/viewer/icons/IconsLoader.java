@@ -25,6 +25,15 @@ public class IconsLoader {
 	public ImageIcon ic_stop_24;
 	public ImageIcon ic_remove_16;
 	public ImageIcon ic_remove_24;
+
+	public ImageIcon ic_preferences_16;
+	public ImageIcon ic_preferences_24;
+	public ImageIcon ic_list_16;
+	public ImageIcon ic_list_24;
+	public ImageIcon ic_settings_24;
+	
+	public ImageIcon ic_sharingOn_24;
+	public ImageIcon ic_sharingOff_24;
 	
 	public ImageIcon ic_edit_16;
 	public ImageIcon ic_edit_24;
@@ -56,9 +65,9 @@ public class IconsLoader {
 		ic_itouch_24_v = new ImageIcon(url);
 
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "windowContract24.png");
-		ic_windowContract_24= new ImageIcon(url);
+		ic_windowContract_24 = new ImageIcon(url);
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "windowExpand24.png");
-		ic_windowExpand_24= new ImageIcon(url);
+		ic_windowExpand_24 = new ImageIcon(url);
 
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "Delete16.gif");
 		ic_delete_16 = new ImageIcon(url);
@@ -72,6 +81,24 @@ public class IconsLoader {
 		ic_remove_16 = new ImageIcon(url);
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "Remove24.gif");
 		ic_remove_24 = new ImageIcon(url);
+
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "Preferences16.gif");
+		ic_preferences_16 = new ImageIcon(url);
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "Preferences24.gif");
+		ic_preferences_24 = new ImageIcon(url);
+
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "settings24.png");
+		ic_settings_24 = new ImageIcon(url);
+
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "List16.png");
+		ic_list_16 = new ImageIcon(url);
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "List24.png");
+		ic_list_24 = new ImageIcon(url);
+
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "SharingOn24.png");
+		ic_sharingOn_24 = new ImageIcon(url);
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "SharingOff24.png");
+		ic_sharingOff_24 = new ImageIcon(url);
 
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "Edit16.gif");
 		ic_edit_16 = new ImageIcon(url);
@@ -93,6 +120,6 @@ public class IconsLoader {
 		ic_zoomOut_16 = new ImageIcon(url);
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "ZoomOut24.gif");
 		ic_zoomOut_24 = new ImageIcon(url);
-		
+
 	}
 }
