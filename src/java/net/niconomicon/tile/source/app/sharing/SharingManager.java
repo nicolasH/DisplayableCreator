@@ -50,8 +50,8 @@ public class SharingManager {
 		return false;
 	}
 
-	public void setSharingList(Collection<String> sharedMaps) {
-		service.setSharedDisplayables(sharedMaps);
+	public void setSharingList(Collection<String> sharedDisplayables) {
+		service.setSharedDisplayables(sharedDisplayables);
 	}
 
 	public void exportDisplayables(JComponent parent) {
@@ -79,9 +79,12 @@ public class SharingManager {
 		}
 	}
 
-	public void restartAnnouncer() {
+	public void restartAnnouncerAsync() {
 		Thread t = new Thread(new Restarter());
 		t.start();
+	}
+	public void restartAnnouncerSync() {
+		new Restarter().run();
 	}
 
 	private class Restarter implements Runnable {

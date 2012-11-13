@@ -97,7 +97,7 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 		start = System.nanoTime();
 		Map<Point, TileJobShrink> shrinked = writeLevel(img, null, scaledWidth, scaledHeight, zoom, tileSize, flipVertically, tileType, serialPool,
 				parallelPool, insertTile, zoom != aaMaxZoom);
-		System.out.println(" ... waiting up to 30 minutes for original tiles to be cut and shrunk ...");
+//		System.out.println(" ... waiting up to 30 minutes for original tiles to be cut and shrunk ...");
 		parallelPool.shutdown();
 		parallelPool.awaitTermination(30, TimeUnit.MINUTES);
 		stop = System.nanoTime();
@@ -135,7 +135,7 @@ public class SQLiteDisplayableCreatorMoreParallel extends SQliteTileCreatorMulti
 					insertTile, zoom != aaMaxZoom);
 			addLevelInfos(fileSansDot, mapID, zoom, scaledWidth, scaledHeight, nbX, nbY, 0, 0);
 
-			System.out.println(" ... waiting up to 30 minutes for original tiles to be cut and shrunk ...");
+//			System.out.println(" ... waiting up to 30 minutes for original tiles to be cut and shrunk ...");
 			parallelPool.shutdown();
 			parallelPool.awaitTermination(30, TimeUnit.MINUTES);
 			stop = System.nanoTime();

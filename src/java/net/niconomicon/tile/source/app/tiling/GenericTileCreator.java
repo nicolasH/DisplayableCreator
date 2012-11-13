@@ -86,12 +86,12 @@ public class GenericTileCreator {
 		int bH = (int) Math.ceil((double) src.height / tileSize) * tileSize;
 
 		BufferedImage buffer = new BufferedImage(bW, bH, imageType);
-		System.out.println("Going to assemble the tiles into a buffer of " + src);
+		// System.out.println("Going to assemble the tiles into a buffer of " + src);
 		// now to paste the tiles on the canvas:
 		for (Point p : sources.keySet()) {
 			int localX = p.x * tileSize;
 			int localY = p.y * tileSize;
-			System.out.println("paste x:" + localX + " y:" + localY);
+//			System.out.println("paste x:" + localX + " y:" + localY);
 			try {
 				TileJobShrink s = sources.get(p);
 				FastClipper.fastPaste(s.finalTile, buffer, localX, localY, false);

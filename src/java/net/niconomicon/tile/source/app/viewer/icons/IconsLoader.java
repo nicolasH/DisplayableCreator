@@ -32,6 +32,7 @@ public class IconsLoader {
 	public ImageIcon ic_list_24;
 	public ImageIcon ic_settings_24;
 	
+	public ImageIcon ic_loading_16;
 	public ImageIcon ic_sharingOn_24;
 	public ImageIcon ic_sharingOff_24;
 	
@@ -95,6 +96,8 @@ public class IconsLoader {
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "List24.png");
 		ic_list_24 = new ImageIcon(url);
 
+		url = this.getClass().getClassLoader().getResource(iconsLocation + "Loading16.gif");
+		ic_loading_16 = new ImageIcon(url);
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "SharingOn24.png");
 		ic_sharingOn_24 = new ImageIcon(url);
 		url = this.getClass().getClassLoader().getResource(iconsLocation + "SharingOff24.png");

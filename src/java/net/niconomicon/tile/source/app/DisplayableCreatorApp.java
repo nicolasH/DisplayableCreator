@@ -15,7 +15,8 @@ import javax.swing.border.TitledBorder;
 
 import net.niconomicon.tile.source.app.input.DisplayableCreatorInputPanel;
 import net.niconomicon.tile.source.app.input.QueueListView;
-import net.niconomicon.tile.source.app.sharing.DisplayableSharingPanel;
+import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget;
+import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget.DA;
 import net.niconomicon.tile.source.app.sharing.SharingWidget;
 import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorParallel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
@@ -28,9 +29,10 @@ import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 public class DisplayableCreatorApp {
 
 	DisplayableCreatorInputPanel tileCreatorPanel;
-	DisplayableSharingPanel mapSharingPanel;
+	DisplayableSharingWidget sharingWidget;
 	DisplayableViewer displayableViewer;
 
+	JFrame frame;
 	public static int ThreadCount = 4;
 
 	public DisplayableCreatorApp() {
@@ -39,42 +41,25 @@ public class DisplayableCreatorApp {
 	}
 
 	private void init() {
-		JFrame f = new JFrame("Displayable Creator");
+		frame = new JFrame("Displayable Creator");
 		displayableViewer = DisplayableViewer.createInstance();
 		QueueListView queue = new QueueListView(displayableViewer);
-		mapSharingPanel = new DisplayableSharingPanel(displayableViewer, queue);
-		tileCreatorPanel = new DisplayableCreatorInputPanel(queue);
+		sharingWidget = new DisplayableSharingWidget(queue);
+		tileCreatorPanel = new DisplayableCreatorInputPanel(queue, sharingWidget);
 
 		Font font = new Font(null, Font.BOLD, 16);
 		Border etch = BorderFactory.createEtchedBorder();
 		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch, "Create a Displayable", TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, font));
 
-		mapSharingPanel.setBorder(BorderFactory.createTitledBorder(etch, "Share Displayables", TitledBorder.DEFAULT_JUSTIFICATION,
-				TitledBorder.DEFAULT_POSITION, font));
+		// JPanel p = new JPanel(new BorderLayout());
+		// p.add(tileCreatorPanel, BorderLayout.CENTER);
+		frame.setContentPane(tileCreatorPanel);
+		frame.pack();
 
-		GridBagConstraints c_top = new GridBagConstraints();
-		c_top.gridx = 0;
-		c_top.gridy = 0;
-		c_top.gridwidth = 1;
-		c_top.gridheight = 3;
-		c_top.fill = GridBagConstraints.BOTH;
-
-		GridBagConstraints c_bottom = new GridBagConstraints();
-		c_bottom.gridx = 0;
-		c_bottom.gridy = 4;
-		c_bottom.gridwidth = 1;
-		c_bottom.gridheight = 2;
-		c_bottom.fill = GridBagConstraints.BOTH;
-
-		JPanel p = new JPanel(new BorderLayout());
-		p.add(tileCreatorPanel, BorderLayout.CENTER);
-		p.add(mapSharingPanel, BorderLayout.SOUTH);
-		f.setContentPane(p);
-		f.pack();
-		f.setSize(350, 500);
-		f.setVisible(true);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(300, 350);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				SQliteTileCreatorMultithreaded.loadLib();
@@ -83,11 +68,12 @@ public class DisplayableCreatorApp {
 		t.start();
 		Thread shutdownThread = new Thread(new Runnable() {
 			public void run() {
-				mapSharingPanel.stopSharing();
+				sharingWidget.switchSharing(DA.DEACTIVATE);
+				frame.setVisible(false);
 			}
 		});
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
-		mapSharingPanel.startSharing(false);
+		sharingWidget.switchSharing(DA.ACTIVATE);
 	}
 
 	public static void main(String[] args) {

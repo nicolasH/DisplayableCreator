@@ -28,6 +28,8 @@ import net.niconomicon.tile.source.app.DisplayableCreatorApp;
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.filter.FileDropHandler;
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
+import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget;
+import net.niconomicon.tile.source.app.sharing.SharingWidget;
 import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorMoreParallel;
 import net.niconomicon.tile.source.app.tiling.TilingStatusReporter;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
@@ -63,19 +65,21 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 	JPanel status;
 
 	QueueListView queueListView;
+	DisplayableSharingWidget sharingWidget;
 	JFrame queueFrame;
 
 	Thread tilerThread;
 
 	String tilingDone = "isItDone?";
 
-	public DisplayableCreatorInputPanel(QueueListView queueListView) {
+	public DisplayableCreatorInputPanel(QueueListView queueListView, DisplayableSharingWidget sharingWidget) {
 		super(new BorderLayout());
 		creator = new SQLiteDisplayableCreatorMoreParallel();
 
 		imageFilter = new ImageFileFilter();
 
 		this.queueListView = queueListView;
+		this.sharingWidget = sharingWidget;
 
 		queueFrame = new JFrame("List");
 		JScrollPane sp = new JScrollPane(queueListView);
@@ -100,14 +104,15 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 
 	public void initInputPanel() {
 
-		JLabel dragndropText = new JLabel("<html><body>Drop images here</body></html>",SwingConstants.CENTER);		
-//		JLabel dragndropText = new JLabel("Drag & drop images here",SwingConstants.CENTER);		
-//		dragndropText.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		JLabel dragndropText = new JLabel("<html><body>Drop images here</body></html>", SwingConstants.CENTER);
+		// JLabel dragndropText = new
+		// JLabel("Drag & drop images here",SwingConstants.CENTER);
+		// dragndropText.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		dragndropText.setForeground(Color.DARK_GRAY);
-		dragndropText.setFont(dragndropText.getFont().deriveFont(Font.ITALIC,24f));
+		dragndropText.setFont(dragndropText.getFont().deriveFont(Font.ITALIC, 24f));
 		dragndropText.setAlignmentX(CENTER_ALIGNMENT);
 		dragndropText.setAlignmentY(CENTER_ALIGNMENT);
-		
+
 		this.add(dragndropText, BorderLayout.CENTER);
 		// JLabel image = new JLabel();
 		// this.add(image, BorderLayout.NORTH);
@@ -118,14 +123,14 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 				queueFrame.setVisible(true);
 			}
 		});
-		
+
 		JButton showPrefs = new JButton(IconsLoader.getIconsLoader().ic_settings_24);
-		JToggleButton sharing = new JToggleButton(IconsLoader.getIconsLoader().ic_sharingOff_24);
-		sharing.setBackground(Color.orange);
+
+		bottom.add(sharingWidget.getSharingButton());
 		bottom.add(showList);
 		bottom.add(showPrefs);
-		bottom.add(sharing);
-		
+		bottom.add(sharingWidget.getExportButton());
+
 		this.add(bottom, BorderLayout.SOUTH);
 		FileDropHandler handler = new FileDropHandler(new DragAndDropManager(this));
 
