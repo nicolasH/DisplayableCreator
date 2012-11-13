@@ -1,6 +1,7 @@
 package net.niconomicon.tile.source.app;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
@@ -8,19 +9,18 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
-
 public class AppPreferences extends JPanel {
 
-	public int tileSize = 192;
+	public int tileSize = 256;
 	public int saveDir;
 	public boolean autoShare = true;
 
@@ -125,4 +125,18 @@ public class AppPreferences extends JPanel {
 		}
 	}
 
+	public class AppPreferencesAction implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			JComponent parentComponent = (JComponent) e.getSource();
+			int selected = JOptionPane.showOptionDialog(parentComponent, getPreferences(), "Preferences", JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.PLAIN_MESSAGE, null, null, null);
+			System.out.println("selected:" + selected);
+			if (selected == JOptionPane.OK_OPTION) {
+				System.out.println("Should save and apply the preferences");
+			} else {
+				System.out.println("Should reset the preferences");
+
+			}
+		}
+	}
 }

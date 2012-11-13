@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 
 import net.niconomicon.tile.source.app.AppPreferences;
 import net.niconomicon.tile.source.app.DisplayablesSource;
+import net.niconomicon.tile.source.app.fonts.FontLoader;
 import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 
 /**
@@ -29,6 +30,8 @@ public class DisplayableSharingWidget {
 	private static final String action_starting = "Starting the network broadcasting ...";
 	private static final String action_stopping = "Stopping the network broadcasting ...";
 	private static final String action_stop = "Stop network broadcasting";
+
+	private static final String action_export = "Export the displayable as a folder which contains an index,html with links to a local copy of all the displayables in the list (advanced).";
 
 	private static final long inet_check_interval = 10000;
 
@@ -59,14 +62,6 @@ public class DisplayableSharingWidget {
 		init();
 	}
 
-	public JButton getExportButton() {
-		return exportButton;
-	}
-
-	public JButton getSharingButton() {
-		return actionButton;
-	}
-
 	public void init() {
 
 		this.ic = IconsLoader.getIconsLoader();
@@ -76,9 +71,10 @@ public class DisplayableSharingWidget {
 
 		// //////////////////////////////////////////
 		// start sharing
-		actionButton = new JButton(ic.ic_sharingOff_24);
+		actionButton = FontLoader.getButton(FontLoader.iconAction);
 		actionButton.setToolTipText(action_start);
-		exportButton = new JButton("Export...");
+		exportButton = FontLoader.getButton(FontLoader.iconExport);
+		exportButton.setToolTipText(action_export);
 
 		actionButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -110,6 +106,14 @@ public class DisplayableSharingWidget {
 		Thread t1 = new Thread(new StatusSwitcher());
 		t1.start();
 
+	}
+
+	public JButton getExportButton() {
+		return exportButton;
+	}
+
+	public JButton getSharingButton() {
+		return actionButton;
 	}
 
 	// public static JComponent createDirSelectionPanel(JPanel parent) {
@@ -164,7 +168,7 @@ public class DisplayableSharingWidget {
 			currentStatus = DS.ACTIVATING;
 		}
 		int port = AppPreferences.getPreferences().getPort();
-		actionButton.setIcon(ic.ic_loading_16);
+		actionButton.setText(FontLoader.iconWait);
 		actionButton.setToolTipText(action_starting);
 
 		try {
@@ -189,11 +193,14 @@ public class DisplayableSharingWidget {
 				currentStatus = DS.DEACTIVATED;
 			}
 			actionButton.setEnabled(true);
-			actionButton.setIcon(ic.ic_sharingOff_24);
+			actionButton.setText(FontLoader.iconAction);
+			actionButton.setForeground(Color.GRAY);
 			return false;
 		}
-		actionButton.setIcon(ic.ic_sharingOn_24);
+		actionButton.setText(FontLoader.iconAction);
+		actionButton.setForeground(Color.GREEN);
 		actionButton.setToolTipText(action_stop);
+
 		synchronized (currentStatus) {
 			currentStatus = DS.ACTIVE;
 		}
@@ -208,14 +215,15 @@ public class DisplayableSharingWidget {
 		synchronized (currentStatus) {
 			currentStatus = DS.DEACTIVATING;
 		}
-		actionButton.setIcon(ic.ic_loading_16);
+		actionButton.setText(FontLoader.iconWait);
 		actionButton.setToolTipText(action_stopping);
 		try {
 			sharingManager.stopSharing();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		actionButton.setIcon(ic.ic_sharingOff_24);
+		actionButton.setText(FontLoader.iconAction);
+		actionButton.setForeground(Color.GRAY);
 		actionButton.setToolTipText(action_start);
 		synchronized (currentStatus) {
 			currentStatus = DS.DEACTIVATED;

@@ -4,13 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.imageio.IIOException;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -18,18 +16,16 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
 
+import net.niconomicon.tile.source.app.AppPreferences;
 import net.niconomicon.tile.source.app.DisplayableCreatorApp;
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.filter.FileDropHandler;
 import net.niconomicon.tile.source.app.filter.ImageFileFilter;
+import net.niconomicon.tile.source.app.fonts.FontLoader;
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget;
-import net.niconomicon.tile.source.app.sharing.SharingWidget;
 import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorMoreParallel;
 import net.niconomicon.tile.source.app.tiling.TilingStatusReporter;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
@@ -114,24 +110,6 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 		dragndropText.setAlignmentY(CENTER_ALIGNMENT);
 
 		this.add(dragndropText, BorderLayout.CENTER);
-		// JLabel image = new JLabel();
-		// this.add(image, BorderLayout.NORTH);
-		JPanel bottom = new JPanel();
-		JButton showList = new JButton(IconsLoader.getIconsLoader().ic_list_24);
-		showList.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				queueFrame.setVisible(true);
-			}
-		});
-
-		JButton showPrefs = new JButton(IconsLoader.getIconsLoader().ic_settings_24);
-
-		bottom.add(sharingWidget.getSharingButton());
-		bottom.add(showList);
-		bottom.add(showPrefs);
-		bottom.add(sharingWidget.getExportButton());
-
-		this.add(bottom, BorderLayout.SOUTH);
 		FileDropHandler handler = new FileDropHandler(new DragAndDropManager(this));
 
 		dragndropText.setTransferHandler(handler);
@@ -140,6 +118,16 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 		dragndropText.setPreferredSize(new Dimension(150, 50));
 		dragndropText.setMaximumSize(new Dimension(150, 50));
 
+	}
+
+	public JButton getListButton() {
+		JButton showList = FontLoader.getButton(FontLoader.iconList);
+		showList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				queueFrame.setVisible(true);
+			}
+		});
+		return showList;
 	}
 
 	public void resetTilingStatus() {

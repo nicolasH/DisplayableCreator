@@ -17,10 +17,9 @@ import javax.swing.JProgressBar;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.filter.DisplayableFilter;
-import net.niconomicon.tile.source.app.sharing.DisplayableCheckBoxTable;
+import net.niconomicon.tile.source.app.fonts.FontLoader;
 import net.niconomicon.tile.source.app.sharing.ResultStruct;
 import net.niconomicon.tile.source.app.tiling.Inhibitor;
-import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 
 public class QueueListItem extends JPanel implements Inhibitor {
 
@@ -32,7 +31,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 	JLabel titleLabel;
 	QueueListView container;
 	private Boolean shouldInhibit = false;
-	IconsLoader iconLoader;
+
 	JButton editButton;
 	JButton removeButton;
 	Color defaultButtonBackground;
@@ -40,7 +39,6 @@ public class QueueListItem extends JPanel implements Inhibitor {
 	public QueueListItem(File f, QueueListView container) {
 		super(new GridBagLayout());
 		defaultButtonBackground = this.getBackground();
-		iconLoader = IconsLoader.getIconsLoader();
 		file = f;
 		this.container = container;
 		if (DisplayableFilter.isProbablyDisplayableFile(f)) {
@@ -76,7 +74,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridx = x;
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
-		removeButton = new JButton(iconLoader.ic_remove_16);
+		removeButton = FontLoader.getButtonSmall(FontLoader.iconTrash);
 		removeButton.setToolTipText("Remove this image from the queue");
 		this.add(removeButton, c);
 		removeButton.addActionListener(container.new RemovePanel(this));
@@ -117,7 +115,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
 
-		editButton = new JButton();
+		editButton = FontLoader.getButtonSmall(FontLoader.iconSave);
 		adjustEditButton();
 		this.add(editButton, c);
 		editButton.addActionListener(new EditAction());
@@ -128,7 +126,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridx = x;
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
-		JButton view = new JButton(iconLoader.ic_zoom_16);
+		JButton view = FontLoader.getButtonSmall(FontLoader.iconView);
 		this.add(view, c);
 		view.addActionListener(new ViewAction());
 
@@ -149,7 +147,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
 
-		removeButton = new JButton(iconLoader.ic_remove_16);
+		removeButton = FontLoader.getButtonSmall(FontLoader.iconTrash);
 		removeButton.setToolTipText("Remove this Displayable from the list");
 		this.add(removeButton, c);
 		removeButton.addActionListener(container.new RemovePanel(this));
@@ -186,7 +184,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridx = x;
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
-		JButton cancel = new JButton(iconLoader.ic_stop_16);
+		JButton cancel = FontLoader.getButtonSmall(FontLoader.iconTrash);
 		cancel.setToolTipText("Stop the displayable creation and remove this item from the list");
 		this.add(cancel, c);
 
@@ -260,11 +258,11 @@ public class QueueListItem extends JPanel implements Inhibitor {
 
 	public void adjustEditButton() {
 		if (Ref.isInTmpLocation(this.file.getAbsolutePath())) {
-			editButton.setIcon(iconLoader.ic_save_16);
+			editButton.setText(FontLoader.iconSave);
 			editButton.setToolTipText("Save this new Displayable & change its details");
 			editButton.setBackground(Color.orange);
 		} else {
-			editButton.setIcon(iconLoader.ic_edit_16);
+			editButton.setText(FontLoader.iconEdit);
 			editButton.setToolTipText("Change this Displayable's details");
 			editButton.setBackground(defaultButtonBackground);
 		}
