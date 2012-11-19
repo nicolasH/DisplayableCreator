@@ -12,12 +12,11 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JToolBar;
 
-import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
+import net.niconomicon.tile.source.app.fonts.FontLoader;
 
 /**
  * @author Nicolas Hoibian
@@ -38,23 +37,23 @@ public class FullScreenResizer implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		ImageIcon icon;
+		String text;
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		Point pos = new Point(0, 0);
-String tooltip="";
+		String tooltip = "";
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
 
 		if (fullScreen) {
 			fullScreen = false;
-			icon = IconsLoader.getIconsLoader().ic_windowExpand_24;
+			text = FontLoader.iconExpand;
 			tooltip = "Make the Displayable view fullscreen";
 			pos = framePreFullPos;
 			dim = framePreFullDim;
 
 		} else {
 			fullScreen = true;
-			icon = IconsLoader.getIconsLoader().ic_windowContract_24;
+			text = FontLoader.iconContract;
 			tooltip = "Return the Displayable view to its previous size";
 			framePreFullDim = frame.getSize();
 			framePreFullPos = frame.getLocation();
@@ -66,7 +65,7 @@ String tooltip="";
 		frame.setUndecorated(fullScreen);
 		frame.pack();
 		frame.setVisible(false);
-		button.setIcon(icon);
+		button.setText(text);
 		button.setToolTipText(tooltip);
 		// Can only affect the window if it is displayable
 		frame.setSize(dim);

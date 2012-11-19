@@ -17,9 +17,9 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
+import net.niconomicon.tile.source.app.fonts.FontLoader;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.actions.FullScreenResizer;
-import net.niconomicon.tile.source.app.viewer.actions.Resizer;
 import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
@@ -28,9 +28,6 @@ import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
  * A class used to view a Displayable - Handles the scrolling, zooming and other user interactions.
  */
 public class DisplayableViewer extends JPanel {
-
-	public static String _PLUS = " + ";
-	public static String _MINUS = " - ";
 
 	DisplayableView tileViewer;
 	DisplayableSource currentSource;
@@ -78,30 +75,29 @@ public class DisplayableViewer extends JPanel {
 
 		IconsLoader loader = IconsLoader.getIconsLoader();
 
-		zM = new JButton(loader.ic_zoomOut_24);
+		zM = FontLoader.getButton(FontLoader.iconZoomOut);
 		zM.addActionListener(new ZoomAction());
 		toolBar.add(zM);
 
 		toolBar.add(currentZoom);
 
-		zP = new JButton(loader.ic_zoomIn_24);
+		zP = FontLoader.getButton(FontLoader.iconZoomIn);
 		zP.addActionListener(new ZoomAction());
 		toolBar.add(zP);
 
-		toolBar.addSeparator();
-
 		JButton b;
-		b = new JButton(loader.ic_itouch_24_v);
-		b.setToolTipText("Resize window to iphone screen size (vertical : ~ 320x480 pixels)");
-		b.addActionListener(new Resizer(viewerFrame, new Dimension(340, 500)));
-		toolBar.add(b);
-		b = new JButton(loader.ic_itouch_24_h);
-		b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
-		b.addActionListener(new Resizer(viewerFrame, new Dimension(500, 340)));
-		toolBar.add(b);
+//		toolBar.addSeparator();
+//		b = new JButton(loader.ic_itouch_24_v);
+//		b.setToolTipText("Resize window to iphone screen size (vertical : ~ 320x480 pixels)");
+//		b.addActionListener(new Resizer(viewerFrame, new Dimension(340, 500)));
+//		toolBar.add(b);
+//		b = new JButton(loader.ic_itouch_24_h);
+//		b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
+//		b.addActionListener(new Resizer(viewerFrame, new Dimension(500, 340)));
+//		toolBar.add(b);
 
 		toolBar.addSeparator();
-		b = new JButton(loader.ic_windowExpand_24);
+		b = FontLoader.getButton(FontLoader.iconExpand);
 		b.setToolTipText("Make the Displayable view fullscreen");
 		b.addActionListener(new FullScreenResizer(viewerFrame, b, toolBar));
 		toolBar.add(b);

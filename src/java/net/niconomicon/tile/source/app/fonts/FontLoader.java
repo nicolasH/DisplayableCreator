@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -18,8 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-
-import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 
 public class FontLoader {
 
@@ -49,7 +48,7 @@ public class FontLoader {
 	public static String iconWait = "\ue008";
 
 	public static String iconList = "\ue046";
-	public static String iconPrefs = "\ue005";
+	public static String iconPrefs = "\ue006";
 	public static String iconExport = "\ue007";
 
 	public static String iconView = "\ue00a";
@@ -72,6 +71,7 @@ public class FontLoader {
 		b.setMinimumSize(btnSize);
 		b.setSize(btnSize);
 		b.setPreferredSize(btnSize);
+		b.setForeground(Color.DARK_GRAY);
 		return b;
 	}
 
@@ -82,6 +82,7 @@ public class FontLoader {
 		b.setMinimumSize(btnSizeSmall);
 		b.setSize(btnSizeSmall);
 		b.setPreferredSize(btnSizeSmall);
+		b.setForeground(Color.DARK_GRAY);
 		return b;
 	}
 
