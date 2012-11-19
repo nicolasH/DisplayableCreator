@@ -37,7 +37,6 @@ import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
  */
 public class DisplayableCreatorInputPanel extends JPanel implements TilingStatusReporter {
 
-	public static final int TILE_SIZE = 256;
 	public static final String TILE_TYPE = "png";
 
 	public static final String USER_HOME = "user.home";
@@ -171,8 +170,8 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 					it.arrangeStatusPanel();
 					long start = System.currentTimeMillis();
 
-					creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, TILE_SIZE, TILE_TYPE, DisplayableCreatorInputPanel.this,
-							DisplayableCreatorApp.ThreadCount, true, it);
+					creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, AppPreferences.getPreferences().getTileSize(), TILE_TYPE,
+							DisplayableCreatorInputPanel.this, DisplayableCreatorApp.ThreadCount, true, it);
 					long end = System.currentTimeMillis();
 					System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60)
 							+ "min");

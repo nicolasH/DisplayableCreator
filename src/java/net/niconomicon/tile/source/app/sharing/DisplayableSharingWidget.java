@@ -40,7 +40,7 @@ public class DisplayableSharingWidget {
 	}
 
 	public static enum DA {
-		ACTIVATE, DEACTIVATE, UPDATELIST
+		ACTIVATE, DEACTIVATE, UPDATELIST, RESTART
 	}
 
 	DS currentStatus = DS.DEACTIVATED;
@@ -101,11 +101,13 @@ public class DisplayableSharingWidget {
 		});
 
 		timer.scheduleAtFixedRate(new LocalHostChecker(), inet_check_interval, inet_check_interval);
+
 		Thread t0 = new Thread(new DisplayableMonitor());
 		t0.start();
 		Thread t1 = new Thread(new StatusSwitcher());
 		t1.start();
-
+		Thread t2 = new Thread(new PortMonitor());
+		t2.start();
 	}
 
 	public JButton getExportButton() {
@@ -248,6 +250,30 @@ public class DisplayableSharingWidget {
 		}
 	}
 
+	public class PortMonitor implements Runnable {
+
+		public void run() {
+			while (true) {
+				synchronized (AppPreferences.portNumberChangeLock) {
+					try {
+						System.out.println("Waiting for a port number change");
+						AppPreferences.portNumberChangeLock.wait();
+					} catch (Exception ex) {
+						System.out.println("Exception");
+						ex.printStackTrace();
+					} finally {
+						// something happened to the displayableList
+						System.out.println("Port number changed, requesting a sharing restart");
+						switchQueues.add(DA.RESTART);
+						synchronized (switchQueues) {
+							switchQueues.notifyAll();
+						}
+					}
+				}
+			}
+		}
+	}
+
 	private class DisplayableMonitor implements Runnable {
 		public void run() {
 			while (true) {
@@ -318,10 +344,16 @@ public class DisplayableSharingWidget {
 					if (currentStatus == DS.ACTIVE) {
 						updateSharing();
 					}
-					if (currentStatus == DS.DEACTIVATED || currentStatus == DS.DEACTIVATED) {
+					if (currentStatus == DS.DEACTIVATED || currentStatus == DS.DEACTIVATING) {
 						startSharing(true);
 					}
 					break;
+				case RESTART:
+					if (currentStatus == DS.ACTIVE || currentStatus == DS.ACTIVATING) {
+						// not so sure about the second one
+						startSharing(true);
+					}
+					// if not started, no need to start
 				}
 			}
 		}

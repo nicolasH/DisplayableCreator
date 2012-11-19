@@ -28,14 +28,20 @@ import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
 import com.google.gson.Gson;
 
 /**
- * @author Nicolas Hoibian This class contains the reference fields. The default port, displayable file extension, json
- *         displayable description uri and generation functions, displayable html description uri and generation
- *         functions etc ...
+ * @author Nicolas Hoibian This class contains the reference fields. The default
+ *         port, displayable file extension, json displayable description uri
+ *         and generation functions, displayable html description uri and
+ *         generation functions etc ...
  */
 public final class Ref {
 
-	public static int sharing_port = 8889;
-	public static final String storingDirectoryKey = "DisplayableStoringDirectoryKey";
+	private static int default_sharing_port = 8889;
+	private static int default_tile_size = 256;
+
+	public static final String prefKey_storingDir = "DisplayableStoringDirectoryKey";
+	public static final String prefKey_tileSize = "DisplayableTileSizeKey";
+	public static final String prefKey_port = "DisplayablePortKey";
+
 	public static final String sharing_serviceName = "DisplayableSharingService";
 
 	public static final String sharing_jsonRef = "displayables.json";
@@ -67,21 +73,14 @@ public final class Ref {
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
 
-	public static final String head =
-			"<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">"
-					+ "<link rel=\"stylesheet\" href=\""
-					+ sharing_cssRef
-					+ "\" type=\"text/css\" />"
-					+ "<script type=\"text/javascript\">"
-					+ "function expandLinks(){"
-					+ "var links = document.getElementsByTagName('a');\n"
-					+ "for (var i=0;\n i < links.length;\n i++) {"
-					+ "    if(links[i].href.indexOf(\"displayator-list:\") == 0){"
-					+ "        links[i].href = links[i].href.replace(\"displayator-list:\",\"displayator-list:\"+document.location);\n"
-					+ "    }"
-					+ "    if(links[i].href.indexOf(\"displayator-image:\") == 0){"
-					+ "       links[i].href = links[i].href.replace(\"displayator-image:\",\"displayator-image:\"+document.location);\n"
-					+ "       }" + " }" + " }" + "</script>" + "</head>\n";
+	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" + "<link rel=\"stylesheet\" href=\""
+			+ sharing_cssRef + "\" type=\"text/css\" />" + "<script type=\"text/javascript\">" + "function expandLinks(){"
+			+ "var links = document.getElementsByTagName('a');\n" + "for (var i=0;\n i < links.length;\n i++) {"
+			+ "    if(links[i].href.indexOf(\"displayator-list:\") == 0){"
+			+ "        links[i].href = links[i].href.replace(\"displayator-list:\",\"displayator-list:\"+document.location);\n" + "    }"
+			+ "    if(links[i].href.indexOf(\"displayator-image:\") == 0){"
+			+ "       links[i].href = links[i].href.replace(\"displayator-image:\",\"displayator-image:\"+document.location);\n" + "       }" + " }"
+			+ " }" + "</script>" + "</head>\n";
 
 	public static File tmpFile;
 	static {
@@ -113,7 +112,8 @@ public final class Ref {
 	/**
 	 * 
 	 * @param fullPath
-	 * @return the name of the file without its path and without its extension (if any)
+	 * @return the name of the file without its path and without its extension
+	 *         (if any)
 	 */
 	public static final String fileSansDot(String fullPath) {
 		int end = fullPath.lastIndexOf(".");
@@ -126,7 +126,8 @@ public final class Ref {
 	/**
 	 * 
 	 * @param fullPath
-	 * @return the name of the file without its path but with its extension (if any)
+	 * @return the name of the file without its path but with its extension (if
+	 *         any)
 	 */
 	public static final String fileSansPath(String fullPath) {
 		return fullPath.substring(fullPath.lastIndexOf(File.separator) + 1);
@@ -143,12 +144,12 @@ public final class Ref {
 	/**
 	 * 
 	 * @param string
-	 * @return a safe string with all the accents removed and punctuation characters replaced by '-'
+	 * @return a safe string with all the accents removed and punctuation
+	 *         characters replaced by '-'
 	 */
 	public static String cleanFilename(String string) {
-		return Normalizer.normalize(string.toLowerCase(), Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-				.replaceAll("\\p{Punct}", "-").replaceAll("\\p{Blank}", "-").replaceAll("\\p{Cntrl}", "-")
-				.replaceAll("-{2,}", "-");
+		return Normalizer.normalize(string.toLowerCase(), Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "").replaceAll("\\p{Punct}", "-")
+				.replaceAll("\\p{Blank}", "-").replaceAll("\\p{Cntrl}", "-").replaceAll("-{2,}", "-");
 	}
 
 	/**
@@ -181,11 +182,29 @@ public final class Ref {
 	 * @return The directory to which a Displayable was stored last.
 	 */
 	public static String getDefaultDir() {
-		return Preferences.userNodeForPackage(Ref.class).get(Ref.storingDirectoryKey, null);
+		return Preferences.userNodeForPackage(Ref.class).get(Ref.prefKey_storingDir, null);
 	}
 
 	public static void setDefaultDir(String dir) {
-		Preferences.userNodeForPackage(Ref.class).put(Ref.storingDirectoryKey, dir);
+		Preferences.userNodeForPackage(Ref.class).put(Ref.prefKey_storingDir, dir);
+	}
+
+	// /////////////////////////
+	public static int getDefaultPort() {
+		return (Integer.parseInt(Preferences.userNodeForPackage(Ref.class).get(Ref.prefKey_port, "" + default_sharing_port)));
+	}
+
+	public static void setDefaultPort(int port) {
+		Preferences.userNodeForPackage(Ref.class).put(Ref.prefKey_port, Integer.toString(port));
+	}
+
+	// /////////////////////////
+	public static int getDefaultTileSize() {
+		return (Integer.parseInt(Preferences.userNodeForPackage(Ref.class).get(Ref.prefKey_tileSize, "" + default_tile_size)));
+	}
+
+	public static void setDefaultFileSize(int tileSize) {
+		Preferences.userNodeForPackage(Ref.class).put(Ref.prefKey_tileSize, Integer.toString(tileSize));
 	}
 
 	public static final FilenameFilter ext_db_filter = new FilenameFilter() {
@@ -197,9 +216,7 @@ public final class Ref {
 	public static String[] getAbsolutePathOfDBFilesInDirectory(File dir) {
 		String[] files = dir.list(Ref.ext_db_filter);
 		for (int i = 0; i < files.length; i++) {
-			files[i] =
-					dir.getAbsolutePath()
-							+ (dir.getAbsolutePath().endsWith(File.separator) ? files[i] : File.separator + files[i]);
+			files[i] = dir.getAbsolutePath() + (dir.getAbsolutePath().endsWith(File.separator) ? files[i] : File.separator + files[i]);
 		}
 		return files;
 	}
@@ -210,14 +227,12 @@ public final class Ref {
 			if (!f.exists()) {
 				System.out.println("file directory [" + saveDirectory + "] does not exists");
 				if (!f.mkdir()) {
-					System.out.println("Could not create directory [" + saveDirectory
-							+ "] Gonna return the tmp directory");
+					System.out.println("Could not create directory [" + saveDirectory + "] Gonna return the tmp directory");
 					saveDirectory = null;
 				}
 			}
 			if (!f.isDirectory()) { // finer
-				System.out.println("File is not a directory [" + saveDirectory
-						+ "] going to return the temporary directory.");
+				System.out.println("File is not a directory [" + saveDirectory + "] going to return the temporary directory.");
 				saveDirectory = null;
 			}
 		}
@@ -239,22 +254,26 @@ public final class Ref {
 	public static void extractThumbsAndMiniToTmpFile(Map<String, String> maps) {
 		for (String key : maps.keySet()) {
 			String file = maps.get(key);
-			// System.out.println("Extracting for Key : [" + key + "]");// + " value : "+ maps.get(key));
+			// System.out.println("Extracting for Key : [" + key + "]");// +
+			// " value : "+ maps.get(key));
 			if (!key.endsWith(Ref.ext_mini) && !key.endsWith(Ref.ext_thumb)) {
 				continue;
 			}
-			// System.out.println("Really trying to open (k=[" + key + "]) => " + file);
+			// System.out.println("Really trying to open (k=[" + key + "]) => "
+			// + file);
 			try {
 				String query = "";
 				String field = "";
 
 				if (key.endsWith(Ref.ext_mini)) {
-					// System.out.println("Extracting mini from the map :" + file);
+					// System.out.println("Extracting mini from the map :" +
+					// file);
 					query = "select " + Ref.infos_miniature + " from infos";
 					field = Ref.infos_miniature;
 				}
 				if (key.endsWith(Ref.ext_thumb)) {
-					// System.out.println("Extracting thumb from the map :" + file);
+					// System.out.println("Extracting thumb from the map :" +
+					// file);
 					query = "select " + Ref.infos_thumb + " from infos";
 					field = Ref.infos_thumb;
 				}
@@ -273,7 +292,8 @@ public final class Ref {
 					oStream.write(rs.getBytes(field));
 					oStream.close();
 					maps.put(key, temp.getAbsolutePath());
-					// System.out.println("Wrote " + key + " into " + temp.getAbsolutePath());
+					// System.out.println("Wrote " + key + " into " +
+					// temp.getAbsolutePath());
 					break;
 				}
 
@@ -309,7 +329,8 @@ public final class Ref {
 			try {
 				File f = new File(mapFileName);
 				long size = f.length();
-				// System.out.println("trying to open the file :" + mapFileName + " To generate the json and html.");
+				// System.out.println("trying to open the file :" + mapFileName
+				// + " To generate the json and html.");
 				Connection connection = DriverManager.getConnection("jdbc:sqlite:" + mapFileName);
 				connection.setReadOnly(true);
 				String[] descriptions = generateDescriptionsForConnection(connection, size, mapFileName, urlToFile);
@@ -349,14 +370,15 @@ public final class Ref {
 	}
 
 	/**
-	 * Generate the description for a given Displayable, and add thumbnail and preview images to the list of available
-	 * URLs
+	 * Generate the description for a given Displayable, and add thumbnail and
+	 * preview images to the list of available URLs
 	 * 
 	 * @param mapDB
 	 * @param weight
 	 * @param fileName
 	 * @param urlToFile
-	 * @return an array of JSON and HTML description of the file as String[]{JSON,HTML}.
+	 * @return an array of JSON and HTML description of the file as
+	 *         String[]{JSON,HTML}.
 	 */
 	public static String[] generateDescriptionsForConnection(Connection mapDB, long weight, String fileName, Map<String, String> urlToFile) {
 		String ret = "";
@@ -372,7 +394,8 @@ public final class Ref {
 				// read the result set
 				// String name =
 				// fileName.contains(File.separator) ? fileName
-				// .substring(fileName.lastIndexOf(File.separator) + 1) : fileName;
+				// .substring(fileName.lastIndexOf(File.separator) + 1) :
+				// fileName;
 				String name = fileName.replaceAll(File.separator, "_");
 				if (md != null) {
 					// name = new String(
@@ -389,15 +412,15 @@ public final class Ref {
 				urlToFile.put(mini, fileName);
 				urlToFile.put(thumb, fileName);
 
-				// Extra / to work around a bug in the displayator app where the JSON part does not handle relative uris
+				// Extra / to work around a bug in the displayator app where the
+				// JSON part does not handle relative uris
 				// correctly.
 				String title = rs.getString(Ref.infos_title);
 				// title = cleanName(title);
 				long width = rs.getLong(Ref.infos_width);
 				long height = rs.getLong(Ref.infos_height);
 				String description = rs.getString(Ref.infos_description);
-				DisplayableInfosForJSON disp =
-						new DisplayableInfosForJSON(title, name, thumb, mini, weight, width, height, description);
+				DisplayableInfosForJSON disp = new DisplayableInfosForJSON(title, name, thumb, mini, weight, width, height, description);
 				String s = DisplayableInfosForJSON.toJSON(serializer, disp);
 				s += ",\n";
 				ret += s;
@@ -413,20 +436,16 @@ public final class Ref {
 
 				String li = "\t\t\t<li>";
 				String li_ = "</li>\n";
-				String html =
-						"<div class=\"item\"><table><tr><td><a href=\"" + mini + "\"><img src=\"" + thumb
-								+ "\" align=\"right\"/></a></td><td><div class=\"content\"><b>" + title + "</b>";
-				// html += "\n\t\t<a href=\"" + mini + "\"><img src=\"" + thumb + "\"></a>\n\t\t";
+				String html = "<div class=\"item\"><table><tr><td><a href=\"" + mini + "\"><img src=\"" + thumb
+						+ "\" align=\"right\"/></a></td><td><div class=\"content\"><b>" + title + "</b>";
+				// html += "\n\t\t<a href=\"" + mini + "\"><img src=\"" + thumb
+				// + "\"></a>\n\t\t";
 				html += "<br><a href=\"" + mini + "\">See the miniature</a>";
-				html +=
-						"<br/>Download and view <a href=\"" + app_handle_item + name + "?" + urlInfos
-								+ "\" >original size with displayator</a>";
+				html += "<br/>Download and view <a href=\"" + app_handle_item + name + "?" + urlInfos + "\" >original size with displayator</a>";
 				html += "  or download <a href=\"" + name + "\" >as a file</a>.<br/>";
 				html += "\n\t<ul>\n";
 				html += li + "Weight: " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB." + li_;
-				html +=
-						li + "Size: " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px."
-								+ li_;
+				html += li + "Size: " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px." + li_;
 				String dsc = rs.getString(Ref.infos_description);
 				if (null != dsc && dsc.length() > 0 && !dsc.equalsIgnoreCase("no description")) {
 					html += li + "Description: " + dsc + li_;

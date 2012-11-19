@@ -32,7 +32,6 @@ public class SQliteTileCreatorMultithreaded {
 	public static final int MINIATURE_HEIGHT = 480;
 
 	public static double ZOOM_FACTOR = 0.5;
-	// public static int TILE_SIZE = 256;
 
 	public static boolean CREATE_MINIATURE = true;
 

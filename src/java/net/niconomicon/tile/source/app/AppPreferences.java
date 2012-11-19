@@ -18,13 +18,22 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
+import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget;
+
 public class AppPreferences extends JPanel {
 
 	public int tileSize = 256;
 	public int saveDir;
 	public boolean autoShare = true;
 
+	int savedPortNumber;
 	JSpinner portNumber;
+	public static final String portNumberChangeLock = "portNumberChanged";
+
+	JRadioButton _192;
+	JRadioButton _256;
+	JRadioButton _384;
+	JRadioButton _512;
 
 	private static AppPreferences prefs;
 
@@ -42,10 +51,10 @@ public class AppPreferences extends JPanel {
 		pixels.setLayout(new BoxLayout(pixels, BoxLayout.PAGE_AXIS));
 		ButtonGroup choices = new ButtonGroup();
 
-		JRadioButton _192 = new JRadioButton(new PixelSizeAction(192, "non-retina iPhone & iPod touch"));
-		JRadioButton _256 = new JRadioButton(new PixelSizeAction(256, "retina iPhone, iPod touch and non-retina iPad"));
-		JRadioButton _384 = new JRadioButton(new PixelSizeAction(384, "retina iPad, retina iPhone & iPod Touch"));
-		JRadioButton _512 = new JRadioButton(new PixelSizeAction(512, "retina iPad"));
+		_192 = new JRadioButton(new PixelSizeAction(192, "non-retina iPhone & iPod touch"));
+		_256 = new JRadioButton(new PixelSizeAction(256, "retina iPhone, iPod touch and non-retina iPad"));
+		_384 = new JRadioButton(new PixelSizeAction(384, "retina iPad, retina iPhone & iPod Touch"));
+		_512 = new JRadioButton(new PixelSizeAction(512, "retina iPad"));
 
 		choices.add(_192);
 		choices.add(_256);
@@ -60,15 +69,16 @@ public class AppPreferences extends JPanel {
 		this.add(pixels);
 
 		JPanel sharing = new JPanel();
-		// sharing.setLayout(new BoxLayout(sharing, BoxLayout.Y_AXIS));
+		sharing.setLayout(new BoxLayout(sharing, BoxLayout.Y_AXIS));
 		sharing.setBorder(BorderFactory.createTitledBorder("Sharing details"));
-		portNumber = new JSpinner(new SpinnerNumberModel(Ref.sharing_port, 1025, 65536, 1));
+		portNumber = new JSpinner(new SpinnerNumberModel(1025, 1025, 65536, 1));
 		JLabel legend = new JLabel("Sharing port:");
-		JLabel help = new JLabel("( ? )");
+		// JLabel help = new JLabel("( ? )");
 		sharing.add(legend);
 		sharing.add(portNumber);
-		sharing.add(help);
+		// sharing.add(help);
 		this.add(sharing);
+		readPrefs();
 	}
 
 	public static void main(String[] args) {
@@ -79,8 +89,11 @@ public class AppPreferences extends JPanel {
 	}
 
 	public int getPort() {
-		return ((SpinnerNumberModel) portNumber.getModel()).getNumber().intValue();
+		return savedPortNumber;
+	}
 
+	public int getTileSize() {
+		return tileSize;
 	}
 
 	private class PixelSizeAction implements Action {
@@ -125,6 +138,38 @@ public class AppPreferences extends JPanel {
 		}
 	}
 
+	private void savePrefs() {
+		Ref.setDefaultFileSize(tileSize);
+
+		if (savedPortNumber != ((Integer) portNumber.getValue()).intValue()) {
+			savedPortNumber = ((Integer) portNumber.getValue()).intValue();
+			Ref.setDefaultPort(savedPortNumber);
+
+			synchronized (portNumberChangeLock) {
+				portNumberChangeLock.notifyAll();
+			}
+		}
+
+	}
+
+	private void readPrefs() {
+		portNumber.setValue(Ref.getDefaultPort());
+		switch (Ref.getDefaultTileSize()) {
+		case 192:
+			_192.setSelected(true);
+			break;
+		case 256:
+			_256.setSelected(true);
+			break;
+		case 384:
+			_384.setSelected(true);
+			break;
+		case 512:
+			_512.setSelected(true);
+			break;
+		}
+	}
+
 	public class AppPreferencesAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			JComponent parentComponent = (JComponent) e.getSource();
@@ -132,10 +177,9 @@ public class AppPreferences extends JPanel {
 					JOptionPane.PLAIN_MESSAGE, null, null, null);
 			System.out.println("selected:" + selected);
 			if (selected == JOptionPane.OK_OPTION) {
-				System.out.println("Should save and apply the preferences");
+				savePrefs();
 			} else {
-				System.out.println("Should reset the preferences");
-
+				readPrefs();
 			}
 		}
 	}
