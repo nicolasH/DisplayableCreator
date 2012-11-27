@@ -43,10 +43,11 @@ public class DisplayableCreatorApp {
 		sharingWidget = new DisplayableSharingWidget(queue);
 		tileCreatorPanel = new DisplayableCreatorInputPanel(queue, sharingWidget);
 
-//		Font font = new Font(null, Font.BOLD, 16);
-//		Border etch = BorderFactory.createEtchedBorder();
-//		tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch, "Create a Displayable", TitledBorder.DEFAULT_JUSTIFICATION,
-//				TitledBorder.DEFAULT_POSITION, font));
+		// Font font = new Font(null, Font.BOLD, 16);
+		// Border etch = BorderFactory.createEtchedBorder();
+		// tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch,
+		// "Create a Displayable", TitledBorder.DEFAULT_JUSTIFICATION,
+		// TitledBorder.DEFAULT_POSITION, font));
 
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(tileCreatorPanel, BorderLayout.CENTER);
@@ -76,12 +77,14 @@ public class DisplayableCreatorApp {
 		t.start();
 		Thread shutdownThread = new Thread(new Runnable() {
 			public void run() {
-				sharingWidget.switchSharing(DA.DEACTIVATE);
 				frame.setVisible(false);
+				sharingWidget.switchSharing(DA.DEACTIVATE);
 			}
 		});
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
-		sharingWidget.switchSharing(DA.ACTIVATE);
+		if (AppPreferences.getPreferences().getAutostart()) {
+			sharingWidget.switchSharing(DA.ACTIVATE);
+		}
 	}
 
 	public static void main(String[] args) {

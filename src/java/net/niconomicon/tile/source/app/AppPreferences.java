@@ -1,5 +1,11 @@
 package net.niconomicon.tile.source.app;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
@@ -7,8 +13,8 @@ import java.util.HashMap;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,24 +23,30 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-
-import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget;
+import javax.swing.border.Border;
+import javax.swing.border.MatteBorder;
 
 public class AppPreferences extends JPanel {
 
-	public int tileSize = 256;
-	public int saveDir;
-	public boolean autoShare = true;
+	private static final MatteBorder lineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY);
+	private static final MatteBorder lineBorderBotton = BorderFactory.createMatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY);
 
+	private static final Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
+	private static final Border emptyBorderBottom = BorderFactory.createEmptyBorder(0, 0, 0, 0);
+
+	public int savedTileSize = 256;
 	int savedPortNumber;
+	boolean savedAutostart;
+
 	JSpinner portNumber;
 	public static final String portNumberChangeLock = "portNumberChanged";
 
-	JRadioButton _192;
+	JCheckBox autoshare;
 	JRadioButton _256;
 	JRadioButton _384;
 	JRadioButton _512;
 
+	private Dimension panelSizes = new Dimension(400, 70);
 	private static AppPreferences prefs;
 
 	public static AppPreferences getPreferences() {
@@ -46,46 +58,84 @@ public class AppPreferences extends JPanel {
 
 	private AppPreferences() {
 		super();
+		this.setLayout(new GridLayout(0, 1));
+
 		JPanel pixels = new JPanel();
-		pixels.setBorder(BorderFactory.createTitledBorder("Tile Size"));
-		pixels.setLayout(new BoxLayout(pixels, BoxLayout.PAGE_AXIS));
+
+		pixels.setLayout(new GridLayout(1, 0));
 		ButtonGroup choices = new ButtonGroup();
 
-		_192 = new JRadioButton(new PixelSizeAction(192, "non-retina iPhone & iPod touch"));
 		_256 = new JRadioButton(new PixelSizeAction(256, "retina iPhone, iPod touch and non-retina iPad"));
 		_384 = new JRadioButton(new PixelSizeAction(384, "retina iPad, retina iPhone & iPod Touch"));
 		_512 = new JRadioButton(new PixelSizeAction(512, "retina iPad"));
 
-		choices.add(_192);
 		choices.add(_256);
 		choices.add(_384);
 		choices.add(_512);
 
-		pixels.add(_192);
-		pixels.add(_256);
-		pixels.add(_384);
-		pixels.add(_512);
+		int inset_radio = 0;
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.insets = new Insets(inset_radio, 0, inset_radio, 0);
+		pixels.add(_256, c);
 
-		this.add(pixels);
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 0;
+		c.insets = new Insets(inset_radio, 0, inset_radio, 0);
+
+		pixels.add(_384, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = 0;
+		c.insets = new Insets(inset_radio, 0, inset_radio, 0);
+		pixels.add(_512, c);
+		pixels.setPreferredSize(panelSizes);
+		pixels.setSize(panelSizes);
+		pixels.setMaximumSize(panelSizes);
 
 		JPanel sharing = new JPanel();
-		sharing.setLayout(new BoxLayout(sharing, BoxLayout.Y_AXIS));
-		sharing.setBorder(BorderFactory.createTitledBorder("Sharing details"));
+		sharing.setLayout(new GridBagLayout());
+		// sharing.setBorder(BorderFactory.createTitledBorder("Sharing details"));
 		portNumber = new JSpinner(new SpinnerNumberModel(1025, 1025, 65536, 1));
 		JLabel legend = new JLabel("Sharing port:");
-		// JLabel help = new JLabel("( ? )");
-		sharing.add(legend);
-		sharing.add(portNumber);
-		// sharing.add(help);
-		this.add(sharing);
-		readPrefs();
-	}
+		autoshare = new JCheckBox("Activate on startup");
 
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("Preferences");
-		frame.setContentPane(new AppPreferences());
-		frame.pack();
-		frame.setVisible(true);
+		int inset_port = 20;
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.insets = new Insets(inset_port, 0, inset_port, 0);
+		sharing.add(legend, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 0;
+		c.insets = new Insets(inset_port, 0, inset_port, 0);
+		sharing.add(portNumber, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = 0;
+		c.gridwidth = 2;
+		c.insets = new Insets(inset_port, 0, inset_port, 0);
+		sharing.add(autoshare, c);
+		// sharing.add(help);
+		sharing.setSize(panelSizes);
+		sharing.setPreferredSize(panelSizes);
+		sharing.setMaximumSize(panelSizes);
+
+		Border borderSharing = BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(lineBorder, " Sharing Details "), emptyBorder);
+		sharing.setBorder(borderSharing);
+		Border borderPixel = BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(lineBorderBotton, " Tile Size "), emptyBorderBottom);
+		pixels.setBorder(borderPixel);
+
+		this.add(sharing);
+		this.add(pixels);
+
+		readPrefs();
 	}
 
 	public int getPort() {
@@ -93,7 +143,11 @@ public class AppPreferences extends JPanel {
 	}
 
 	public int getTileSize() {
-		return tileSize;
+		return savedTileSize;
+	}
+
+	public boolean getAutostart() {
+		return savedAutostart;
 	}
 
 	private class PixelSizeAction implements Action {
@@ -111,8 +165,8 @@ public class AppPreferences extends JPanel {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			AppPreferences.this.tileSize = size;
-			System.out.println("set the tilesize to" + AppPreferences.this.tileSize);
+			AppPreferences.this.savedTileSize = size;
+			System.out.println("set the tilesize to" + AppPreferences.this.savedTileSize);
 		}
 
 		public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -139,8 +193,11 @@ public class AppPreferences extends JPanel {
 	}
 
 	private void savePrefs() {
-		Ref.setDefaultFileSize(tileSize);
-
+		Ref.setDefaultFileSize(savedTileSize);
+		if (savedAutostart != autoshare.isSelected()) {
+			savedAutostart = autoshare.isSelected();
+			Ref.setAutostart(savedAutostart);
+		}
 		if (savedPortNumber != ((Integer) portNumber.getValue()).intValue()) {
 			savedPortNumber = ((Integer) portNumber.getValue()).intValue();
 			Ref.setDefaultPort(savedPortNumber);
@@ -153,11 +210,14 @@ public class AppPreferences extends JPanel {
 	}
 
 	private void readPrefs() {
-		portNumber.setValue(Ref.getDefaultPort());
+
+		savedPortNumber = Ref.getDefaultPort();
+		portNumber.setValue(savedPortNumber);
+
+		savedAutostart = Ref.getAutostart();
+		autoshare.setSelected(savedAutostart);
+
 		switch (Ref.getDefaultTileSize()) {
-		case 192:
-			_192.setSelected(true);
-			break;
 		case 256:
 			_256.setSelected(true);
 			break;
@@ -183,4 +243,15 @@ public class AppPreferences extends JPanel {
 			}
 		}
 	}
+
+	public static void main(String[] args) {
+		JFrame frame = new JFrame("Preferences");
+		frame.setContentPane(new JPanel());
+		AppPreferencesAction action = getPreferences().new AppPreferencesAction();
+		action.actionPerformed(new ActionEvent(frame.getContentPane(), 0, "whatever"));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		frame.setVisible(true);
+	}
+
 }

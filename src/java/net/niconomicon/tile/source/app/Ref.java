@@ -41,6 +41,7 @@ public final class Ref {
 	public static final String prefKey_storingDir = "DisplayableStoringDirectoryKey";
 	public static final String prefKey_tileSize = "DisplayableTileSizeKey";
 	public static final String prefKey_port = "DisplayablePortKey";
+	public static final String prefKey_autostart = "DisplayableAutostartKey";
 
 	public static final String sharing_serviceName = "DisplayableSharingService";
 
@@ -207,6 +208,16 @@ public final class Ref {
 		Preferences.userNodeForPackage(Ref.class).put(Ref.prefKey_tileSize, Integer.toString(tileSize));
 	}
 
+	// /////////////////////////
+	public static boolean getAutostart() {
+		return (Boolean.parseBoolean(Preferences.userNodeForPackage(Ref.class).get(Ref.prefKey_autostart, "" + true)));
+	}
+
+	public static void setAutostart(boolean auto) {
+		Preferences.userNodeForPackage(Ref.class).put(Ref.prefKey_autostart, Boolean.toString(auto));
+	}
+
+	// //////////////////////////
 	public static final FilenameFilter ext_db_filter = new FilenameFilter() {
 		public boolean accept(File dir, String name) {
 			return name.endsWith(ext_db);
