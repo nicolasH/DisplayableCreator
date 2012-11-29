@@ -60,7 +60,7 @@ public class DisplayableCreatorApp {
 		bottom.add(sharingWidget.getSharingButton());
 		bottom.add(tileCreatorPanel.getListButton());
 		bottom.add(showPrefs);
-		bottom.add(sharingWidget.getExportButton());
+//		bottom.add(sharingWidget.getExportButton());
 
 		p.add(bottom, BorderLayout.SOUTH);
 		frame.setContentPane(p);

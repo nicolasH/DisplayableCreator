@@ -1,7 +1,10 @@
 package net.niconomicon.tile.source.app.input;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -9,11 +12,14 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 
+import javax.imageio.IIOException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JTextArea;
 
 import net.niconomicon.tile.source.app.Ref;
 import net.niconomicon.tile.source.app.filter.DisplayableFilter;
@@ -23,10 +29,14 @@ import net.niconomicon.tile.source.app.tiling.Inhibitor;
 
 public class QueueListItem extends JPanel implements Inhibitor {
 
+	public enum IS {
+		QUEUED, TILING, DISPLAYABLE, ERROR
+	}
+
 	private File file = null;
 	public IS status;
 
-	public static int minWidth = 300;
+	public static int minWidth = 400;
 	public static int minHeight = 40;
 	JLabel titleLabel;
 	QueueListView container;
@@ -74,8 +84,8 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridx = x;
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
-		removeButton = FontLoader.getButtonSmall(FontLoader.iconTrash);
-		removeButton.setToolTipText("Remove this image from the queue");
+		removeButton = FontLoader.getButtonFlatSmall(FontLoader.iconTrash);
+		removeButton.setToolTipText("Click to remove this image from the queue");
 		this.add(removeButton, c);
 		removeButton.addActionListener(container.new RemovePanel(this));
 
@@ -115,7 +125,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
 
-		editButton = FontLoader.getButtonSmall(FontLoader.iconSave);
+		editButton = FontLoader.getButtonFlatSmall(FontLoader.iconSave);
 		adjustEditButton();
 		this.add(editButton, c);
 		editButton.addActionListener(new EditAction());
@@ -126,7 +136,8 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridx = x;
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
-		JButton view = FontLoader.getButtonSmall(FontLoader.iconView);
+		JButton view = FontLoader.getButtonFlatSmall(FontLoader.iconView);
+		view.setToolTipText("Click to view this Displayable");
 		this.add(view, c);
 		view.addActionListener(new ViewAction());
 
@@ -147,13 +158,10 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
 
-		removeButton = FontLoader.getButtonSmall(FontLoader.iconTrash);
-		removeButton.setToolTipText("Remove this Displayable from the list");
+		removeButton = FontLoader.getButtonFlatSmall(FontLoader.iconTrash);
+		removeButton.setToolTipText("Click to remove this Displayable from the list");
 		this.add(removeButton, c);
 		removeButton.addActionListener(container.new RemovePanel(this));
-
-		System.out.println("Insets for edit:" + editButton.getInsets());
-		System.out.println("Border for edit:" + editButton.getBorder());
 
 		finishPanel(minHeight);
 	}
@@ -166,7 +174,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 
 		this.removeAll();
 
-		JLabel subStatus = new JLabel("Creating displayable");
+		JLabel subStatus = new JLabel("Creating Displayable");
 
 		c = new GridBagConstraints();
 		c.gridx = x;
@@ -184,8 +192,8 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridx = x;
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
-		JButton cancel = FontLoader.getButtonSmall(FontLoader.iconTrash);
-		cancel.setToolTipText("Stop the displayable creation and remove this item from the list");
+		JButton cancel = FontLoader.getButtonFlatSmall(FontLoader.iconTrash);
+		cancel.setToolTipText("Click to stop the Displayable creation and remove this item from the list");
 		this.add(cancel, c);
 
 		cancel.addActionListener(container.new RemovePanel(this));
@@ -205,6 +213,71 @@ public class QueueListItem extends JPanel implements Inhibitor {
 
 	}
 
+	public void arrangeErrorPanel(Exception ex) {
+		this.status = IS.ERROR;
+		GridBagConstraints c;
+		int y = 0;
+		int x = 0;
+
+		this.removeAll();
+
+		titleLabel = new JLabel(this.getName());
+		c = new GridBagConstraints();
+		c.gridx = x;
+		c.gridy = y;
+		c.gridwidth = 5;
+		c.weightx = 3;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = c.LINE_START;
+		this.add(this.titleLabel, c);
+
+		x = 7;
+		c = new GridBagConstraints();
+		c.gridy = y;
+		c.gridx = x;
+		c.gridwidth = 1;
+		c.anchor = c.LINE_END;
+
+		JButton btn = FontLoader.getButtonFlatSmall(FontLoader.iconError);
+		btn.setToolTipText("Click to view more details about the error");
+		btn.addActionListener(new ErrorAction(ex));
+		this.add(btn, c);
+
+		x = 8;
+		c = new GridBagConstraints();
+		c.gridy = y;
+		c.gridx = x;
+		c.gridwidth = 1;
+		c.anchor = c.LINE_END;
+		this.add(new JLabel("    "), c);
+
+		x = 9;
+		c = new GridBagConstraints();
+		c.gridy = y;
+		c.gridx = x;
+		c.gridwidth = 1;
+		c.anchor = c.LINE_END;
+		JButton cancel = FontLoader.getButtonFlatSmall(FontLoader.iconTrash);
+		cancel.setToolTipText("Click to remove this item from the list");
+		cancel.addActionListener(container.new RemovePanel(this));
+		this.add(cancel, c);
+
+		JLabel subStatus = new JLabel(ex.getMessage());
+		subStatus.setFont(subStatus.getFont().deriveFont(Font.ITALIC));
+
+		y++;
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = y;
+		c.gridwidth = 4;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = c.LINE_START;
+		this.add(subStatus, c);
+
+		finishPanel(60);
+
+	}
+
 	private void finishPanel(int myHeight) {
 		this.setAlignmentX(LEFT_ALIGNMENT);
 		this.setAlignmentY(TOP_ALIGNMENT);
@@ -217,10 +290,6 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		this.revalidate();
 		this.repaint();
 
-	}
-
-	public enum IS {
-		QUEUED, TILING, DISPLAYABLE
 	}
 
 	public String getName() {
@@ -259,11 +328,11 @@ public class QueueListItem extends JPanel implements Inhibitor {
 	public void adjustEditButton() {
 		if (Ref.isInTmpLocation(this.file.getAbsolutePath())) {
 			editButton.setText(FontLoader.iconSave);
-			editButton.setToolTipText("Save this new Displayable & change its details");
+			editButton.setToolTipText("Click to save this new Displayable & change its details");
 			editButton.setBackground(Color.orange);
 		} else {
 			editButton.setText(FontLoader.iconEdit);
-			editButton.setToolTipText("Change this Displayable's details");
+			editButton.setToolTipText("Click to change this Displayable's details");
 			editButton.setBackground(defaultButtonBackground);
 		}
 	}
@@ -289,4 +358,51 @@ public class QueueListItem extends JPanel implements Inhibitor {
 			}
 		}
 	}
+
+	public class ErrorAction implements ActionListener {
+		Exception ex;
+
+		public String cleanStack(Exception ex) {
+			String clean = "\nStack trace: (Please email it and the image to the developer to help him improve the Displayable Creator)\n\n";
+			clean += ex.toString() + "\n";
+			for (StackTraceElement e : ex.getStackTrace()) {
+				clean += "    at " + e.toString() + "\n";
+			}
+			return clean;
+		}
+
+		public ErrorAction(Exception ex) {
+			this.ex = ex;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			JPanel error = new JPanel(new BorderLayout());
+			JLabel message = new JLabel();
+			error.add(message, BorderLayout.NORTH);
+			JTextArea explanation = new JTextArea();
+			explanation.setBorder(null);
+			explanation.setEditable(false);
+			explanation.setBackground(((Component) e.getSource()).getBackground());
+			explanation.setWrapStyleWord(true);
+			explanation.setLineWrap(true);
+			explanation.setColumns(80);
+			error.add(explanation, BorderLayout.CENTER);
+
+			explanation.setText(cleanStack(ex));
+			if (ex instanceof IIOException) {
+				message.setText("<html><body>Could not open the image. <br/>Reason : <i>"
+						+ ex.getMessage()
+						+ "</i><br/>Possible workaround: <br/>Try saving the image as a PNG or a BMP in another program and then transform that file instead.</body></html>");
+				JOptionPane.showConfirmDialog((Component) e.getSource(), error, "Error opening the image", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			} else {
+				message.setText("<html><body>Error creating the Displayable : <i>" + ex.getMessage() + "</i></body></html>");
+				JOptionPane.showConfirmDialog((Component) e.getSource(), error, "Error creating the Displayable", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.ERROR_MESSAGE);
+			}
+
+		}
+	}
+
 }

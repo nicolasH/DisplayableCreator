@@ -99,7 +99,11 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 
 	public void initInputPanel() {
 
+		
 		JLabel dragndropText = new JLabel("<html><body>Drop images here</body></html>", SwingConstants.CENTER);
+		dragndropText.setToolTipText("Currently supported: BMP, PNG, JPEG");
+		//	<center><font style='font-size:12pt'><br>(BMP, PNG, JPEG)</font></center>
+		
 		// JLabel dragndropText = new
 		// JLabel("Drag & drop images here",SwingConstants.CENTER);
 		// dragndropText.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
@@ -190,19 +194,7 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 						queueFrame.requestFocus();
 					}
 				} catch (Exception ex) {
-					if (ex instanceof IIOException) {
-						JOptionPane
-								.showConfirmDialog(
-										DisplayableCreatorInputPanel.this,
-										"<html><body>Could not open the image. <br/>Reason : <i>"
-												+ ex.getMessage()
-												+ "</i><br/>Possible workaround: <br/>Try saving the image as a PNG or a BMP in another program and then transform that file instead.</body></html>",
-										"Error opening the image", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-					} else {
-						JOptionPane.showConfirmDialog(DisplayableCreatorInputPanel.this,
-								"<html><body>Error creating the Displayable : <i>" + ex.getMessage() + "</i></body></html>",
-								"Error creating the Displayable", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-					}
+					it.arrangeErrorPanel(ex);
 					ex.printStackTrace();
 				}
 				tilingDone.notifyAll();
@@ -223,7 +215,6 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 		public void run() {
 			while (true) {
 				QueueListItem item = queueListView.getNextItem();
-				System.out.println("Got item!" + item);
 				if (item != null) {
 					try {
 						preTile(item);

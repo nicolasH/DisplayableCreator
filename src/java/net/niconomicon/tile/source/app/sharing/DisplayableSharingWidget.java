@@ -57,6 +57,8 @@ public class DisplayableSharingWidget {
 	Queue<DA> switchQueues;
 	IconsLoader ic;
 
+	Color COLOR_INACTIVE = Color.DARK_GRAY;
+	
 	public DisplayableSharingWidget(DisplayablesSource dispList) {
 		this.displayablesSource = dispList;
 		init();
@@ -73,6 +75,7 @@ public class DisplayableSharingWidget {
 		// start sharing
 		actionButton = FontLoader.getButton(FontLoader.iconAction);
 		actionButton.setToolTipText(action_start);
+		actionButton.setForeground(COLOR_INACTIVE);
 		exportButton = FontLoader.getButton(FontLoader.iconExport);
 		exportButton.setToolTipText(action_export);
 
@@ -118,31 +121,9 @@ public class DisplayableSharingWidget {
 		return actionButton;
 	}
 
-	// public static JComponent createDirSelectionPanel(JPanel parent) {
-	// JTextArea explanation = new JTextArea();
-	// explanation.setBorder(null);
-	// explanation.setEditable(false);
-	// explanation.setBackground(parent.getBackground());
-	// explanation.setWrapStyleWord(true);
-	// explanation.setLineWrap(true);
-	// explanation.setColumns(30);
-	// explanation.setFont(explanation.getFont().deriveFont(Font.ITALIC));
-	// explanation.setText("Share your displayables over the network to download them on your iPhone or iPod touch.");
-	// return explanation;
-	// }
 
 	public void switchSharing(DA action) {
-		switch (action) {
-		case ACTIVATE:
-			startSharing(true);
-			break;
-		case UPDATELIST:
-			updateSharing();
-			break;
-		case DEACTIVATE:
-			stopSharing();
-			break;
-		}
+		switchQueues.add(action);
 	}
 
 	private void updateSharing() {
@@ -196,7 +177,7 @@ public class DisplayableSharingWidget {
 			}
 			actionButton.setEnabled(true);
 			actionButton.setText(FontLoader.iconAction);
-			actionButton.setForeground(Color.GRAY);
+			actionButton.setForeground(COLOR_INACTIVE);
 			return false;
 		}
 		actionButton.setText(FontLoader.iconAction);
@@ -345,7 +326,7 @@ public class DisplayableSharingWidget {
 						updateSharing();
 					}
 					if (currentStatus == DS.DEACTIVATED || currentStatus == DS.DEACTIVATING) {
-						startSharing(true);
+						// do nothing //startSharing(true);
 					}
 					break;
 				case RESTART:

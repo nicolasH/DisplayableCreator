@@ -44,26 +44,30 @@ public class FontLoader {
 		icomoon = Font.createFont(Font.TRUETYPE_FONT, url.openStream());
 	}
 
-	public static String iconAction = "\ue047";
-	public static String iconWait = "\ue008";
+	public static String iconAction = "\ue028";
+	public static String iconWait = "\ue007";
 
-	public static String iconList = "\ue046";
-	public static String iconPrefs = "\ue006";
-	public static String iconExport = "\ue007";
+	public static String iconList = "\ue019";
+	public static String iconPrefs = "\ue00a";
+	public static String iconExport = "\ue01e";
 
-	public static String iconView = "\ue00a";
-	public static String iconEdit = "\ue000";
-	public static String iconSave = "\ue037";
-	public static String iconTrash = "\ue00d";
+	public static String iconView = "\ue000";
+	public static String iconEdit = "\ue011";
+	public static String iconSave = "\ue024";
+	public static String iconTrash = "\ue002";
 
-	public static String iconZoomIn = "\ue03d";
-	public static String iconZoomOut = "\ue03c";
-	public static String iconExpand = "\ue03f";
-	public static String iconContract = "\ue041";
+	public static String iconZoomIn = "\ue014";
+	public static String iconZoomOut = "\ue013";
+	public static String iconExpand = "\ue029";
+	public static String iconContract = "\ue02a";
+
+	public static String iconError = "\ue025";
 
 	public static final Dimension btnSize = new Dimension(40, 40);
 	public static final Dimension btnSizeSmall = new Dimension(30, 30);
-	
+
+	private static final Color defaultBackground = new JLabel().getBackground();
+
 	public static JButton getButton(String string) {
 		JButton b = new JButton(string);
 		b.setFont(getFontLoader().icomoon.deriveFont(24.0f));
@@ -83,6 +87,14 @@ public class FontLoader {
 		b.setSize(btnSizeSmall);
 		b.setPreferredSize(btnSizeSmall);
 		b.setForeground(Color.DARK_GRAY);
+		return b;
+	}
+
+	public static JButton getButtonFlatSmall(String string) {
+		JButton b = getButtonSmall(string);
+		b.setBorder(null);
+		b.setBackground(defaultBackground);
+		b.setOpaque(false);
 		return b;
 	}
 
@@ -114,35 +126,34 @@ public class FontLoader {
 		p.add(actionGreen);
 		p.add(actionWait);
 		p.add(actionGray);
-		p.add(new JLabel(""));
-
 		p.add(actionOrange);
 		p.add(new JLabel(""));
-
-		p.add(getButton(FontLoader.iconWait));
-		p.add(new JLabel(""));
-
 		p.add(getButton(FontLoader.iconList));
 		p.add(getButton(FontLoader.iconPrefs));
 		p.add(getButton(FontLoader.iconExport));
 		p.add(new JLabel(""));
-		p.add(getButton(FontLoader.iconEdit));
-		p.add(getButton(FontLoader.iconSave));
-		p.add(getButton(FontLoader.iconView));
-		p.add(getButton(FontLoader.iconTrash));
 		p.add(new JLabel(""));
-		p.add(getButton(FontLoader.iconZoomIn));
-		p.add(getButton(FontLoader.iconZoomOut));
-		p.add(getButton(FontLoader.iconExpand));
-		p.add(getButton(FontLoader.iconContract));
 
+		p.add(getButtonFlatSmall(FontLoader.iconEdit));
+		p.add(getButtonFlatSmall(FontLoader.iconSave));
+		p.add(getButtonFlatSmall(FontLoader.iconView));
+		p.add(getButtonFlatSmall(FontLoader.iconTrash));
+		p.add(new JLabel(""));
+
+		p.add(getButtonFlatSmall(FontLoader.iconZoomIn));
+		p.add(getButtonFlatSmall(FontLoader.iconZoomOut));
+		p.add(getButtonFlatSmall(FontLoader.iconExpand));
+		p.add(getButtonFlatSmall(FontLoader.iconContract));
+		p.add(new JLabel(""));
+		p.add(getButtonFlatSmall(FontLoader.iconError));
+		p.add(new JLabel(""));
 		p.add(new JLabel(""));
 		p.add(new JLabel(""));
 		p.add(new JLabel(""));
 		for (int i = 0; i < 100; i++) {
 			int codePoint = i + 57343;
 			String s = new String(Character.toChars(codePoint));
-			JButton b = new JButton(s);
+			JButton b = getButtonFlatSmall(s);
 			b.setFont(loader.icomoon);
 			b.setFont(b.getFont().deriveFont(24.0f));
 			b.setSize(new Dimension(40, 40));
