@@ -222,6 +222,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		this.removeAll();
 
 		titleLabel = new JLabel(this.getName());
+		titleLabel.setForeground(Color.GRAY);
 		c = new GridBagConstraints();
 		c.gridx = x;
 		c.gridy = y;
@@ -264,7 +265,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 
 		JLabel subStatus = new JLabel(ex.getMessage());
 		subStatus.setFont(subStatus.getFont().deriveFont(Font.ITALIC));
-
+		subStatus.setForeground(Color.GRAY);
 		y++;
 		c = new GridBagConstraints();
 		c.gridx = 0;
@@ -335,6 +336,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 			editButton.setToolTipText("Click to change this Displayable's details");
 			editButton.setBackground(defaultButtonBackground);
 		}
+		FontLoader.adjustButtonFlatSmall(editButton);
 	}
 
 	public class ViewAction implements ActionListener {
@@ -363,7 +365,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		Exception ex;
 
 		public String cleanStack(Exception ex) {
-			String clean = "\nStack trace: (Please email it and the image to the developer to help him improve the Displayable Creator)\n\n";
+			String clean = "\nStack trace: (Please consider emailing it and the image to the developer to help him improve the Displayable Creator).\n\n";
 			clean += ex.toString() + "\n";
 			for (StackTraceElement e : ex.getStackTrace()) {
 				clean += "    at " + e.toString() + "\n";

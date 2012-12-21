@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -79,25 +78,23 @@ public class FontLoader {
 		return b;
 	}
 
-	public static JButton getButtonSmall(String string) {
+	public static JButton getButtonFlatSmall(String string) {
 		JButton b = new JButton(string);
+		adjustButtonFlatSmall(b);
+		return b;
+	}
+
+	public static void adjustButtonFlatSmall(JButton b){
 		b.setFont(getFontLoader().icomoon.deriveFont(16.0f));
 		b.setMaximumSize(btnSizeSmall);
 		b.setMinimumSize(btnSizeSmall);
 		b.setSize(btnSizeSmall);
 		b.setPreferredSize(btnSizeSmall);
 		b.setForeground(Color.DARK_GRAY);
-		return b;
-	}
-
-	public static JButton getButtonFlatSmall(String string) {
-		JButton b = getButtonSmall(string);
 		b.setBorder(null);
 		b.setBackground(defaultBackground);
 		b.setOpaque(false);
-		return b;
 	}
-
 	/**
 	 * @param args
 	 */

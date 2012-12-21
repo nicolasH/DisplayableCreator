@@ -67,6 +67,8 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 
 	String tilingDone = "isItDone?";
 
+	private static final String FORMATS = " Displayables, BMP, GIF, PNG, JPEG";
+
 	public DisplayableCreatorInputPanel(QueueListView queueListView, DisplayableSharingWidget sharingWidget) {
 		super(new BorderLayout());
 		creator = new SQLiteDisplayableCreatorMoreParallel();
@@ -98,12 +100,13 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 	}
 
 	public void initInputPanel() {
+		String dropText = "<html><body>";
+		dropText += "Drop images here";
+		dropText += "<center><font style='font-size:12pt;'><br><i>- "+FORMATS+" -</i></font></center>";
+		dropText +="</body></html>";
+		JLabel dragndropText = new JLabel(dropText, SwingConstants.CENTER);
+		dragndropText.setToolTipText("Currently supported:" + FORMATS);		
 
-		
-		JLabel dragndropText = new JLabel("<html><body>Drop images here</body></html>", SwingConstants.CENTER);
-		dragndropText.setToolTipText("Currently supported: BMP, PNG, JPEG");
-		//	<center><font style='font-size:12pt'><br>(BMP, PNG, JPEG)</font></center>
-		
 		// JLabel dragndropText = new
 		// JLabel("Drag & drop images here",SwingConstants.CENTER);
 		// dragndropText.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
@@ -225,9 +228,9 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 						ex.printStackTrace();
 					}
 				} else {
-					synchronized (queueListView.queue) {
+					synchronized (queueListView.itemsToTransformQueue) {
 						try {
-							queueListView.queue.wait();
+							queueListView.itemsToTransformQueue.wait();
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

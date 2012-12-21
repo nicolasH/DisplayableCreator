@@ -19,11 +19,12 @@ import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 public class QueueListView extends JPanel implements DisplayablesSource {
 
-	Queue<QueueListItem> queue;
-	List<QueueListItem> list;
+	Queue<QueueListItem> itemsToTransformQueue;
+	List<QueueListItem> allItemsList;
 	Object displayablesLock;
 	DisplayableViewer viewer;
 	SaveDialog saveDialog;
+	JLabel lastItem;
 
 	public QueueListView(DisplayableViewer viewer) {
 		super();
@@ -41,17 +42,24 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 
 	public void init() {
 
-		queue = new ConcurrentLinkedQueue<QueueListItem>();
-		list = new Vector<QueueListItem>();
+		itemsToTransformQueue = new ConcurrentLinkedQueue<QueueListItem>();
+		allItemsList = new Vector<QueueListItem>();
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		displayablesLock = new Object();
 		saveDialog = new SaveDialog();
 		this.setSize(QueueListItem.minWidth, 400);
 		this.setMinimumSize(new Dimension(QueueListItem.minWidth, QueueListItem.minHeight));
-		JLabel empty = new JLabel("<html>&mdash; ~ &mdash;</html>",JLabel.CENTER);
-		empty.setMaximumSize(new Dimension(Short.MAX_VALUE, 50));
-		this.add(empty, 0);
+		lastItem = new JLabel("<html>&mdash; ~ &mdash;</html>", JLabel.CENTER);
+		lastItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 40));
+		lastItem.setMinimumSize(new Dimension(350, 40));
+		lastItem.setPreferredSize(new Dimension(350, 40));
+		this.add(lastItem, getConstraintForY(0));
+	}
+
+	private void makeLastItemLast() {
+		this.remove(lastItem);
+		this.add(lastItem, getConstraintForY(allItemsList.size()));
 	}
 
 	/**
@@ -75,22 +83,23 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 	}
 
 	private void addImageItem(QueueListItem item) {
-		list.add(0, item);
-		queue.add(item);
-		this.add(item, 0);// getConstraintForY(0));
-		synchronized (queue) {
-			queue.notifyAll();
+		allItemsList.add(0, item);
+		itemsToTransformQueue.add(item);
+		this.add(item, getConstraintForY(0));
+		makeLastItemLast();
+		synchronized (itemsToTransformQueue) {
+			itemsToTransformQueue.notifyAll();
 		}
 	}
 
 	public QueueListItem getNextItem() {
-		return queue.poll();
+		return itemsToTransformQueue.poll();
 	}
 
 	private void addDisplayableItem(QueueListItem sp) {
 		sp.arrangeDisplayablePanel(null);
 		int nextReady = 0;
-		for (QueueListItem p : list) {
+		for (QueueListItem p : allItemsList) {
 			switch (p.status) {
 			case DISPLAYABLE:
 				break;
@@ -102,9 +111,9 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 				break;
 			}
 		}
-		list.add(nextReady, sp);
+		allItemsList.add(nextReady, sp);
 		this.add(sp, getConstraintForY(nextReady));
-
+		makeLastItemLast();
 		synchronized (displayablesLock) {
 			System.out.println("Adding displayable. notifying all displayables lock");
 			displayablesLock.notifyAll();
@@ -115,7 +124,7 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 	private void addProcessingItem(QueueListItem sp) {
 		sp.arrangeStatusPanel();
 		int nextReady = 0;
-		for (QueueListItem p : list) {
+		for (QueueListItem p : allItemsList) {
 			switch (p.status) {
 			case DISPLAYABLE:
 				break;
@@ -125,7 +134,7 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 				nextReady++;
 			}
 		}
-		list.add(nextReady, sp);
+		allItemsList.add(nextReady, sp);
 		this.add(sp, getConstraintForY(nextReady));
 	}
 
@@ -135,7 +144,7 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 
 	public List<String> getDisplayables() {
 		List<String> displayables = new LinkedList<String>();
-		for (QueueListItem p : list) {
+		for (QueueListItem p : allItemsList) {
 			switch (p.status) {
 			case DISPLAYABLE:
 				displayables.add(p.getFullPath());
@@ -163,8 +172,8 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 		}
 
 		public void actionPerformed(ActionEvent arg0) {
-			QueueListView.this.queue.remove(panelToRemove);
-			QueueListView.this.list.remove(panelToRemove);
+			QueueListView.this.itemsToTransformQueue.remove(panelToRemove);
+			QueueListView.this.allItemsList.remove(panelToRemove);
 			QueueListView.this.remove(panelToRemove);
 			QueueListView.this.doLayout();
 			QueueListView.this.getParent().validate();
@@ -174,21 +183,21 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 		}
 	}
 
-//	public static void main(String[] args) {
-//		JFrame frame = new JFrame();
-//		JPanel main = new JPanel(new BorderLayout());
-//		JLabel top = new JLabel("Drop images and displayables here");
-//		top.setMinimumSize(new Dimension(150, 100));
-//		top.setPreferredSize(new Dimension(150, 100));
-//		top.setMaximumSize(new Dimension(150, 100));
-//
-//		main.add(top, BorderLayout.NORTH);
-//		main.add(new JScrollPane(new QueueListView(null)), BorderLayout.CENTER);
-//		main.add(new JLabel("Fancy sharing stuff here"), BorderLayout.SOUTH);
-//		frame.setContentPane(main);
-//		frame.pack();
-//		frame.setSize(340, 600);
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.setVisible(true);
-//	}
+	// public static void main(String[] args) {
+	// JFrame frame = new JFrame();
+	// JPanel main = new JPanel(new BorderLayout());
+	// JLabel top = new JLabel("Drop images and displayables here");
+	// top.setMinimumSize(new Dimension(150, 100));
+	// top.setPreferredSize(new Dimension(150, 100));
+	// top.setMaximumSize(new Dimension(150, 100));
+	//
+	// main.add(top, BorderLayout.NORTH);
+	// main.add(new JScrollPane(new QueueListView(null)), BorderLayout.CENTER);
+	// main.add(new JLabel("Fancy sharing stuff here"), BorderLayout.SOUTH);
+	// frame.setContentPane(main);
+	// frame.pack();
+	// frame.setSize(340, 600);
+	// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	// frame.setVisible(true);
+	// }
 }
