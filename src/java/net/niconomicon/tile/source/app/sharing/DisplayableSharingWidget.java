@@ -57,7 +57,7 @@ public class DisplayableSharingWidget {
 	Queue<DA> switchQueues;
 	IconsLoader ic;
 
-	Color COLOR_INACTIVE = Color.DARK_GRAY;
+	Color COLOR_INACTIVE = Color.ORANGE;
 	
 	public DisplayableSharingWidget(DisplayablesSource dispList) {
 		this.displayablesSource = dispList;
