@@ -32,7 +32,7 @@ public class DisplayableCreatorApp {
 	public static int ThreadCount = 4;
 
 	public DisplayableCreatorApp() {
-		ThreadCount = Math.max(Runtime.getRuntime().availableProcessors() * 2, ThreadCount);
+		ThreadCount = Math.max(Runtime.getRuntime().availableProcessors()+1, ThreadCount);
 		init();
 	}
 

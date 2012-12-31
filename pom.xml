@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.niconomicon</groupId>
 	<artifactId>displayable-creator</artifactId>
-	<version>1.1.2</version>
+	<version>2.0.0-beta1</version>
 	<url>http://www.niconomicon.net/tests/maven/net/niconomicon/DisplayableCreator</url>
 	<dependencies>
 		<dependency>
@@ -41,6 +41,8 @@
 					<include>**/*.css</include>
 					<include>**/*.gif</include>
 					<include>**/*.png</include>
+					<include>**/*.ttf</include>
+					<include>**/*.txt</include>
 				</includes>
 			</resource>
 		</resources>
@@ -100,8 +102,8 @@
 						<mainClass>net.niconomicon.tile.source.app.DisplayableCreatorApp</mainClass>
 					</jnlp>
 					<sign>
-						<keystore>/Users/niko/keystore_jnlp/displayatorKS</keystore>
-						<alias>displayatorCreator</alias>
+						<keystore>/Users/niko/keystore_jnlp/dispKS</keystore>
+						<alias>displayableCreator</alias>
 						<storepass>!R4n!D0m!</storepass>
 						<keypass>!R4n!D0m!</keypass>
 						<!-- verify that the signing operation succeeded -->
