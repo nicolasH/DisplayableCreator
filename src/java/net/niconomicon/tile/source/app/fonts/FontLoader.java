@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -61,21 +62,40 @@ public class FontLoader {
 	public static String iconContract = "\ue02a";
 
 	public static String iconError = "\ue025";
+	public static String iconHelp = "\ue001";
 
 	public static final Dimension btnSize = new Dimension(40, 40);
 	public static final Dimension btnSizeSmall = new Dimension(30, 30);
 
 	private static final Color defaultBackground = new JLabel().getBackground();
 
-	public static JButton getButton(String string) {
-		JButton b = new JButton(string);
+	public static JTextArea getBoringTextArea(JComponent backgroundSource, int columns, String text) {
+		JTextArea area = new JTextArea();
+		area.setBorder(null);
+		area.setEditable(false);
+		area.setForeground(Color.black);
+		area.setBackground(backgroundSource.getBackground());
+		area.setWrapStyleWord(true);
+		area.setLineWrap(true);
+		area.setColumns(30);
+		area.setText(text);
+		return area;
+	}
+
+	public static JButton getButton(String icon) {
+		JButton b = new JButton();
+		iconifyButton(b, icon);
+		return b;
+	}
+
+	public static void iconifyButton(JButton b, String icon) {
+		b.setText(icon);
 		b.setFont(getFontLoader().icomoon.deriveFont(24.0f));
 		b.setMaximumSize(btnSize);
 		b.setMinimumSize(btnSize);
 		b.setSize(btnSize);
 		b.setPreferredSize(btnSize);
 		b.setForeground(Color.DARK_GRAY);
-		return b;
 	}
 
 	public static JButton getButtonFlatSmall(String string) {
@@ -84,7 +104,7 @@ public class FontLoader {
 		return b;
 	}
 
-	public static void adjustButtonFlatSmall(JButton b){
+	public static void adjustButtonFlatSmall(JButton b) {
 		b.setFont(getFontLoader().icomoon.deriveFont(16.0f));
 		b.setMaximumSize(btnSizeSmall);
 		b.setMinimumSize(btnSizeSmall);
@@ -95,6 +115,7 @@ public class FontLoader {
 		b.setBackground(defaultBackground);
 		b.setOpaque(false);
 	}
+
 	/**
 	 * @param args
 	 */
@@ -108,6 +129,11 @@ public class FontLoader {
 		JButton actionGreen = getButton(FontLoader.iconAction);
 		actionGreen.setForeground(Color.GREEN);
 
+		JCheckBox box = new JCheckBox(FontLoader.iconAction);
+		box.setFont(actionGreen.getFont());
+		
+		p.add(box);
+		
 		JButton actionGray = getButton(FontLoader.iconAction);
 		actionGray.setForeground(Color.GRAY);
 

@@ -1,0 +1,11 @@
+	public static JTextArea getBoringTextArea(JComponent backgroundSource, int columns, String text) {
+		JTextArea area = new JTextArea();
+		area.setBorder(null);
+		area.setEditable(false);
+		area.setForeground(Color.black);
+		area.setBackground(backgroundSource.getBackground());
+		area.setBackground(Color.BLUE);
+		area.setWrapStyleWord(true);
+		area.setLineWrap(true);
+		area.setColumns(30);
+		area.setText(text);

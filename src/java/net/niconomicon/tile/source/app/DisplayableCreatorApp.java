@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import net.niconomicon.tile.source.app.fonts.FontLoader;
+import net.niconomicon.tile.source.app.help.HelpWidget;
 import net.niconomicon.tile.source.app.input.DisplayableCreatorInputPanel;
 import net.niconomicon.tile.source.app.input.QueueListView;
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget;
@@ -42,7 +43,7 @@ public class DisplayableCreatorApp {
 		QueueListView queue = new QueueListView(displayableViewer);
 		sharingWidget = new DisplayableSharingWidget(queue);
 		tileCreatorPanel = new DisplayableCreatorInputPanel(queue, sharingWidget);
-
+		
 		// Font font = new Font(null, Font.BOLD, 16);
 		// Border etch = BorderFactory.createEtchedBorder();
 		// tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch,
@@ -61,7 +62,7 @@ public class DisplayableCreatorApp {
 		bottom.add(tileCreatorPanel.getListButton());
 		bottom.add(showPrefs);
 //		bottom.add(sharingWidget.getExportButton());
-
+		bottom.add(HelpWidget.createHelpWidget());
 		p.add(bottom, BorderLayout.SOUTH);
 		frame.setContentPane(p);
 		frame.pack();
