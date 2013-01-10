@@ -13,6 +13,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import net.niconomicon.tile.source.app.AppPreferences;
@@ -26,10 +27,10 @@ import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
  */
 public class DisplayableSharingWidget {
 
-	private static final String action_start = "Start the network broadcasting";
-	private static final String action_starting = "Starting the network broadcasting ...";
-	private static final String action_stopping = "Stopping the network broadcasting ...";
-	private static final String action_stop = "Stop network broadcasting";
+	private static final String action_start = "Start sharing the current displayables over the local network"; // broadcasting
+	private static final String action_starting = "Starting the local network sharing ...";
+	private static final String action_stopping = "Stopping the local network sharing ...";
+	private static final String action_stop = "Stop sharing the dislpayables over the network.";
 
 	private static final String action_export = "Export the displayable as a folder which contains an index,html with links to a local copy of all the displayables in the list (advanced).";
 
@@ -46,7 +47,8 @@ public class DisplayableSharingWidget {
 	DS currentStatus = DS.DEACTIVATED;
 	SharingManager sharingManager;
 
-	JButton actionButton;
+	JCheckBox actionCheckBox;
+
 	JButton exportButton;
 
 	Color defaultColor;
@@ -58,7 +60,7 @@ public class DisplayableSharingWidget {
 	IconsLoader ic;
 
 	Color COLOR_INACTIVE = Color.ORANGE;
-	
+
 	public DisplayableSharingWidget(DisplayablesSource dispList) {
 		this.displayablesSource = dispList;
 		init();
@@ -73,15 +75,18 @@ public class DisplayableSharingWidget {
 
 		// //////////////////////////////////////////
 		// start sharing
-		actionButton = FontLoader.getButton(FontLoader.iconAction);
-		actionButton.setToolTipText(action_start);
-		actionButton.setForeground(COLOR_INACTIVE);
+		actionCheckBox = new JCheckBox(FontLoader.iconAction);
+		JButton b = FontLoader.getButton("");
+		actionCheckBox.setFont(b.getFont());
+		actionCheckBox.setToolTipText(action_start);
+		actionCheckBox.setForeground(COLOR_INACTIVE);
+		
 		exportButton = FontLoader.getButton(FontLoader.iconExport);
 		exportButton.setToolTipText(action_export);
 
-		actionButton.addActionListener(new ActionListener() {
+		actionCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				actionButton.setEnabled(false);
+				actionCheckBox.setEnabled(false);
 				synchronized (currentStatus) {
 
 					if (currentStatus == DS.ACTIVATING || currentStatus == DS.ACTIVE) {
@@ -117,10 +122,9 @@ public class DisplayableSharingWidget {
 		return exportButton;
 	}
 
-	public JButton getSharingButton() {
-		return actionButton;
+	public JCheckBox getSharingButton() {
+		return actionCheckBox;
 	}
-
 
 	public void switchSharing(DA action) {
 		switchQueues.add(action);
@@ -146,13 +150,13 @@ public class DisplayableSharingWidget {
 	private boolean startSharing(boolean shouldPopup) {
 		System.out.println("should start sharing the maps, with " + (shouldPopup ? "popup" : "no popup") + " in case of problem");
 
-		actionButton.setEnabled(false);
+		actionCheckBox.setEnabled(false);
 		synchronized (currentStatus) {
 			currentStatus = DS.ACTIVATING;
 		}
 		int port = AppPreferences.getPreferences().getPort();
-		actionButton.setText(FontLoader.iconWait);
-		actionButton.setToolTipText(action_starting);
+		actionCheckBox.setText(FontLoader.iconWait);
+		actionCheckBox.setToolTipText(action_starting);
 
 		try {
 			sharingManager.setPort(port);
@@ -167,7 +171,7 @@ public class DisplayableSharingWidget {
 				ex1.printStackTrace();
 			}
 			if (shouldPopup) {
-				JOptionPane.showConfirmDialog(this.actionButton, "<html><body>Error while starting the sharing component on port [" + port
+				JOptionPane.showConfirmDialog(this.actionCheckBox, "<html><body>Error while starting the sharing component on port [" + port
 						+ "]: <br/><i>" + ex.getMessage() + "</i><br/>You might want to change the port.</body></html>",
 						"Error creating starting the sharing component", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
 			}
@@ -175,43 +179,43 @@ public class DisplayableSharingWidget {
 			synchronized (currentStatus) {
 				currentStatus = DS.DEACTIVATED;
 			}
-			actionButton.setEnabled(true);
-			actionButton.setText(FontLoader.iconAction);
-			actionButton.setForeground(COLOR_INACTIVE);
+			actionCheckBox.setEnabled(true);
+			actionCheckBox.setText(FontLoader.iconAction);
+			actionCheckBox.setForeground(COLOR_INACTIVE);
 			return false;
 		}
-		actionButton.setText(FontLoader.iconAction);
-		actionButton.setForeground(Color.GREEN);
-		actionButton.setToolTipText(action_stop);
+		actionCheckBox.setText(FontLoader.iconAction);
+		actionCheckBox.setForeground(Color.GREEN);
+		actionCheckBox.setToolTipText(action_stop);
 
 		synchronized (currentStatus) {
 			currentStatus = DS.ACTIVE;
 		}
-		actionButton.setEnabled(true);
+		actionCheckBox.setEnabled(true);
 
 		return true;
 	}
 
 	private void stopSharing() {
 		System.out.println("deactivating");
-		actionButton.setEnabled(false);
+		actionCheckBox.setEnabled(false);
 		synchronized (currentStatus) {
 			currentStatus = DS.DEACTIVATING;
 		}
-		actionButton.setText(FontLoader.iconWait);
-		actionButton.setToolTipText(action_stopping);
+		actionCheckBox.setText(FontLoader.iconWait);
+		actionCheckBox.setToolTipText(action_stopping);
 		try {
 			sharingManager.stopSharing();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		actionButton.setText(FontLoader.iconAction);
-		actionButton.setForeground(Color.GRAY);
-		actionButton.setToolTipText(action_start);
+		actionCheckBox.setText(FontLoader.iconAction);
+		actionCheckBox.setForeground(Color.GRAY);
+		actionCheckBox.setToolTipText(action_start);
 		synchronized (currentStatus) {
 			currentStatus = DS.DEACTIVATED;
 		}
-		actionButton.setEnabled(true);
+		actionCheckBox.setEnabled(true);
 	}
 
 	public class LocalHostChecker extends TimerTask {

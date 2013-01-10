@@ -14,6 +14,7 @@ import java.util.HashMap;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -26,14 +27,18 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 
+import net.niconomicon.tile.source.app.fonts.FontLoader;
+
 public class AppPreferences extends JPanel {
 
+	private static final String SHOWPREFS_TOOLTIP = "<html><body>Shows the preferences window. <br>You can adjust the sharing port and the next displayables tile sizes.</body></html>";
+	
 	private static final MatteBorder lineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY);
 	private static final MatteBorder lineBorderBotton = BorderFactory.createMatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY);
-
 	private static final Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 	private static final Border emptyBorderBottom = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
+	
 	public int savedTileSize = 256;
 	int savedPortNumber;
 	boolean savedAutostart;
@@ -42,10 +47,11 @@ public class AppPreferences extends JPanel {
 	public static final String portNumberChangeLock = "portNumberChanged";
 
 	JCheckBox autoshare;
+	
 	JRadioButton _256;
 	JRadioButton _384;
 	JRadioButton _512;
-
+	
 	private Dimension panelSizes = new Dimension(400, 70);
 	private static AppPreferences prefs;
 
@@ -206,7 +212,13 @@ public class AppPreferences extends JPanel {
 				portNumberChangeLock.notifyAll();
 			}
 		}
+	}
 
+	public JButton getPreferencesButton() {
+		JButton showPrefs = FontLoader.getButton(FontLoader.iconPrefs);
+		showPrefs.addActionListener(new AppPreferencesAction());
+		showPrefs.setToolTipText(SHOWPREFS_TOOLTIP);
+		return showPrefs;
 	}
 
 	private void readPrefs() {

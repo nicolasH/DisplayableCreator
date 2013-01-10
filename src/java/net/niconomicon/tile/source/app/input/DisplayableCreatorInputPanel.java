@@ -37,6 +37,7 @@ import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
  */
 public class DisplayableCreatorInputPanel extends JPanel implements TilingStatusReporter {
 
+	public static final String LIST_TOOLTIP = "Show the list of queued images and displayables.";
 	public static final String TILE_TYPE = "png";
 
 	public static final String USER_HOME = "user.home";
@@ -102,10 +103,10 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 	public void initInputPanel() {
 		String dropText = "<html><body>";
 		dropText += "Drop images here";
-		dropText += "<center><font style='font-size:12pt;'><br><i>- "+FORMATS+" -</i></font></center>";
-		dropText +="</body></html>";
+		dropText += "<center><font style='font-size:12pt;'><br><i>- " + FORMATS + " -</i></font></center>";
+		dropText += "</body></html>";
 		JLabel dragndropText = new JLabel(dropText, SwingConstants.CENTER);
-		dragndropText.setToolTipText("Currently supported:" + FORMATS);		
+		dragndropText.setToolTipText("Currently supported:" + FORMATS);
 
 		// JLabel dragndropText = new
 		// JLabel("Drag & drop images here",SwingConstants.CENTER);
@@ -128,6 +129,7 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 
 	public JButton getListButton() {
 		JButton showList = FontLoader.getButton(FontLoader.iconList);
+		showList.setToolTipText(LIST_TOOLTIP);
 		showList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				queueFrame.setVisible(true);

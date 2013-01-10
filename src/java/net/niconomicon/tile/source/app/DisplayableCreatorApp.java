@@ -55,12 +55,10 @@ public class DisplayableCreatorApp {
 
 		JPanel bottom = new JPanel();
 		bottom.setMaximumSize(new Dimension(100, 50));
-		JButton showPrefs = FontLoader.getButton(FontLoader.iconPrefs);
-		showPrefs.addActionListener(AppPreferences.getPreferences().new AppPreferencesAction());
 
 		bottom.add(sharingWidget.getSharingButton());
 		bottom.add(tileCreatorPanel.getListButton());
-		bottom.add(showPrefs);
+		bottom.add(AppPreferences.getPreferences().getPreferencesButton());
 //		bottom.add(sharingWidget.getExportButton());
 		bottom.add(HelpWidget.createHelpWidget());
 		p.add(bottom, BorderLayout.SOUTH);

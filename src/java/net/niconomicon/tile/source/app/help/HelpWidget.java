@@ -21,6 +21,8 @@ import net.niconomicon.tile.source.app.fonts.FontLoader;
 public class HelpWidget extends JButton {
 
 	static final int columns = 20;
+	static final String HELP_TOOLTIP = "Shows the help for Displayable Creator";
+	
 	private JFrame helpFrame;
 	private static HelpWidget wi;
 	private static final String HELP_TITLE = "Displayable Creator Help";
@@ -39,6 +41,7 @@ public class HelpWidget extends JButton {
 
 	private HelpWidget() {
 		super();
+		this.setToolTipText(HELP_TOOLTIP);
 		FontLoader.iconifyButton(this, FontLoader.iconHelp);
 		helpFrame = new JFrame(HELP_TITLE);
 		helpFrame.setSize(helpPrefDim);
@@ -59,16 +62,15 @@ public class HelpWidget extends JButton {
 
 	private JPanel getHelpPanel() {
 		JPanel help = new JPanel();
-		//help.setLayout(new BoxLayout(help, BoxLayout.Y_AXIS));
+		// help.setLayout(new BoxLayout(help, BoxLayout.Y_AXIS));
 		help.setLayout(new GridLayout(0, 1));
-		
+
 		help.setMinimumSize(helpPanelMinDim);
 		help.setMaximumSize(helpPanelMaxDim);
 		help.setPreferredSize(helpPanelPrefDim);
-		
-		
+
 		HelpLoader hl = new HelpLoader();
-		
+
 		help.add(FontLoader.getBoringTextArea(help, columns, hl.text_top));// top
 		help.add(FontLoader.getBoringTextArea(help, columns, hl.text_main));// main
 		help.add(new JLabel(hl.ic_main));
@@ -79,16 +81,15 @@ public class HelpWidget extends JButton {
 		help.add(FontLoader.getBoringTextArea(help, columns, hl.text_view));// view
 		help.add(new JLabel(hl.ic_view));
 		help.setOpaque(true);
-//		help.setBackground(Color.GREEN);
-		
-		
+		// help.setBackground(Color.GREEN);
+
 		JPanel p = new JPanel(new BorderLayout());
 		JScrollPane sp = new JScrollPane(help);
-//		sp.setMaximumSize(helpPrefDim);
-		
+		// sp.setMaximumSize(helpPrefDim);
+
 		p.add(sp, BorderLayout.CENTER);
-//		p.setMaximumSize(helpPrefDim);
-		
+		// p.setMaximumSize(helpPrefDim);
+
 		return p;
 	}
 }
