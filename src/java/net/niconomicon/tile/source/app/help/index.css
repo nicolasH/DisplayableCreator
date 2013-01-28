@@ -1,0 +1,130 @@
+/* @override http://127.0.0.1/~niko/displayatorSite/index.css */
+
+html{
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	margin:-0px;
+	padding: -0px;
+	max-width: 800px;
+}
+
+body {
+	padding: 10px;
+	font-family: "Helvetica Neue", Helvetica, Geneva, Arial, sans-serif;
+	font-size: 14pt;
+	line-height: 20pt;
+	background-color: whitesmoke;
+	width:800px;
+	max-width: 800px;
+}
+
+
+ul{
+	margin: 10px;
+	list-style-type: disc;
+	list-style-position: inside;
+}
+
+.title{
+	text-shadow: 0px 1px 1px #4d4d4d;
+	text-shadow: #bbb 2px 2px 0;
+	/*margin-top: 40px;*/
+	text-align: center;	
+}
+.title h1{
+	font-size: 3em;
+}
+
+.title h1 span em{
+	font-size: 0.5em;	
+}
+
+h1{        
+	text-shadow:2px 2px 0 #bbb;
+	color: #222;
+	text-align: left;
+}
+
+h2{
+	text-shadow:2px 2px 0 #bbb;
+	color: #222;
+	text-align: left;
+}
+div.title h2 img{
+	float: left;
+	padding: 0.5em;
+}
+div.title h2{
+	text-shadow:2px 2px 0 #bbb;
+	color: #222;
+}
+
+h3{
+	text-shadow: #bbb 0px 1px 0;
+	color: #222;
+}
+
+a{
+	color: black;
+}
+
+
+.half {
+ 	padding: 1em;
+ 	padding-top: 0em;
+ 	padding-bottom: 0em;;
+}
+
+.half_right {
+	float: right;
+	width: 400px;
+ 	/*padding: 1em;*/
+}
+.half_left{
+	float: left;
+	width: 400px;
+ 	/*padding: 1em;*/
+}
+
+.image{
+	padding: 40px;
+}
+
+.imgCenter{
+	text-align: center;
+}
+
+.screenshot{
+	margin-left: 23px;
+	margin-top: -428px;	
+}
+
+.full{
+	width:100%;
+	margin:0 auto;
+	border-top: 1px solid #999;
+	overflow: hidden;
+}
+
+#extra{
+	/*float: left;*/
+	padding: 0em;
+}
+.contact{
+	font-size: 10pt;
+	font-style: italic;
+	color: #888888;
+	width: 800px;
+	border-top: 1px solid #888888;
+}
+.contact a{
+	color: #888888;
+} 
+.copy{
+	font-size: 0.9em;
+	font-style: italic;
+	color: #888888;
+	margin:0 auto;
+}
+.copy a{
+	color: #888888;
+}

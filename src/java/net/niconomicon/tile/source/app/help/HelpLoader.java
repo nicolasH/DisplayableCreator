@@ -25,54 +25,45 @@ public class HelpLoader {
 	public ImageIcon ic_view;
 	public ImageIcon ic_save;
 
-	 public String text_top;
-	public String text_main;
-	public String text_list;
-	public String text_prefs;
-	public String text_view;
-	public String text_save;
+	public URL help_url;
 
-	static final String iconsLocation = "net/niconomicon/tile/source/app/help/";
+	static final String helpLocation = "net/niconomicon/tile/source/app/help/";
+	static final String imagesLocation = helpLocation+"img/";
 	private static HelpLoader icons;
 
 	public HelpLoader() {
 		URL url;
 
-		url = this.getClass().getClassLoader().getResource(iconsLocation + "main.png");
+		url = this.getClass().getClassLoader().getResource(imagesLocation + "main.png");
 		ic_main = new ImageIcon(url);
-		url = this.getClass().getClassLoader().getResource(iconsLocation + "list.png");
+		url = this.getClass().getClassLoader().getResource(imagesLocation + "list.png");
 		ic_list = new ImageIcon(url);
-		url = this.getClass().getClassLoader().getResource(iconsLocation + "prefs.png");
+		url = this.getClass().getClassLoader().getResource(imagesLocation + "prefs.png");
 		ic_prefs = new ImageIcon(url);
-		url = this.getClass().getClassLoader().getResource(iconsLocation + "view.png");
+		url = this.getClass().getClassLoader().getResource(imagesLocation + "view.png");
 		ic_view = new ImageIcon(url);
 
-		url = this.getClass().getClassLoader().getResource(iconsLocation + "save.png");
+		url = this.getClass().getClassLoader().getResource(imagesLocation + "save.png");
 		ic_save = new ImageIcon(url);
 
-		text_top = readURL(this.getClass().getClassLoader().getResource(iconsLocation + "header.html"));
-		text_main = readURL(this.getClass().getClassLoader().getResource(iconsLocation + "main.html"));
-		text_list = readURL(this.getClass().getClassLoader().getResource(iconsLocation + "list.html"));
-		text_prefs = readURL(this.getClass().getClassLoader().getResource(iconsLocation + "prefs.html"));
-		text_view = readURL(this.getClass().getClassLoader().getResource(iconsLocation + "view.html"));
-		text_save = readURL(this.getClass().getClassLoader().getResource(iconsLocation + "save.html"));
+		help_url = this.getClass().getClassLoader().getResource(helpLocation + "index.html");
 
 	}
 
-	public String readURL(URL url) {
-		String outputLine = "";
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-
-			String inputLine;
-			while ((inputLine = in.readLine()) != null) {
-				System.out.println(inputLine);
-				outputLine += inputLine + "\n";
-			}
-			in.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return outputLine;
-	}
+//	public String readURL(URL url) {
+//		String outputLine = "";
+//		try {
+//			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+//
+//			String inputLine;
+//			while ((inputLine = in.readLine()) != null) {
+//				System.out.println(inputLine);
+//				outputLine += inputLine + "\n";
+//			}
+//			in.close();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return outputLine;
+//	}
 }
