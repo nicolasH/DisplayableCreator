@@ -32,7 +32,7 @@ public class DisplayableSharingWidget {
 	private static final String action_stopping = "Stopping the local network sharing ...";
 	private static final String action_stop = "Stop sharing the dislpayables over the network.";
 
-	private static final String action_export = "Export the displayable as a folder which contains an index,html with links to a local copy of all the displayables in the list (advanced).";
+	private static final String action_export = "Export the displayable as a folder which contains an index.html with links to a local copy of all the displayables in the list (advanced).";
 
 	private static final long inet_check_interval = 10000;
 

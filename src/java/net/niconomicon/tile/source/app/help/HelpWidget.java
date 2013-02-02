@@ -1,21 +1,22 @@
 package net.niconomicon.tile.source.app.help;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.text.html.HTMLEditorKit;
 
 import net.niconomicon.tile.source.app.fonts.FontLoader;
 
 public class HelpWidget extends JButton {
-
+	
+	static final String helpLocation = "net/niconomicon/tile/source/app/help/html/";
 	static final int columns = 20;
 	static final String HELP_TOOLTIP = "Shows the help for Displayable Creator";
 
@@ -24,8 +25,8 @@ public class HelpWidget extends JButton {
 	private static final String HELP_TITLE = "Displayable Creator Help";
 
 	private final Dimension helpPanelMinDim = new Dimension(600, 500);
-	private final Dimension helpPanelPrefDim = new Dimension(800, 700);
-	private final Dimension helpPanelMaxDim = new Dimension(800, 2000);
+	private final Dimension helpPanelPrefDim = new Dimension(700, 700);
+	private final Dimension helpPanelMaxDim = new Dimension(700, 2000);
 
 	public static HelpWidget createHelpWidget() {
 		if (wi == null) {
@@ -59,26 +60,27 @@ public class HelpWidget extends JButton {
 
 	private Container getHelpPanel() {
 
-
-		HelpLoader hl = new HelpLoader();
+		URL help_url = this.getClass().getClassLoader().getResource(helpLocation + "index.html");
 		JScrollPane pane = new JScrollPane();
 		JEditorPane editor = new JEditorPane();
 		try {
-			editor.setPage(hl.help_url);
+			editor.setPage(help_url);
 			editor.setEditable(false);
-//			HTMLEditorKit kit = (HTMLEditorKit)editor.getEditorKit();
 			editor.setAutoscrolls(true);
+			editor.setSize(helpPanelPrefDim);
 			editor.setMinimumSize(helpPanelMinDim);
 			editor.setMaximumSize(helpPanelMaxDim);
 			editor.setPreferredSize(helpPanelMaxDim);
 
-			System.out.println("Editor:"+editor.getPreferredScrollableViewportSize());
-			System.out.println("editor.width"+editor.getWidth());
-			pane = new JScrollPane(editor);
-			pane.setMaximumSize(helpPanelMaxDim);			
-			System.out.println("Editor:"+editor.getPreferredScrollableViewportSize());
-			System.out.println("editor.width"+editor.getWidth());
+			for (Component c: editor.getComponents()){
+				System.out.println(c.getName() + ":" + c.getSize()+ " -- "+c.getMaximumSize()  + " -- " + c.getMinimumSize() + " -- " + c.getPreferredSize());
+			}
 
+			pane = new JScrollPane(editor);
+			pane.setMaximumSize(helpPanelMaxDim);
+			pane.setSize(helpPanelPrefDim);
+			pane.setPreferredSize(helpPanelPrefDim);
+			pane.setMinimumSize(helpPanelMinDim);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

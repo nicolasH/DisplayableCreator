@@ -84,7 +84,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridx = x;
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
-		removeButton = FontLoader.getButtonFlatSmall(FontLoader.iconTrash);
+		removeButton = FontLoader.getButtonFlatSmall(FontLoader.iconRemove);
 		removeButton.setToolTipText("Click to remove this image from the queue");
 		this.add(removeButton, c);
 		removeButton.addActionListener(container.new RemovePanel(this));
@@ -158,8 +158,9 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
 
-		removeButton = FontLoader.getButtonFlatSmall(FontLoader.iconTrash);
-		removeButton.setToolTipText("Click to remove this Displayable from the list");
+		removeButton = FontLoader.getButtonFlatSmall(FontLoader.iconRemove);
+		adjustRemoveButton();
+		// removeButton.setToolTipText("Click to remove this Displayable from the list");
 		this.add(removeButton, c);
 		removeButton.addActionListener(container.new RemovePanel(this));
 
@@ -192,7 +193,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridx = x;
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
-		JButton cancel = FontLoader.getButtonFlatSmall(FontLoader.iconTrash);
+		JButton cancel = FontLoader.getButtonFlatSmall(FontLoader.iconRemove);
 		cancel.setToolTipText("Click to stop the Displayable creation and remove this item from the list");
 		this.add(cancel, c);
 
@@ -258,7 +259,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.gridx = x;
 		c.gridwidth = 1;
 		c.anchor = c.LINE_END;
-		JButton cancel = FontLoader.getButtonFlatSmall(FontLoader.iconTrash);
+		JButton cancel = FontLoader.getButtonFlatSmall(FontLoader.iconRemove);
 		cancel.setToolTipText("Click to remove this item from the list");
 		cancel.addActionListener(container.new RemovePanel(this));
 		this.add(cancel, c);
@@ -339,6 +340,19 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		FontLoader.adjustButtonFlatSmall(editButton);
 	}
 
+	public void adjustRemoveButton() {
+		if (Ref.isInTmpLocation(this.file.getAbsolutePath())) {
+			removeButton.setText(FontLoader.iconTrash);
+			removeButton.setToolTipText("Click to delete this un-saved displayable");
+			removeButton.setBackground(Color.orange);
+		} else {
+			removeButton.setText(FontLoader.iconRemove);
+			removeButton.setToolTipText("Click to remove this saved displayable from the list.");
+			removeButton.setBackground(defaultButtonBackground);
+		}
+		FontLoader.adjustButtonFlatSmall(removeButton);
+	}	
+	
 	public class ViewAction implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			container.getViewer().setDisplayable(getFullPath());

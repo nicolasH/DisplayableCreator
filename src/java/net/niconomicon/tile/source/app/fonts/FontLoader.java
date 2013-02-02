@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -19,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 
 public class FontLoader {
 
@@ -54,7 +56,8 @@ public class FontLoader {
 	public static String iconView = "\ue000";
 	public static String iconEdit = "\ue011";
 	public static String iconSave = "\ue024";
-	public static String iconTrash = "\ue002";
+	public static String iconRemove = "\ue002";
+	public static String iconTrash = "\ue00b";
 
 	public static String iconZoomIn = "\ue014";
 	public static String iconZoomOut = "\ue013";
@@ -65,6 +68,8 @@ public class FontLoader {
 	public static String iconHelp = "\ue001";
 
 	public static final Dimension btnSize = new Dimension(40, 40);
+	public static final Dimension btnMaxSize = new Dimension(50, 50);
+	
 	public static final Dimension btnSizeSmall = new Dimension(30, 30);
 
 	private static final Color defaultBackground = new JLabel().getBackground();
@@ -91,10 +96,10 @@ public class FontLoader {
 	public static void iconifyButton(JButton b, String icon) {
 		b.setText(icon);
 		b.setFont(getFontLoader().icomoon.deriveFont(24.0f));
-		b.setMaximumSize(btnSize);
 		b.setMinimumSize(btnSize);
 		b.setSize(btnSize);
 		b.setPreferredSize(btnSize);
+		b.setMaximumSize(btnMaxSize);
 		b.setForeground(Color.DARK_GRAY);
 	}
 
@@ -120,6 +125,8 @@ public class FontLoader {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
+		UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+
 		FontLoader.loader = new FontLoader();
 
 		JPanel p = new JPanel();
@@ -131,9 +138,9 @@ public class FontLoader {
 
 		JCheckBox box = new JCheckBox(FontLoader.iconAction);
 		box.setFont(actionGreen.getFont());
-		
+
 		p.add(box);
-		
+
 		JButton actionGray = getButton(FontLoader.iconAction);
 		actionGray.setForeground(Color.GRAY);
 
@@ -160,7 +167,7 @@ public class FontLoader {
 		p.add(getButtonFlatSmall(FontLoader.iconEdit));
 		p.add(getButtonFlatSmall(FontLoader.iconSave));
 		p.add(getButtonFlatSmall(FontLoader.iconView));
-		p.add(getButtonFlatSmall(FontLoader.iconTrash));
+		p.add(getButtonFlatSmall(FontLoader.iconRemove));
 		p.add(new JLabel(""));
 
 		p.add(getButtonFlatSmall(FontLoader.iconZoomIn));
@@ -173,6 +180,7 @@ public class FontLoader {
 		p.add(new JLabel(""));
 		p.add(new JLabel(""));
 		p.add(new JLabel(""));
+
 		for (int i = 0; i < 100; i++) {
 			int codePoint = i + 57343;
 			String s = new String(Character.toChars(codePoint));

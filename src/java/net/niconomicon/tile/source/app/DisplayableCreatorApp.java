@@ -6,11 +6,10 @@ package net.niconomicon.tile.source.app;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
-import net.niconomicon.tile.source.app.fonts.FontLoader;
 import net.niconomicon.tile.source.app.help.HelpWidget;
 import net.niconomicon.tile.source.app.input.DisplayableCreatorInputPanel;
 import net.niconomicon.tile.source.app.input.QueueListView;
@@ -87,6 +86,28 @@ public class DisplayableCreatorApp {
 	}
 
 	public static void main(String[] args) {
+		try{
+			// if os == windows
+			String motif = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+			String gtk = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+			String metal ="javax.swing.plaf.metal.MetalLookAndFeel";
+			String windows = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+			String lnf_id_metal = "Metal";
+			String lnf_id_osx = "Acqua";
+			String lnf_id_gtk = "GTK"; // ok. font in the list look too big
+			String lnf_id_windows = "";
+			String lnf_id_motif = "";
+			
+			//UIManager.setLookAndFeel(windows);
+			UIManager.setLookAndFeel(metal);
+//			UIManager.setLookAndFeel(gtk);
+			//UIManager.setLookAndFeel(motif); // buttons too small	
+			
+			System.out.println("UI look and feel:"+UIManager.getLookAndFeel().getID());
+		}catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
 		DisplayableCreatorApp app = new DisplayableCreatorApp();
 	}
 }
