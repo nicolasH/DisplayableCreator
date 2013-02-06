@@ -83,9 +83,8 @@ Displayator app on your iOS device.
 <img src="img/view.png">
 
 When you click on the _eye_ icon in the displayable list, the viewer
-will appear with the selected displayable.
+will appear with the selected displayable. Clicking on the looking glasses with + and - will zoom and de-zoom the displayable.
 
-- clicking on the diagonal expanding arrows will make the view go full-screen.
-- clicking on the looking glasses with + and - will zoom and de-zoom the displayable.
+<!--- clicking on the diagonal expanding arrows will make the view go full-screen.-->
 
 

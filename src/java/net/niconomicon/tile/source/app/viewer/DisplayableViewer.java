@@ -5,8 +5,13 @@ package net.niconomicon.tile.source.app.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
@@ -18,14 +23,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.fonts.FontLoader;
+import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorParallel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.actions.FullScreenResizer;
 import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
- * @author Nicolas Hoibian
- * A class used to view a Displayable - Handles the scrolling, zooming and other user interactions.
+ * @author Nicolas Hoibian A class used to view a Displayable - Handles the
+ *         scrolling, zooming and other user interactions.
  */
 public class DisplayableViewer extends JPanel {
 
@@ -56,6 +61,9 @@ public class DisplayableViewer extends JPanel {
 		viewerFrame = new JFrame();
 		this.setLayout(new BorderLayout());
 		JScrollPane sp = new JScrollPane(tileViewer);
+		DragListener dl = new DragListener();
+		sp.addMouseMotionListener(dl);
+		sp.addMouseListener(dl);
 		sp.setMinimumSize(new Dimension(340, 340));
 		this.add(sp, BorderLayout.CENTER);
 
@@ -86,27 +94,31 @@ public class DisplayableViewer extends JPanel {
 		toolBar.add(zP);
 
 		JButton b;
-//		toolBar.addSeparator();
-//		b = new JButton(loader.ic_itouch_24_v);
-//		b.setToolTipText("Resize window to iphone screen size (vertical : ~ 320x480 pixels)");
-//		b.addActionListener(new Resizer(viewerFrame, new Dimension(340, 500)));
-//		toolBar.add(b);
-//		b = new JButton(loader.ic_itouch_24_h);
-//		b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
-//		b.addActionListener(new Resizer(viewerFrame, new Dimension(500, 340)));
-//		toolBar.add(b);
+		// toolBar.addSeparator();
+		// b = new JButton(loader.ic_itouch_24_v);
+		// b.setToolTipText("Resize window to iphone screen size (vertical : ~ 320x480 pixels)");
+		// b.addActionListener(new Resizer(viewerFrame, new Dimension(340,
+		// 500)));
+		// toolBar.add(b);
+		// b = new JButton(loader.ic_itouch_24_h);
+		// b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
+		// b.addActionListener(new Resizer(viewerFrame, new Dimension(500,
+		// 340)));
+		// toolBar.add(b);
 
-		toolBar.addSeparator();
-		b = FontLoader.getButton(FontLoader.iconExpand);
-		b.setToolTipText("Make the Displayable view fullscreen");
-		b.addActionListener(new FullScreenResizer(viewerFrame, b, toolBar));
-		toolBar.add(b);
+		// Buggy when closing the toolbar in full screen mode:(
+		// toolBar.addSeparator();
+		// b = FontLoader.getButton(FontLoader.iconExpand);
+		// b.setToolTipText("Make the Displayable view fullscreen");
+		// b.addActionListener(new FullScreenResizer(viewerFrame, b, toolBar));
+		// toolBar.add(b);
 
-		toolBar.add(infos);
-		toolBar.add(loadingLabel);
-		toolBar.add(progress);
+		// toolBar.add(infos);
+		// toolBar.add(loadingLabel);
+		// toolBar.add(progress);
 
-		this.add(toolBar, BorderLayout.NORTH);
+		toolBar.setOrientation(JToolBar.VERTICAL);
+		this.add(toolBar, BorderLayout.WEST);
 	}
 
 	public void setDisplayable(String displayableLocation) {
@@ -182,4 +194,46 @@ public class DisplayableViewer extends JPanel {
 		}
 	}
 
+	public static void main(String[] args) {
+		SQLiteDisplayableCreatorParallel.loadLib();
+		DisplayableViewer viewer = DisplayableViewer.createInstance();
+		viewer.setDisplayable("/Users/niko/displayables/" + "tpg-urbain-a218f603b2fc.disp");
+
+		viewer.viewerFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+	}
+
+	private class DragListener implements MouseMotionListener, MouseListener {
+		private Point lastPoint;
+
+		public void mousePressed(MouseEvent e) {
+			lastPoint = e.getPoint();
+			System.out.println("Last Point" + lastPoint);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			lastPoint = null;
+		}
+
+		public void mouseDragged(MouseEvent e) {
+			if (lastPoint != null) {
+				Point delta = new Point(lastPoint.x - e.getPoint().x, lastPoint.y - e.getPoint().y);
+				Rectangle current = tileViewer.getVisibleRect();
+				tileViewer.scrollRectToVisible(new Rectangle(current.x + delta.x, current.y + delta.y, current.width, current.height));
+				lastPoint = e.getPoint();
+			}
+		}
+
+		public void mouseClicked(MouseEvent e) {
+		}
+
+		public void mouseMoved(MouseEvent e) {
+		}
+
+		public void mouseExited(MouseEvent e) {
+		}
+
+		public void mouseEntered(MouseEvent e) {
+		}
+	}
 }
