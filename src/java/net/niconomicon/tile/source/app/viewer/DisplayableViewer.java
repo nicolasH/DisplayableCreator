@@ -4,6 +4,7 @@
 package net.niconomicon.tile.source.app.viewer;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -61,6 +62,7 @@ public class DisplayableViewer extends JPanel {
 		viewerFrame = new JFrame();
 		this.setLayout(new BorderLayout());
 		JScrollPane sp = new JScrollPane(tileViewer);
+		tileViewer.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 		DragListener dl = new DragListener();
 		sp.addMouseMotionListener(dl);
 		sp.addMouseListener(dl);

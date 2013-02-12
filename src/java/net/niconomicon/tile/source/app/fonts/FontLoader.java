@@ -6,12 +6,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -100,6 +100,7 @@ public class FontLoader {
 		b.setSize(btnSize);
 		b.setPreferredSize(btnSize);
 		b.setMaximumSize(btnMaxSize);
+		b.setMargin(new Insets(2, 2, 2, 2));
 		b.setForeground(Color.DARK_GRAY);
 	}
 
@@ -125,7 +126,7 @@ public class FontLoader {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+		//UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 
 		FontLoader.loader = new FontLoader();
 

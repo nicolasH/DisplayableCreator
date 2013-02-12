@@ -32,7 +32,7 @@ public class DisplayableCreatorApp {
 	public static int ThreadCount = 4;
 
 	public DisplayableCreatorApp() {
-		ThreadCount = Math.max(Runtime.getRuntime().availableProcessors()+1, ThreadCount);
+		ThreadCount = Math.max(Runtime.getRuntime().availableProcessors() + 1, ThreadCount);
 		init();
 	}
 
@@ -42,7 +42,7 @@ public class DisplayableCreatorApp {
 		QueueListView queue = new QueueListView(displayableViewer);
 		sharingWidget = new DisplayableSharingWidget(queue);
 		tileCreatorPanel = new DisplayableCreatorInputPanel(queue, sharingWidget);
-		
+
 		// Font font = new Font(null, Font.BOLD, 16);
 		// Border etch = BorderFactory.createEtchedBorder();
 		// tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch,
@@ -58,7 +58,7 @@ public class DisplayableCreatorApp {
 		bottom.add(sharingWidget.getSharingButton());
 		bottom.add(tileCreatorPanel.getListButton());
 		bottom.add(AppPreferences.getPreferences().getPreferencesButton());
-//		bottom.add(sharingWidget.getExportButton());
+		// bottom.add(sharingWidget.getExportButton());
 		bottom.add(HelpWidget.createHelpWidget());
 		p.add(bottom, BorderLayout.SOUTH);
 		frame.setContentPane(p);
@@ -86,25 +86,28 @@ public class DisplayableCreatorApp {
 	}
 
 	public static void main(String[] args) {
-		try{
+		try {
 			// if os == windows
-			String motif = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
-			String gtk = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
-			String metal ="javax.swing.plaf.metal.MetalLookAndFeel";
+			// String motif = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+			// // to 40^2 is too small for the 24pt icon on main screen
+			// String gtk = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+			// String metal ="javax.swing.plaf.metal.MetalLookAndFeel"; // to
+			// 40^2 is too small for the 24pt icon on main screen
 			String windows = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
-			String lnf_id_metal = "Metal";
-			String lnf_id_osx = "Acqua";
-			String lnf_id_gtk = "GTK"; // ok. font in the list look too big
-			String lnf_id_windows = "";
-			String lnf_id_motif = "";
-			
-			//UIManager.setLookAndFeel(windows);
-			UIManager.setLookAndFeel(metal);
-//			UIManager.setLookAndFeel(gtk);
-			//UIManager.setLookAndFeel(motif); // buttons too small	
-			
-			System.out.println("UI look and feel:"+UIManager.getLookAndFeel().getID());
-		}catch (Exception e) {
+			// String lnf_id_metal = "Metal";
+			// String lnf_id_osx = "Acqua";
+			// String lnf_id_gtk = "GTK"; // ok. font in the list look too big
+			// String lnf_id_windows = "";
+			// String lnf_id_motif = "Motif";
+
+			// UIManager.setLookAndFeel(motif);
+			// UIManager.setLookAndFeel(gtk);
+			// UIManager.setLookAndFeel(metal); // buttons too small
+			if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+				UIManager.setLookAndFeel(windows);
+			}
+			System.out.println("UI look and feel:" + UIManager.getLookAndFeel().getID());
+		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO: handle exception
 		}
