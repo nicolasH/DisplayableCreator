@@ -56,9 +56,10 @@ to view the save dialog (see bellow).
   saved. Clicking on it will popup the save/edit dialog (see bellow).
 - Clicking on the _eye icon_ will activate the displayable viewer
   window, loading it with the selected displayable.
-- Clicking on the _x icon_ allows you to remove the displayable from
-  the list. if the displayable is unsaved, removing it from the list
-  will remove it from its temporary place on your hard drive.
+- Clicking on the _x icon_ allows you to remove the displayable or
+  queued image from the list. If the displayable is unsaved, removing
+  it from the list will remove it from its temporary place on your
+  hard drive.
 
 
 ## The Edit / Save dialog

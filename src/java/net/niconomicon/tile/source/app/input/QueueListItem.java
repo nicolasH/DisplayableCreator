@@ -341,18 +341,18 @@ public class QueueListItem extends JPanel implements Inhibitor {
 	}
 
 	public void adjustRemoveButton() {
-		if (Ref.isInTmpLocation(this.file.getAbsolutePath())) {
-			removeButton.setText(FontLoader.iconTrash);
-			removeButton.setToolTipText("Click to delete this un-saved displayable");
-			removeButton.setBackground(Color.orange);
-		} else {
-			removeButton.setText(FontLoader.iconRemove);
-			removeButton.setToolTipText("Click to remove this saved displayable from the list.");
-			removeButton.setBackground(defaultButtonBackground);
-		}
+		// if (Ref.isInTmpLocation(this.file.getAbsolutePath())) {
+		// removeButton.setText(FontLoader.iconTrash);
+		// removeButton.setToolTipText("Click to delete this un-saved displayable");
+		// removeButton.setBackground(Color.orange);
+		// } else {
+		removeButton.setText(FontLoader.iconRemove);
+		removeButton.setToolTipText("Click to remove this item from the list.");
+		removeButton.setBackground(defaultButtonBackground);
+		// }
 		FontLoader.adjustButtonFlatSmall(removeButton);
-	}	
-	
+	}
+
 	public class ViewAction implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			container.getViewer().setDisplayable(getFullPath());
