@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jnlp spec="1.0+" codebase="http://www.displayator.com/DisplayableCreator/beta/">
     <information>
-        <title>Displayable Creator - 2.0.0-beta1</title>
+        <title>Displayable Creator - 2.0.0-beta2</title>
         <vendor>Nicolas Hoibian</vendor>
         <description>This app is meant to create Displayables for the Displayator iPad, iPhone & iPod touch app</description>
         <description kind="short">DisplayableCreator</description>
@@ -13,7 +13,7 @@
   </security>
 
     <resources>
-        <j2se version="1.5+" java-vm-args="-Xmx1524M"/>
+        <j2se version="1.5+" java-vm-args="-Xmx2048M"/>
         $dependencies
 	</resources>
 	<application-desc main-class="$mainClass"/>
