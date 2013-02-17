@@ -69,12 +69,12 @@ public class DisplayableViewer extends JPanel {
 		sp.setMinimumSize(new Dimension(340, 340));
 		this.add(sp, BorderLayout.CENTER);
 
-		this.setMinimumSize(new Dimension(320, 320));
+		this.setMinimumSize(new Dimension(500, 320));
 		viewerFrame.setContentPane(this);
-		viewerFrame.setMinimumSize(new Dimension(300, 300));
+		viewerFrame.setMinimumSize(new Dimension(500, 300));
 		viewerFrame.setLocation(400, 200);
-		viewerFrame.setSize(340, 500);
-		this.setPreferredSize(new Dimension(340, 340));
+		viewerFrame.setSize(600, 400);
+		this.setPreferredSize(new Dimension(600, 400));
 
 		toolBar = new JToolBar("Zoom", JToolBar.HORIZONTAL);
 		currentZoom = new JLabel();
@@ -86,38 +86,16 @@ public class DisplayableViewer extends JPanel {
 		IconsLoader loader = IconsLoader.getIconsLoader();
 
 		zM = FontLoader.getButton(FontLoader.iconZoomOut);
+		zM.setMaximumSize(new Dimension(40, 40));
 		zM.addActionListener(new ZoomAction());
 		toolBar.add(zM);
 
-		toolBar.add(currentZoom);
-
 		zP = FontLoader.getButton(FontLoader.iconZoomIn);
 		zP.addActionListener(new ZoomAction());
+		zP.setMaximumSize(new Dimension(40, 40));
 		toolBar.add(zP);
 
 		JButton b;
-		// toolBar.addSeparator();
-		// b = new JButton(loader.ic_itouch_24_v);
-		// b.setToolTipText("Resize window to iphone screen size (vertical : ~ 320x480 pixels)");
-		// b.addActionListener(new Resizer(viewerFrame, new Dimension(340,
-		// 500)));
-		// toolBar.add(b);
-		// b = new JButton(loader.ic_itouch_24_h);
-		// b.setToolTipText("Resize window to iphone screen size (horizontal: ~ 480x320 pixels)");
-		// b.addActionListener(new Resizer(viewerFrame, new Dimension(500,
-		// 340)));
-		// toolBar.add(b);
-
-		// Buggy when closing the toolbar in full screen mode:(
-		// toolBar.addSeparator();
-		// b = FontLoader.getButton(FontLoader.iconExpand);
-		// b.setToolTipText("Make the Displayable view fullscreen");
-		// b.addActionListener(new FullScreenResizer(viewerFrame, b, toolBar));
-		// toolBar.add(b);
-
-		// toolBar.add(infos);
-		// toolBar.add(loadingLabel);
-		// toolBar.add(progress);
 
 		toolBar.setOrientation(JToolBar.VERTICAL);
 		this.add(toolBar, BorderLayout.WEST);
@@ -145,6 +123,15 @@ public class DisplayableViewer extends JPanel {
 		t.start();
 	}
 
+	protected void updateTitle() {
+		ZoomLevel zl = currentSource.getMaxInfo();
+		float megapixels = (zl.width * zl.height) / 100000;
+		megapixels = Math.round(megapixels) / 10;
+		String title = currentSource.getTitle() + " \u2014 " + zl.width + "x" + zl.height + " (" + megapixels + " Mpx)";
+		title += " \u2014 Zoom: " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + "/" + currentSource.getMaxZ() + " ";
+		viewerFrame.setTitle(title);
+	}
+
 	private class TileSourceSetter implements Runnable {
 		String tileSourceLocation;
 
@@ -157,13 +144,17 @@ public class DisplayableViewer extends JPanel {
 			zP.setEnabled(false);
 			loadingLabel.setText("Loading displayable ...");
 			progress.setIndeterminate(true);
-			currentZoom.setText(" ? / ? ");
+			// currentZoom.setText(" ? / ? ");
 			currentSource = new DisplayableSource(displayableLocation, loadingLabel, tileViewer);
 			// currentSource.registerView(tileViewer);
 			tileViewer.setDisplayable(currentSource);
-			currentZoom.setText(" " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ() + " ");
+			// currentZoom.setText(" " + (currentSource.getMaxZ() -
+			// tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ() +
+			// " ");
 			ZoomLevel zl = currentSource.getMaxInfo();
-			infos.setText(" Original size : " + zl.width + " px * " + zl.height + " px. ");
+			updateTitle();
+			// infos.setText(" Original size : " + zl.width + " px * " +
+			// zl.height + " px. ");
 
 			tileViewer.revalidate();
 			revalidate();
@@ -182,27 +173,18 @@ public class DisplayableViewer extends JPanel {
 
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource().equals(zP)) {
-				System.out.println("zoom +");
 				tileViewer.incrZ();
 			}
 			if (e.getSource().equals(zM)) {
-				System.out.println("zoom -");
 				tileViewer.decrZ();
 			}
 			zP.setEnabled(tileViewer.canZoomIn());
 			zM.setEnabled(tileViewer.canZoomOut());
-
-			currentZoom.setText(" " + (currentSource.getMaxZ() - tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ() + " ");
+			updateTitle();
+			// currentZoom.setText(" " + (currentSource.getMaxZ() -
+			// tileViewer.currentLevel.z) + " / " + currentSource.getMaxZ() +
+			// " ");
 		}
-	}
-
-	public static void main(String[] args) {
-		SQLiteDisplayableCreatorParallel.loadLib();
-		DisplayableViewer viewer = DisplayableViewer.createInstance();
-		viewer.setDisplayable("/Users/niko/displayables/" + "tpg-urbain-a218f603b2fc.disp");
-
-		viewer.viewerFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 	}
 
 	private class DragListener implements MouseMotionListener, MouseListener {
@@ -210,7 +192,7 @@ public class DisplayableViewer extends JPanel {
 
 		public void mousePressed(MouseEvent e) {
 			lastPoint = e.getPoint();
-			System.out.println("Last Point" + lastPoint);
+			// System.out.println("Last Point" + lastPoint);
 		}
 
 		public void mouseReleased(MouseEvent e) {
@@ -226,16 +208,20 @@ public class DisplayableViewer extends JPanel {
 			}
 		}
 
-		public void mouseClicked(MouseEvent e) {
-		}
+		public void mouseClicked(MouseEvent e) {}
 
-		public void mouseMoved(MouseEvent e) {
-		}
+		public void mouseMoved(MouseEvent e) {}
 
-		public void mouseExited(MouseEvent e) {
-		}
+		public void mouseExited(MouseEvent e) {}
 
-		public void mouseEntered(MouseEvent e) {
-		}
+		public void mouseEntered(MouseEvent e) {}
 	}
+
+	public static void main(String[] args) {
+		SQLiteDisplayableCreatorParallel.loadLib();
+		DisplayableViewer viewer = DisplayableViewer.createInstance();
+		viewer.setDisplayable("/Users/niko/TileSources/displayables/" + "tpg-plan-urbain-mai-2012-300-dpi.disp");
+		viewer.viewerFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
 }
