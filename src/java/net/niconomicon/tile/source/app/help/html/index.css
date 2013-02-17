@@ -10,7 +10,7 @@ html{
 body {
 	padding: 10px;
 	font-family: "Helvetica Neue", Helvetica, Geneva, Arial, sans-serif;
-	font-size: 14pt;
+	font-size: 16pt;
 	line-height: 20pt;
 	background-color: whitesmoke;
 	width:800px;
@@ -25,7 +25,6 @@ ul{
 }
 
 .title{
-	text-shadow: 0px 1px 1px #4d4d4d;
 	text-shadow: #bbb 2px 2px 0;
 	/*margin-top: 40px;*/
 	text-align: center;	
@@ -39,13 +38,13 @@ ul{
 }
 
 h1{        
-	text-shadow:2px 2px 0 #bbb;
+	font-size: 1.5em;
 	color: #222;
 	text-align: left;
 }
 
 h2{
-	text-shadow:2px 2px 0 #bbb;
+	font-size: 1.2em;
 	color: #222;
 	text-align: left;
 }
@@ -54,12 +53,10 @@ div.title h2 img{
 	padding: 0.5em;
 }
 div.title h2{
-	text-shadow:2px 2px 0 #bbb;
 	color: #222;
 }
 
 h3{
-	text-shadow: #bbb 0px 1px 0;
 	color: #222;
 }
 

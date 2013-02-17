@@ -1,8 +1,8 @@
-## Displayable Creator Help
+# Displayable Creator Help
 
 
 
-#### Principle
+## Principle
 
 The aim of the displayable creator is to create displayable and to
 open Displayables. A displayable is created from a usually big image.
@@ -10,7 +10,7 @@ open Displayables. A displayable is created from a usually big image.
 Once the displayable Creator is launched, just drop images on the main
 window to create Displayables, or drop Displayables to view them.
 
-#### Main Window
+## Main Window
 
 <img src="img/main.png">
 
@@ -23,7 +23,7 @@ The main window give access to all the functionality of the app.
 - the help icon gives access to this very document.
 
 
-#### Preferences
+## Preferences
 
 <img src="img/prefs.png">
 
@@ -41,7 +41,7 @@ The main window give access to all the functionality of the app.
   size.
 
 
-#### Displayable & Image List
+## Displayable & Image List
 
 <img src="img/list.png">
 
@@ -61,7 +61,7 @@ to view the save dialog (see bellow).
   will remove it from its temporary place on your hard drive.
 
 
-#### The Edit / Save dialog
+## The Edit / Save dialog
 
 <img src="img/save.png">
 
@@ -78,12 +78,14 @@ Displayator app on your iOS device.
   displayable app, on top of a miniature of the image.
 
 
-#### Viewing displayables
+## Viewing displayables
 
 <img src="img/view.png">
 
 When you click on the _eye_ icon in the displayable list, the viewer
 will appear with the selected displayable. Clicking on the looking glasses with + and - will zoom and de-zoom the displayable.
+
+You can move the view around by dragging the image.
 
 <!--- clicking on the diagonal expanding arrows will make the view go full-screen.-->
 
