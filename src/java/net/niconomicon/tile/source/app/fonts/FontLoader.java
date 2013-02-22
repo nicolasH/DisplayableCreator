@@ -46,6 +46,10 @@ public class FontLoader {
 		icomoon = Font.createFont(Font.TRUETYPE_FONT, url.openStream());
 	}
 
+	public Font getFont() {
+		return icomoon;
+	}
+
 	public static String iconAction = "\ue028";
 	public static String iconWait = "\ue007";
 
@@ -69,7 +73,7 @@ public class FontLoader {
 
 	public static final Dimension btnSize = new Dimension(40, 40);
 	public static final Dimension btnMaxSize = new Dimension(50, 50);
-	
+
 	public static final Dimension btnSizeSmall = new Dimension(30, 30);
 
 	private static final Color defaultBackground = new JLabel().getBackground();
@@ -126,7 +130,7 @@ public class FontLoader {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		//UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+		// UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 
 		FontLoader.loader = new FontLoader();
 

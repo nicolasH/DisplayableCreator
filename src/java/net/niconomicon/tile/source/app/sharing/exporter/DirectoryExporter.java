@@ -9,8 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -25,7 +25,7 @@ import net.niconomicon.tile.source.app.Ref;
  */
 public class DirectoryExporter {
 
-	public static void showDialog(JComponent parent, Map<String, String> nameToFiles) {
+	public static void showDialog(JComponent parent, List<String> fullPaths) {
 		JFileChooser chooser = new JFileChooser();
 
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -33,7 +33,7 @@ public class DirectoryExporter {
 		boolean notDecided = true;
 		long weight = 0;
 		int res0, res1, res2;
-		for (String file : nameToFiles.values()) {
+		for (String file : fullPaths) {
 			File f = new File(file);
 			if (f.exists()) {
 				weight += f.length();
@@ -51,16 +51,16 @@ public class DirectoryExporter {
 		// " of each displayable. It will also contain a JSON file providing the same descriptions in a Displayator-friendly way. \n"
 		// +
 		// "You can point an iPhone web browser at the HTML page. That page contains a link that, when tapped, will launch the Displayator "
-		// + "and make it open the list of Displayables availables in that page.\n"
+		// +
+		// "and make it open the list of Displayables availables in that page.\n"
 		// + "\n"
-		// + "If you upload this directory to a web host, you can share your displayables on the Internet.\n"
+		// +
+		// "If you upload this directory to a web host, you can share your displayables on the Internet.\n"
 		// + "\n" + "The size of the directory will be " + w + " MB.\n"
 		// + "\n Are you sure you want to continue ?";
-		String text =
-				"Select a directory and the shared displayables will be copied into it, as well as an html index "
-						+ "and a json representation of the list (+thumbnails and miniatures). You can then upload this directory to a web site for easy"
-						+ " internet sharing of your displayables." + "\n" + "The size of the directory will be " + w
-						+ " MB.";
+		String text = "Select a directory and the shared displayables will be copied into it, as well as an html index "
+				+ "and a json representation of the list (+thumbnails and miniatures). You can then upload this directory to a web site for easy"
+				+ " internet sharing of your displayables." + "\n" + "The size of the directory will be " + w + " MB.";
 
 		JTextArea area = new JTextArea(text);
 		area.setColumns(40);
@@ -71,10 +71,8 @@ public class DirectoryExporter {
 		String[] options = new String[] { "Create " + w + " MB directory", " Nevermind !" };
 
 		while (notDecided) {
-			res0 =
-					JOptionPane.showOptionDialog(parent, area, "Export " + nameToFiles.size() + " files in a new, " + w
-							+ " MB directory", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-							options[1]);
+			res0 = JOptionPane.showOptionDialog(parent, area, "Export " + fullPaths.size() + " files in a new, " + w + " MB directory",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 			if (res0 != JOptionPane.YES_OPTION) { return; }
 			res1 = chooser.showSaveDialog(parent);
 			if (res1 != JFileChooser.APPROVE_OPTION) { return; }
@@ -90,7 +88,7 @@ public class DirectoryExporter {
 				}
 			}
 			try {
-				copyFiles(chooser.getSelectedFile().getAbsolutePath(), nameToFiles);
+				copyFiles(chooser.getSelectedFile().getAbsolutePath(), fullPaths);
 				notDecided = false;
 			} catch (IOException ex) {
 				JOptionPane.showMessageDialog(parent, ex, "Error while trying to export the files into "
@@ -99,7 +97,7 @@ public class DirectoryExporter {
 		}
 	}
 
-	public static void copyFiles(String directory, Map<String, String> nameToFiles) throws IOException {
+	public static void copyFiles(String directory, List<String> fullPaths) throws IOException {
 		File destFile = new File(directory);
 		if (!destFile.exists() || !destFile.isDirectory()) {
 			destFile.mkdir();
@@ -107,20 +105,18 @@ public class DirectoryExporter {
 
 		FileChannel source = null;
 		FileChannel destination = null;
-		for (Entry<String, String> entry : nameToFiles.entrySet()) {
-			String name = entry.getKey();
-			String fpath = entry.getValue();
-
+		for (String fpath : fullPaths) {
 			File file = new File(fpath);
-			String destPath = destFile.getAbsolutePath() + File.separator + Ref.fileSansPath(name);
+			String fname = Ref.fileSansPath(fpath);
+			String destPath = destFile.getAbsolutePath() + File.separator + fname;
 
 			try {
 				destination = new FileOutputStream(destPath).getChannel();
 				if (!file.exists()) {
-					System.out.println("Creating " + name);
+					System.out.println("Creating " + destPath);
 					destination.write(ByteBuffer.wrap(fpath.getBytes()));
 				} else {
-					System.out.println("Writing " + name);
+					System.out.println("Overwriting " + destPath);
 					source = new FileInputStream(file).getChannel();
 					destination.transferFrom(source, 0, source.size());
 				}

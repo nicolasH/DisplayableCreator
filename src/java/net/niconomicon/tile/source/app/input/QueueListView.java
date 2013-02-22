@@ -1,5 +1,7 @@
 package net.niconomicon.tile.source.app.input;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
@@ -11,10 +13,14 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.niconomicon.tile.source.app.DisplayablesSource;
+import net.niconomicon.tile.source.app.fonts.FontLoader;
+import net.niconomicon.tile.source.app.sharing.SharingManager;
+import net.niconomicon.tile.source.app.sharing.exporter.DirectoryExporter;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 public class QueueListView extends JPanel implements DisplayablesSource {
@@ -24,7 +30,9 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 	Object displayablesLock;
 	DisplayableViewer viewer;
 	SaveDialog saveDialog;
-	JLabel lastItem;
+	JButton lastItem;
+
+	// JLabel lastItem;
 
 	public QueueListView(DisplayableViewer viewer) {
 		super();
@@ -40,7 +48,7 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 		return saveDialog;
 	}
 
-	public void init() {
+	private void init() {
 
 		itemsToTransformQueue = new ConcurrentLinkedQueue<QueueListItem>();
 		allItemsList = new Vector<QueueListItem>();
@@ -50,11 +58,19 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 		saveDialog = new SaveDialog();
 		this.setSize(QueueListItem.minWidth, 400);
 		this.setMinimumSize(new Dimension(QueueListItem.minWidth, QueueListItem.minHeight));
-		lastItem = new JLabel("<html>&mdash; ~ &mdash;</html>", JLabel.CENTER);
+
+		lastItem = FontLoader.getButtonFlatSmall("<html>&mdash; " + FontLoader.iconExport + " &mdash;</html>");
+		lastItem.setToolTipText("Export the Displayables as a directory with HTML & JSON indexes");
+		lastItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DirectoryExporter.showDialog(lastItem, getDisplayables());
+			}
+		});
 		lastItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 40));
 		lastItem.setMinimumSize(new Dimension(350, 40));
 		lastItem.setPreferredSize(new Dimension(350, 40));
 		this.add(lastItem, getConstraintForY(0));
+
 	}
 
 	private void makeLastItemLast() {

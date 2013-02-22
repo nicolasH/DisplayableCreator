@@ -209,9 +209,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		JProgressBar progressIndicator = new JProgressBar(0, 100);
 		this.add(progressIndicator, c);
 		progressIndicator.setIndeterminate(true);
-
 		finishPanel(60);
-
 	}
 
 	public void arrangeErrorPanel(Exception ex) {

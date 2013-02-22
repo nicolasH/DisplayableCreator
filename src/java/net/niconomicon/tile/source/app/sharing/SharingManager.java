@@ -54,10 +54,6 @@ public class SharingManager {
 		service.setSharedDisplayables(sharedDisplayables);
 	}
 
-	public void exportDisplayables(JComponent parent) {
-		DirectoryExporter.showDialog(parent, service.getMappings());
-	}
-
 	public void startSharing() throws Exception {
 		System.out.println("supposedly starting to share on port :" + port);
 

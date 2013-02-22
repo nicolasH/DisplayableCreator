@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import net.niconomicon.tile.source.app.AppPreferences;
@@ -44,14 +45,13 @@ public class DisplayableSharingWidget {
 		ACTIVATE, DEACTIVATE, UPDATELIST, RESTART
 	}
 
+	Color COLOR_INACTIVE = Color.ORANGE;
+	Color defaultColor;
+
 	DS currentStatus = DS.DEACTIVATED;
 	SharingManager sharingManager;
 
 	JCheckBox actionCheckBox;
-
-	JButton exportButton;
-
-	Color defaultColor;
 
 	DisplayablesSource displayablesSource;
 	Timer timer;
@@ -59,7 +59,6 @@ public class DisplayableSharingWidget {
 	Queue<DA> switchQueues;
 	IconsLoader ic;
 
-	Color COLOR_INACTIVE = Color.ORANGE;
 
 	public DisplayableSharingWidget(DisplayablesSource dispList) {
 		this.displayablesSource = dispList;
@@ -80,9 +79,6 @@ public class DisplayableSharingWidget {
 		actionCheckBox.setFont(b.getFont());
 		actionCheckBox.setToolTipText(action_start);
 		actionCheckBox.setForeground(COLOR_INACTIVE);
-		
-		exportButton = FontLoader.getButton(FontLoader.iconExport);
-		exportButton.setToolTipText(action_export);
 
 		actionCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -102,12 +98,6 @@ public class DisplayableSharingWidget {
 			}
 		});
 
-		exportButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				sharingManager.exportDisplayables(DisplayableSharingWidget.this.exportButton);
-			}
-		});
-
 		timer.scheduleAtFixedRate(new LocalHostChecker(), inet_check_interval, inet_check_interval);
 
 		Thread t0 = new Thread(new DisplayableMonitor());
@@ -116,10 +106,6 @@ public class DisplayableSharingWidget {
 		t1.start();
 		Thread t2 = new Thread(new PortMonitor());
 		t2.start();
-	}
-
-	public JButton getExportButton() {
-		return exportButton;
 	}
 
 	public JCheckBox getSharingButton() {
