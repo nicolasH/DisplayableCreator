@@ -43,6 +43,10 @@ public final class Ref {
 	public static final String prefKey_port = "DisplayablePortKey";
 	public static final String prefKey_autostart = "DisplayableAutostartKey";
 
+	public static final String prefKey_warnAboutUpdate = "WarnAboutUpdate";
+	public static final String prefKey_checkForUpdate = "CheckForUpdate";
+	public static final String prefKey_lastSeenVersion = "LastSeenVersion";
+	
 	public static final String sharing_serviceName = "DisplayableSharingService";
 
 	public static final String sharing_jsonRef = "displayables.json";
@@ -176,6 +180,33 @@ public final class Ref {
 
 	public static String getKey(TileCoord coord) {
 		return getKey(coord.x, coord.y, coord.z);
+	}
+
+	/*****************************************
+	 * Preferences
+	 ****************************************/
+	public static String getWarnAboutUpdates() {
+		return Preferences.userNodeForPackage(Ref.class).get(Ref.prefKey_warnAboutUpdate, null);
+	}
+
+	public static void setWarnAboutUpdates(String ignoredVersion) {
+		Preferences.userNodeForPackage(Ref.class).put(Ref.prefKey_warnAboutUpdate, ignoredVersion);
+	}
+
+	public static boolean getCheckForUpdates() {
+		return Boolean.parseBoolean(Preferences.userNodeForPackage(Ref.class).get(Ref.prefKey_checkForUpdate, "true"));
+	}
+
+	public static void setCheckForUpdates(boolean checkForUpdates) {
+		Preferences.userNodeForPackage(Ref.class).put(Ref.prefKey_checkForUpdate, Boolean.toString(checkForUpdates));
+	}
+
+	public static void getLastSeenVersion(String lastSeenVersion) {
+		Preferences.userNodeForPackage(Ref.class).get(Ref.prefKey_lastSeenVersion, null);
+	}
+
+	public static void setLastSeenVersion(String lastSeenVersion) {
+		Preferences.userNodeForPackage(Ref.class).put(Ref.prefKey_lastSeenVersion, lastSeenVersion);
 	}
 
 	/**

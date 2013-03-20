@@ -32,13 +32,12 @@ import net.niconomicon.tile.source.app.fonts.FontLoader;
 public class AppPreferences extends JPanel {
 
 	private static final String SHOWPREFS_TOOLTIP = "<html><body>Shows the preferences window. <br>You can adjust the sharing port and the next displayables tile sizes.</body></html>";
-	
+
 	private static final MatteBorder lineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY);
 	private static final MatteBorder lineBorderBotton = BorderFactory.createMatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY);
 	private static final Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 	private static final Border emptyBorderBottom = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
-	
 	public int savedTileSize = 256;
 	int savedPortNumber;
 	boolean savedAutostart;
@@ -47,11 +46,13 @@ public class AppPreferences extends JPanel {
 	public static final String portNumberChangeLock = "portNumberChanged";
 
 	JCheckBox autoshare;
-	
+	JCheckBox checkForUpdates;
+	JButton launch_new;
+
 	JRadioButton _256;
 	JRadioButton _384;
 	JRadioButton _512;
-	
+
 	private Dimension panelSizes = new Dimension(400, 70);
 	private static AppPreferences prefs;
 
@@ -102,6 +103,7 @@ public class AppPreferences extends JPanel {
 		pixels.setSize(panelSizes);
 		pixels.setMaximumSize(panelSizes);
 
+		// ////////////////////////////////////////////////
 		JPanel sharing = new JPanel();
 		sharing.setLayout(new GridBagLayout());
 		// sharing.setBorder(BorderFactory.createTitledBorder("Sharing details"));
@@ -133,13 +135,46 @@ public class AppPreferences extends JPanel {
 		sharing.setPreferredSize(panelSizes);
 		sharing.setMaximumSize(panelSizes);
 
+		// ////////////////////////////////////////
+		JPanel update = new JPanel();
+		update.setLayout(new GridBagLayout());
+		checkForUpdates = new JCheckBox("Check for update on startup");
+
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 3;
+		c.insets = new Insets(inset_port, 0, inset_port, 0);
+		update.add(checkForUpdates, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		c.insets = new Insets(inset_port, 0, inset_port, 0);
+
+		launch_new = new JButton("Up to date");
+		launch_new.setToolTipText("Current version: 2.0.0");
+		launch_new.setEnabled(false);
+		update.add(launch_new, c);
+
+		// sharing.add(help);
+		sharing.setSize(panelSizes);
+		sharing.setPreferredSize(panelSizes);
+		sharing.setMaximumSize(panelSizes);
+
+		// ////////////////////////////////////////
+
 		Border borderSharing = BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(lineBorder, " Sharing Details "), emptyBorder);
 		sharing.setBorder(borderSharing);
-		Border borderPixel = BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(lineBorderBotton, " Tile Size "), emptyBorderBottom);
+		Border borderPixel = BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(lineBorder, " Tile Size "), emptyBorder);
 		pixels.setBorder(borderPixel);
+		Border borderUpdate = BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(lineBorderBotton, " Updates "), emptyBorderBottom);
+		update.setBorder(borderUpdate);
 
 		this.add(sharing);
 		this.add(pixels);
+		this.add(update);
 
 		readPrefs();
 	}
@@ -175,8 +210,7 @@ public class AppPreferences extends JPanel {
 			System.out.println("set the tilesize to" + AppPreferences.this.savedTileSize);
 		}
 
-		public void addPropertyChangeListener(PropertyChangeListener listener) {
-		}
+		public void addPropertyChangeListener(PropertyChangeListener listener) {}
 
 		public Object getValue(String key) {
 			return values.get(key);
@@ -190,8 +224,7 @@ public class AppPreferences extends JPanel {
 			values.put(key, value);
 		}
 
-		public void removePropertyChangeListener(PropertyChangeListener listener) {
-		}
+		public void removePropertyChangeListener(PropertyChangeListener listener) {}
 
 		public void setEnabled(boolean b) {
 			this.enabled = b;
@@ -212,6 +245,8 @@ public class AppPreferences extends JPanel {
 				portNumberChangeLock.notifyAll();
 			}
 		}
+		Ref.setCheckForUpdates(checkForUpdates.isSelected());
+
 	}
 
 	public JButton getPreferencesButton() {
@@ -228,6 +263,8 @@ public class AppPreferences extends JPanel {
 
 		savedAutostart = Ref.getAutostart();
 		autoshare.setSelected(savedAutostart);
+
+		checkForUpdates.setSelected(Ref.getCheckForUpdates());
 
 		switch (Ref.getDefaultTileSize()) {
 		case 256:
