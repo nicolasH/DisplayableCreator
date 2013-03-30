@@ -157,8 +157,7 @@ public class AppPreferences extends JPanel {
 		check_new.setToolTipText("You have: " + UpdateChecker.BASE_VERSION);
 		check_new.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				UpdateChecker u_check = new UpdateChecker();
-				u_check.checkForUpdate((JComponent) e.getSource(), true, true);
+				UpdateChecker.checkForUpdate((JComponent) e.getSource(), true, true);
 			}
 		});
 		update.add(check_new, c);

@@ -60,16 +60,7 @@ public class HelpWidget extends JButton {
 	}
 
 	private Container getHelpPanel() {
-		try {
-			Enumeration<URL> elements = this.getClass().getClassLoader().getResources("index.html");
-			while (elements.hasMoreElements()) {
-				System.out.println("----"+elements.nextElement());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		URL help_url = this.getClass().getClassLoader().getResource(helpLocation+"index.html");
-		System.out.println(help_url);
 		JScrollPane pane = new JScrollPane();
 		JEditorPane editor = new JEditorPane();
 		try {
@@ -81,10 +72,11 @@ public class HelpWidget extends JButton {
 			editor.setMaximumSize(helpPanelMaxDim);
 			editor.setPreferredSize(helpPanelMaxDim);
 
-			for (Component c : editor.getComponents()) {
-				System.out.println(c.getName() + ":" + c.getSize() + " -- " + c.getMaximumSize() + " -- " + c.getMinimumSize() + " -- "
-						+ c.getPreferredSize());
-			}
+			// for (Component c : editor.getComponents()) {
+			// System.out.println(c.getName() + ":" + c.getSize() + " -- " +
+			// c.getMaximumSize() + " -- " + c.getMinimumSize() + " -- "
+			// + c.getPreferredSize());
+			// }
 
 			pane = new JScrollPane(editor);
 			pane.setMaximumSize(helpPanelMaxDim);

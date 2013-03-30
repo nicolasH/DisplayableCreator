@@ -60,19 +60,31 @@ public class DisplayableCreatorApp {
 		bottom.add(AppPreferences.getPreferences().getPreferencesButton());
 		// bottom.add(sharingWidget.getExportButton());
 		bottom.add(HelpWidget.createHelpWidget());
-		p.add(bottom, BorderLayout.SOUTH);
+		JPanel south = new JPanel(new BorderLayout());
+		south.add(bottom, BorderLayout.CENTER);
+		south.add(sharingWidget.getAddressComponent(), BorderLayout.SOUTH);
+		p.add(south, BorderLayout.SOUTH);
 		frame.setContentPane(p);
 		frame.pack();
 
 		frame.setSize(300, 350);
+		frame.setMinimumSize(new Dimension(250, 200));
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				SQliteTileCreatorMultithreaded.loadLib();
 			}
 		});
 		t.start();
+
+		if (AppPreferences.getPreferences().getAutostart()) {
+			sharingWidget.switchSharing(DA.ACTIVATE);
+		}
+		if (Ref.getCheckForUpdates()) {
+			UpdateChecker.checkForUpdate(p, false, false);
+		}
 		Thread shutdownThread = new Thread(new Runnable() {
 			public void run() {
 				frame.setVisible(false);
@@ -80,13 +92,6 @@ public class DisplayableCreatorApp {
 			}
 		});
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
-		if (AppPreferences.getPreferences().getAutostart()) {
-			sharingWidget.switchSharing(DA.ACTIVATE);
-		}
-		if (Ref.getCheckForUpdates()) {
-			UpdateChecker checker = new UpdateChecker();
-			checker.checkForUpdate(p, false, false);
-		}
 	}
 
 	public static void main(String[] args) {
@@ -94,10 +99,11 @@ public class DisplayableCreatorApp {
 			// if os == windows
 			// String motif = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
 			// // to 40^2 is too small for the 24pt icon on main screen
-			// String gtk = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+			String gtk = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
 			// String metal ="javax.swing.plaf.metal.MetalLookAndFeel"; // to
 			// 40^2 is too small for the 24pt icon on main screen
 			String windows = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+			String osx = "com.apple.laf.AquaLookAndFeel";
 			// String lnf_id_metal = "Metal";
 			// String lnf_id_osx = "Acqua";
 			// String lnf_id_gtk = "GTK"; // ok. font in the list look too big
@@ -110,7 +116,20 @@ public class DisplayableCreatorApp {
 			if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
 				UIManager.setLookAndFeel(windows);
 			}
-			System.out.println("UI look and feel:" + UIManager.getLookAndFeel().getID());
+			if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
+				UIManager.setLookAndFeel(osx);
+			}
+			if (System.getProperty("os.name").toLowerCase().startsWith("linux")) {
+				UIManager.setLookAndFeel(osx);
+			}
+
+			// System.out.println("UI look and feel:" +
+			// UIManager.getLookAndFeel().getID());
+			// System.out.println("UI look and feel:" +
+			// UIManager.getLookAndFeel().getName());
+			// System.out.println("UI look and feel:" +
+			// UIManager.getLookAndFeel().getClass());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO: handle exception

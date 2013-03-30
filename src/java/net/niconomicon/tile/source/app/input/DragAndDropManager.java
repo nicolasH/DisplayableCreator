@@ -22,7 +22,7 @@ public class DragAndDropManager {
 
 	public DragAndDropManager(DisplayableCreatorInputPanel pCrea) {
 		this.pCrea = pCrea;
-		System.out.println("Crea " + pCrea);
+		//System.out.println("Crea " + pCrea);
 
 		Thread threadImages = new Thread(new FileProcessor(files));
 

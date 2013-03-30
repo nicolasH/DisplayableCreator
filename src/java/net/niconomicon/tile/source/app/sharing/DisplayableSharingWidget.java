@@ -4,6 +4,7 @@
 package net.niconomicon.tile.source.app.sharing;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
@@ -14,8 +15,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 import net.niconomicon.tile.source.app.AppPreferences;
 import net.niconomicon.tile.source.app.DisplayablesSource;
@@ -52,6 +54,7 @@ public class DisplayableSharingWidget {
 	SharingManager sharingManager;
 
 	JCheckBox actionCheckBox;
+	JTextArea addressLabel;
 
 	DisplayablesSource displayablesSource;
 	Timer timer;
@@ -59,14 +62,15 @@ public class DisplayableSharingWidget {
 	Queue<DA> switchQueues;
 	IconsLoader ic;
 
-
 	public DisplayableSharingWidget(DisplayablesSource dispList) {
 		this.displayablesSource = dispList;
 		init();
 	}
 
 	public void init() {
-
+		addressLabel = FontLoader.getBoringTextArea(new JLabel(), 60, "");
+		addressLabel.setFont(addressLabel.getFont().deriveFont(Font.ITALIC));
+		addressLabel.setForeground(Color.DARK_GRAY);
 		this.ic = IconsLoader.getIconsLoader();
 		switchQueues = new ConcurrentLinkedQueue<DA>();
 		sharingManager = new SharingManager();
@@ -100,20 +104,27 @@ public class DisplayableSharingWidget {
 
 		timer.scheduleAtFixedRate(new LocalHostChecker(), inet_check_interval, inet_check_interval);
 
-		Thread t0 = new Thread(new DisplayableMonitor());
-		t0.start();
 		Thread t1 = new Thread(new StatusSwitcher());
 		t1.start();
-		Thread t2 = new Thread(new PortMonitor());
+		Thread t2 = new Thread(new DisplayableMonitor());
 		t2.start();
+		Thread t3 = new Thread(new PortMonitor());
+		t3.start();
 	}
 
 	public JCheckBox getSharingButton() {
 		return actionCheckBox;
 	}
 
+	public JTextArea getAddressComponent() {
+		return addressLabel;
+	}
+
 	public void switchSharing(DA action) {
 		switchQueues.add(action);
+		synchronized (switchQueues) {
+			switchQueues.notifyAll();
+		}
 	}
 
 	private void updateSharing() {
@@ -204,6 +215,27 @@ public class DisplayableSharingWidget {
 		actionCheckBox.setEnabled(true);
 	}
 
+	private void updateAddressUIElements() {
+		synchronized (currentStatus) {
+			switch (currentStatus) {
+			case ACTIVE:
+				try {
+					String localhost = InetAddress.getLocalHost().getHostAddress();
+					addressLabel.setText("Serving disp. on http://" + localhost + ":" + AppPreferences.getPreferences().getPort() + "/");
+				} catch (Exception e) {
+					addressLabel.setText("Serving disp. on http://[this machine address]:" + AppPreferences.getPreferences().getPort() + "/");
+				}
+				actionCheckBox.setSelected(true);
+				break;
+
+			case DEACTIVATED:
+				addressLabel.setText("");
+				actionCheckBox.setSelected(false);
+				break;
+			}
+		}
+	}
+
 	public class LocalHostChecker extends TimerTask {
 		String hostname = "bla";
 		String localHost = "notBla";
@@ -279,16 +311,13 @@ public class DisplayableSharingWidget {
 					synchronized (switchQueues) {
 						tmp = switchQueues.poll();
 					}
-					System.out.println("Polling - tmp:" + tmp);
 					if (tmp != null) {
 						next = tmp;
 					}
 				}
-				System.out.println("Polling - next:" + next);
 				if (next == null) {
 					try {
 						synchronized (switchQueues) {
-							System.out.println("Waiting on the queue");
 							switchQueues.wait();
 						}
 					} catch (Exception e) {
@@ -301,14 +330,14 @@ public class DisplayableSharingWidget {
 					if (currentStatus == DS.DEACTIVATED || currentStatus == DS.DEACTIVATING) {
 						startSharing(true);
 					} else {// else do nothing
-						System.out.println("Switching: ACTIVATE while already active or activating: doing nothing");
+						//System.out.println("Switching: ACTIVATE while already active or activating: doing nothing");
 					}
 					break;
 				case DEACTIVATE:
 					if (currentStatus == DS.ACTIVE || currentStatus == DS.ACTIVATING) {
 						stopSharing();
 					} else {// else do nothing
-						System.out.println("Switching: DEACTIVATE while already deactivating or deactivated: doing nothing");
+						//System.out.println("Switching: DEACTIVATE while already deactivating or deactivated: doing nothing");
 					}
 					break;
 				case UPDATELIST:
@@ -326,6 +355,7 @@ public class DisplayableSharingWidget {
 					}
 					// if not started, no need to start
 				}
+				updateAddressUIElements();
 			}
 		}
 	}

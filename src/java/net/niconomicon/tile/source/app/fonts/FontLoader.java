@@ -85,7 +85,7 @@ public class FontLoader {
 		area.setBackground(backgroundSource.getBackground());
 		area.setWrapStyleWord(true);
 		area.setLineWrap(true);
-		area.setColumns(30);
+		area.setColumns(columns);
 		area.setText(text);
 		return area;
 	}
