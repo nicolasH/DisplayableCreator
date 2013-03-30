@@ -83,6 +83,10 @@ public class DisplayableCreatorApp {
 		if (AppPreferences.getPreferences().getAutostart()) {
 			sharingWidget.switchSharing(DA.ACTIVATE);
 		}
+		if (Ref.getCheckForUpdates()) {
+			UpdateChecker checker = new UpdateChecker();
+			checker.checkForUpdate(p, false, false);
+		}
 	}
 
 	public static void main(String[] args) {

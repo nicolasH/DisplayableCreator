@@ -3,6 +3,7 @@
 if [ "$1" = "prod" ];then
         echo "deploying to nearlyfreespeech"
         scp -r target/jnlp/* nhoibian_displayator@ssh.phx.nearlyfreespeech.net:/home/public/DisplayableCreator/
+        scp -r latest nhoibian_displayator@ssh.phx.nearlyfreespeech.net:/home/public/DisplayableCreator/
         exit
 fi
 if [ "$1" = "beta" ];then

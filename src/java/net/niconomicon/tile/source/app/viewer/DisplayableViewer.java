@@ -16,6 +16,7 @@ import java.awt.event.MouseMotionListener;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,6 +25,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.fonts.FontLoader;
+import net.niconomicon.tile.source.app.input.QueueListItem;
+import net.niconomicon.tile.source.app.input.SaveDialog;
+import net.niconomicon.tile.source.app.sharing.ResultStruct;
 import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorParallel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
 import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
@@ -95,14 +99,11 @@ public class DisplayableViewer extends JPanel {
 		zP.setMaximumSize(new Dimension(40, 40));
 		toolBar.add(zP);
 
-		JButton b;
-
 		toolBar.setOrientation(JToolBar.VERTICAL);
 		this.add(toolBar, BorderLayout.WEST);
 	}
 
 	public void setDisplayable(String displayableLocation) {
-
 		if (currentSource != null) {
 			currentSource.done();
 		}

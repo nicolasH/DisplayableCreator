@@ -47,7 +47,7 @@ public class AppPreferences extends JPanel {
 
 	JCheckBox autoshare;
 	JCheckBox checkForUpdates;
-	JButton launch_new;
+	JButton check_new;
 
 	JRadioButton _256;
 	JRadioButton _384;
@@ -153,10 +153,15 @@ public class AppPreferences extends JPanel {
 		c.gridwidth = 1;
 		c.insets = new Insets(inset_port, 0, inset_port, 0);
 
-		launch_new = new JButton("Up to date");
-		launch_new.setToolTipText("Current version: 2.0.0");
-		launch_new.setEnabled(false);
-		update.add(launch_new, c);
+		check_new = new JButton("Check now");
+		check_new.setToolTipText("You have: " + UpdateChecker.BASE_VERSION);
+		check_new.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				UpdateChecker u_check = new UpdateChecker();
+				u_check.checkForUpdate((JComponent) e.getSource(), true, true);
+			}
+		});
+		update.add(check_new, c);
 
 		// sharing.add(help);
 		sharing.setSize(panelSizes);

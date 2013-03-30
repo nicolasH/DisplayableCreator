@@ -46,7 +46,7 @@ public final class Ref {
 	public static final String prefKey_warnAboutUpdate = "WarnAboutUpdate";
 	public static final String prefKey_checkForUpdate = "CheckForUpdate";
 	public static final String prefKey_lastSeenVersion = "LastSeenVersion";
-	
+
 	public static final String sharing_serviceName = "DisplayableSharingService";
 
 	public static final String sharing_jsonRef = "displayables.json";
