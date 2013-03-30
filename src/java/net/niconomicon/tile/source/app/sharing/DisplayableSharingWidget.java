@@ -145,7 +145,7 @@ public class DisplayableSharingWidget {
 	 * @return if the operation was successful.
 	 */
 	private boolean startSharing(boolean shouldPopup) {
-		System.out.println("should start sharing the maps, with " + (shouldPopup ? "popup" : "no popup") + " in case of problem");
+		//System.out.println("should start sharing the maps, with " + (shouldPopup ? "popup" : "no popup") + " in case of problem");
 
 		actionCheckBox.setEnabled(false);
 		synchronized (currentStatus) {

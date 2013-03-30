@@ -166,7 +166,7 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 				displayables.add(p.getFullPath());
 			}
 		}
-		System.out.println("displayables");
+		//System.out.println("displayables");
 		System.out.println(displayables);
 		return displayables;
 	}

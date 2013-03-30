@@ -52,7 +52,7 @@ public final class Ref {
 	public static final String sharing_jsonRef = "displayables.json";
 	public static final String sharing_htmlRef = "index.html";
 
-	public static final String sharing_cssRef = "displayableList.css";
+	public static final String sharing_cssRef = "/displayableList.css";
 
 	public static final String URI_jsonRef = "/displayables.json";
 	public static final String URI_htmlRef = "/index.html";

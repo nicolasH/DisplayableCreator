@@ -2,6 +2,7 @@
 	http://127.0.0.1:8889/index.css
 	http://192.168.1.5:8889/displayableList.css
 	http://192.168.1.5/~niko/displayables/displayableList.css
+	http://192.168.1.103:8889/displayableList.css
 */
 
 /* Used to style the html list of shared Displayables. */
@@ -13,10 +14,10 @@ body {
 }
 div.feed{
 	margin: 1em;
+	font-size: 1.3em;
 }
 div.feed a{
 	font-weight: bold;
-	font-size: 1.5em;
 }
 
 .item{
@@ -26,13 +27,17 @@ div.feed a{
 	padding-bottom: 0.4em;
 }
 .content{
-	margin-left: -0px;
+	margin-left: -px;
+}
+.content b{
+	margin-left: -4em;
 }
 img{
 	padding-top: 2em;
 	padding-bottom: 2em;
 	padding: 1em;
 	clear: left;
+	float: left;
 }
 b{
 	text-align: left;
