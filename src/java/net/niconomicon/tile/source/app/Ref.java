@@ -3,9 +3,12 @@
  */
 package net.niconomicon.tile.source.app;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -53,6 +56,7 @@ public final class Ref {
 	public static final String sharing_htmlRef = "index.html";
 
 	public static final String sharing_cssRef = "displayableList.css";
+	public static final String sharing_cssLocation = "net/niconomicon/tile/source/app/sharing/server/jetty/displayableList.css";
 
 	public static final String URI_jsonRef = "displayables.json";
 	public static final String URI_htmlRef = "index.html";
@@ -402,6 +406,21 @@ public final class Ref {
 		html.append("    <script type=\"text/javascript\">expandLinks();</script>\n");
 		html.append("</body></html>");
 		urlToFile.put(sharing_htmlRef, html.toString());
+
+		URL url = Ref.class.getClassLoader().getResource(sharing_cssLocation);
+		String css = "";
+		try {
+			BufferedReader dis = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+			String buffer;
+			StringBuffer sb = new StringBuffer();
+			while ((buffer = dis.readLine()) != null) {
+				sb.append(buffer);
+			}
+			css = sb.toString();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		urlToFile.put(sharing_cssRef, css);
 		// System.out.println(html.toString());
 		return urlToFile;
 	}
@@ -496,17 +515,23 @@ public final class Ref {
 				html += "\t\t\t\t\t\t <b>" + title + "</b><br>\n";
 				html += "\t\t\t\t\t\t Download <a href=\"" + app_handle_item + name + "?" + urlInfos + "\" > in Displayator</a>";
 				html += " or <a href=\"" + name + "\" >as a file</a>.<br/>\n";
-//				html += "\t\t\t\t\t\t - Weight: " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB.<br>\n";
-//				html += "\t\t\t\t\t\t - Size: " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px.<br>\n";
-//				float mpx =(rs.getLong(Ref.infos_width) * rs.getLong(Ref.infos_height)) / 100000.0f;
-//				html += "\t\t\t\t\t\t - Megapixels: " +Math.round(mpx)/10.0f+ "MPX.<br>\n";
-//				String dsc = rs.getString(Ref.infos_description);
-//				if (null != dsc && dsc.length() > 0 && !dsc.equalsIgnoreCase("no description")) {
-//					html += "\t\t\t\t\t - Description: " + dsc + "<br>\n";
-//				}
-				html += "\t\t\t\t\t\t " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB / " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + " px = ";
-				float mpx =(rs.getLong(Ref.infos_width) * rs.getLong(Ref.infos_height)) / 100000.0f;
-				html +=  Math.round(mpx)/10.0f+ "MPX.<br>\n";
+				// html += "\t\t\t\t\t\t - Weight: " + ((float)
+				// Math.round(((double) weight) / 10000)) / 100 + " MB.<br>\n";
+				// html += "\t\t\t\t\t\t - Size: " + rs.getLong(Ref.infos_width)
+				// + " x " + rs.getLong(Ref.infos_height) + "px.<br>\n";
+				// float mpx =(rs.getLong(Ref.infos_width) *
+				// rs.getLong(Ref.infos_height)) / 100000.0f;
+				// html += "\t\t\t\t\t\t - Megapixels: " +Math.round(mpx)/10.0f+
+				// "MPX.<br>\n";
+				// String dsc = rs.getString(Ref.infos_description);
+				// if (null != dsc && dsc.length() > 0 &&
+				// !dsc.equalsIgnoreCase("no description")) {
+				// html += "\t\t\t\t\t - Description: " + dsc + "<br>\n";
+				// }
+				html += "\t\t\t\t\t\t " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB / " + rs.getLong(Ref.infos_width) + " x "
+						+ rs.getLong(Ref.infos_height) + " px = ";
+				float mpx = (rs.getLong(Ref.infos_width) * rs.getLong(Ref.infos_height)) / 100000.0f;
+				html += Math.round(mpx) / 10.0f + "MPX.<br>\n";
 				String dsc = rs.getString(Ref.infos_description);
 				if (null != dsc && dsc.length() > 0 && !dsc.equalsIgnoreCase("no description")) {
 					html += "\t\t\t\t\t - Description: " + dsc + "<br>\n";

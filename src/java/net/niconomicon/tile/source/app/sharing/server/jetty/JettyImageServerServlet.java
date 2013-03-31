@@ -39,8 +39,6 @@ public class JettyImageServerServlet extends HttpServlet {
 	Map<String, String> imaginaryMap;
 	Set<String> knownImages;
 
-	String cssLocation = "net/niconomicon/tile/source/app/sharing/server/jetty/displayableList.css";
-
 	public JettyImageServerServlet() {
 		knownImages = new HashSet<String>();
 		// System.out.println("CSS : " + cssContent);
@@ -88,21 +86,24 @@ public class JettyImageServerServlet extends HttpServlet {
 		// if (imaginaryMap.containsKey(key)){//.substring(1))) {
 		// key = key.substring(1);
 		// }
-		if (key.equals(Ref.sharing_cssRef)) {
-			try {
-				sendRessource(cssLocation, resp);
-				return;
-			} catch (Exception ex) {
-				resp.sendError(500, "The server encountered an error while trying to send the content for request [" + request + "]");
-				return;
-			}
-		}
+		// if (key.equals(Ref.sharing_cssRef)) {
+		// try {
+		// sendRessource(Ref.sharing_cssLocation, resp);
+		// return;
+		// } catch (Exception ex) {
+		// resp.sendError(500,
+		// "The server encountered an error while trying to send the content for request ["
+		// + request + "]");
+		// return;
+		// }
+		// }
 
 		if (key.equals("")) {
 			key = Ref.sharing_htmlRef;
 		}
 		if (imaginaryMap.containsKey(key)) {
 			String val = imaginaryMap.get(key);
+			System.out.println("["+key+"]{"+val+"}");
 			try {
 				File f = new File(val);
 				if (f.exists()) {

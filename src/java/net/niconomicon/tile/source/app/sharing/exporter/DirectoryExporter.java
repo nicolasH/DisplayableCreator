@@ -3,12 +3,21 @@
  */
 package net.niconomicon.tile.source.app.sharing.exporter;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.sharing.server.jetty.JettyImageServerServlet;
 
 /**
  * @author Nicolas Hoibian
@@ -103,31 +113,84 @@ public class DirectoryExporter {
 			destFile.mkdir();
 		}
 
+		Map<String, String> allFiles = Ref.generateIndexFromFileNames(fullPaths);
 		FileChannel source = null;
 		FileChannel destination = null;
-		for (String fpath : fullPaths) {
-			File file = new File(fpath);
-			String fname = Ref.fileSansPath(fpath);
-			String destPath = destFile.getAbsolutePath() + File.separator + fname;
-
-			try {
-				destination = new FileOutputStream(destPath).getChannel();
-				if (!file.exists()) {
-					System.out.println("Creating " + destPath);
-					destination.write(ByteBuffer.wrap(fpath.getBytes()));
-				} else {
-					System.out.println("Overwriting " + destPath);
+		String query = "";
+		String field = "";
+		for (String key : allFiles.keySet()) {
+			String file = allFiles.get(key);
+			// System.out.println(key +"->"+file);
+			String destPath = directory + key;
+			// Displayables
+			if (key.endsWith(".disp")) {
+				try {
+					// System.out.println("(Over)writing " + destPath);
 					source = new FileInputStream(file).getChannel();
+					destination = new FileOutputStream(destPath).getChannel();
 					destination.transferFrom(source, 0, source.size());
-				}
-			} finally {
-				if (source != null) {
-					source.close();
-				}
-				if (destination != null) {
-					destination.close();
+				} finally {
+					if (source != null) {
+						source.close();
+					}
+					if (destination != null) {
+						destination.close();
+					}
 				}
 			}
+			if (key.endsWith(Ref.ext_mini) || key.endsWith(Ref.ext_thumb)) {
+				try {
+					if (key.endsWith(Ref.ext_mini)) {
+						query = "select " + Ref.infos_miniature + " from infos";
+						field = Ref.infos_miniature;
+					}
+					if (key.endsWith(Ref.ext_thumb)) {
+						query = "select " + Ref.infos_thumb + " from infos";
+						field = Ref.infos_thumb;
+					}
+					Connection connection = DriverManager.getConnection("jdbc:sqlite:" + file);
+					connection.setReadOnly(true);
+					Statement statement = connection.createStatement();
+					statement.setQueryTimeout(5); // set timeout to 30 sec.
+
+					ResultSet rs = statement.executeQuery(query);
+					while (rs.next()) {
+						FileOutputStream oStream = new FileOutputStream(destPath);
+						oStream.write(rs.getBytes(field));
+						oStream.close();
+						break;
+					}
+					if (connection != null) connection.close();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			} else {
+				// either a displayable or html, json or css
+				if (key.endsWith(".html") || key.endsWith(".json") || key.endsWith(".css")) {
+					FileOutputStream oStream = new FileOutputStream(destPath);
+					oStream.write(file.getBytes());
+					oStream.close();
+					oStream.close();
+				}
+			}
+		}
+
+	}
+
+	public static void main(String[] args) {
+		List<String> fullPaths = new ArrayList<String>();
+		String base = "/Users/niko/TileSources/displayables/";
+		String[] disps = new String[] { "tpg-plan-centre-9-decembre-12-4-1.disp", "tpg-plan-peripherique-9-decembre-12-2.disp",
+				"tpg-plan-schematique-9-decembre-12-3.disp" };
+		for (String d : disps) {
+			fullPaths.add(base + d);
+		}
+		String directory = "/Users/niko/TESTING_DISP/";
+		try {
+			DirectoryExporter.copyFiles(directory, fullPaths);
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
 		}
 	}
 }
