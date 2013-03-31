@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,6 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.sharing.server.DisplayableSharingServiceAnnouncer;
+
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
  * @author Nicolas Hoibian The servlet that is given to the Jetty Server
@@ -71,13 +77,17 @@ public class JettyImageServerServlet extends HttpServlet {
 		String key = request;
 		// to work around a bug in the displayator app where the JSON part does
 		// not handle relative uris correctly.
+		System.out.println("key:[" + key + "]");
 		if (key.startsWith("//")) {
 			key = key.substring(1);
 		}
-		if (imaginaryMap.containsKey(key.substring(1))) {
+		if (key.startsWith("/")) {
 			key = key.substring(1);
 		}
-
+		System.out.println("key:[" + key + "]");
+		// if (imaginaryMap.containsKey(key)){//.substring(1))) {
+		// key = key.substring(1);
+		// }
 		if (key.equals(Ref.sharing_cssRef)) {
 			try {
 				sendRessource(cssLocation, resp);
@@ -88,7 +98,7 @@ public class JettyImageServerServlet extends HttpServlet {
 			}
 		}
 
-		if (request.equals("/")) {
+		if (key.equals("")) {
 			key = Ref.sharing_htmlRef;
 		}
 		if (imaginaryMap.containsKey(key)) {
@@ -107,12 +117,16 @@ public class JettyImageServerServlet extends HttpServlet {
 				return;
 			}
 		}
+		System.out.println("Could not find ["+key+"] amongst:");
+		for (String k : imaginaryMap.keySet()){
+			System.out.println("{"+k+"}");
+		}
+		
 		resp.sendError(404, "The server could not find or get access to [" + request + "]");
 		if (true) {
 			System.out.println("Sending 404 for " + request);
 			return;
 		}
-
 		if (request.equals("/" + Ref.sharing_jsonRef) || request.equals(Ref.URI_jsonRef)) {
 			String k = "/" + Ref.sharing_jsonRef;
 			// System.out.println("should be returning the Displayable Feed [" +
@@ -209,6 +223,31 @@ public class JettyImageServerServlet extends HttpServlet {
 			sendString(toSend, response);
 		} catch (IOException ex) {
 			ex.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		int port = 8889;
+
+		JettyImageServerServlet service = new JettyImageServerServlet();
+		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		context.setContextPath("/");
+		context.addServlet(new ServletHolder(service), "/*");
+		Collection<String> sharedDisplayables = new ArrayList<String>();
+		String base = "/Users/niko/TileSources/displayables/";
+		String[] disps = new String[] { "tpg-plan-centre-9-decembre-12-4-1.disp", "tpg-plan-peripherique-9-decembre-12-2.disp",
+				"tpg-plan-schematique-9-decembre-12-3.disp" };
+		for (String d : disps) {
+			sharedDisplayables.add(base + d);
+		}
+		service.setSharedDisplayables(sharedDisplayables);
+		Server server = new Server(port);
+		server.setHandler(context);
+		try {
+			server.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
 		}
 
 	}

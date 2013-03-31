@@ -52,10 +52,10 @@ public final class Ref {
 	public static final String sharing_jsonRef = "displayables.json";
 	public static final String sharing_htmlRef = "index.html";
 
-	public static final String sharing_cssRef = "/displayableList.css";
+	public static final String sharing_cssRef = "displayableList.css";
 
-	public static final String URI_jsonRef = "/displayables.json";
-	public static final String URI_htmlRef = "/index.html";
+	public static final String URI_jsonRef = "displayables.json";
+	public static final String URI_htmlRef = "index.html";
 
 	public static final String app_handle_item = "displayator-image:";
 	public static final String app_handle_list = "displayator-list:";
@@ -77,15 +77,6 @@ public final class Ref {
 	public static final String infos_height = "height";
 	public static final String infos_miniature = "miniature";
 	public static final String infos_thumb = "thumb";
-
-	public static final String head = "<meta name=\"viewport\" content=\"width=500, user-scalable=yes\">" + "<link rel=\"stylesheet\" href=\""
-			+ sharing_cssRef + "\" type=\"text/css\" />" + "<script type=\"text/javascript\">" + "function expandLinks(){"
-			+ "var links = document.getElementsByTagName('a');\n" + "for (var i=0;\n i < links.length;\n i++) {"
-			+ "    if(links[i].href.indexOf(\"displayator-list:\") == 0){"
-			+ "        links[i].href = links[i].href.replace(\"displayator-list:\",\"displayator-list:\"+document.location);\n" + "    }"
-			+ "    if(links[i].href.indexOf(\"displayator-image:\") == 0){"
-			+ "       links[i].href = links[i].href.replace(\"displayator-image:\",\"displayator-image:\"+document.location);\n" + "       }" + " }"
-			+ " }" + "</script>" + "</head>\n";
 
 	public static File tmpFile;
 	static {
@@ -364,9 +355,26 @@ public final class Ref {
 		StringBuffer json = new StringBuffer();
 		StringBuffer html = new StringBuffer();
 		json.append("[");
-		html.append("<html>" + head + "<body>");
+		html.append("<html>\n");
+		html.append("<head>\n");
+		html.append("    <meta name=\"viewport\" content=\"width=400, user-scalable=yes\">\n");
+		html.append("    <link rel=\"stylesheet\" href=\"" + sharing_cssRef + "\" type=\"text/css\" />\n");
+		html.append("    <script type=\"text/javascript\">\n");
+		html.append("         function expandLinks(){\n");
+		html.append("             var links = document.getElementsByTagName('a');\n");
+		html.append("             for (var i=0; i < links.length; i++) {\n");
+		html.append("                 if(links[i].href.indexOf(\"displayator-list:\") == 0){\n");
+		html.append("                     links[i].href = links[i].href.replace(\"displayator-list:\",\"displayator-list:\"+document.location);\n");
+		html.append("                 }\n");
+		html.append("                 if(links[i].href.indexOf(\"displayator-image:\") == 0){\n");
+		html.append("                     links[i].href = links[i].href.replace(\"displayator-image:\",\"displayator-image:\"+document.location);\n");
+		html.append("                 }\n");
+		html.append("             }\n");
+		html.append("         }\n");
+		html.append("    </script>\n");
+		html.append("</head>\n");
 		html.append("<div class=\"feed\">Tap on the link to <a href=\"" + app_handle_list + URI_jsonRef
-				+ "\">open this list with the Displayator app</a>.</div>");
+				+ "\">open this list with the Displayator app</a>.</div>\n");
 		for (String mapFileName : maps) {
 			try {
 				File f = new File(mapFileName);
@@ -389,8 +397,9 @@ public final class Ref {
 			json.deleteCharAt(json.lastIndexOf(","));
 		}
 		json.append("]");
-		urlToFile.put("/" + sharing_jsonRef, json.toString());
-		html.append("<script type=\"text/javascript\">expandLinks();</script>");
+		urlToFile.put(sharing_jsonRef, json.toString());
+		html.append("    <div class=\"item\"></div>\n");
+		html.append("    <script type=\"text/javascript\">expandLinks();</script>\n");
 		html.append("</body></html>");
 		urlToFile.put(sharing_htmlRef, html.toString());
 		// System.out.println(html.toString());
@@ -476,24 +485,38 @@ public final class Ref {
 				urlInfos += "&height=" + height;
 				urlInfos += "&description=" + description;
 
-				String li = "\t\t\t<li>";
-				String li_ = "</li>\n";
-				String html = "<div class=\"item\"><table><tr><td><a href=\"" + mini + "\"><img src=\"" + thumb
-						+ "\" align=\"right\"/></a></td><td><div class=\"content\"><b>" + title + "</b>";
-				// html += "\n\t\t<a href=\"" + mini + "\"><img src=\"" + thumb
-				// + "\"></a>\n\t\t";
-				html += "<br><a href=\"" + mini + "\">See the miniature</a>";
-				html += "<br/>Download and view <a href=\"" + app_handle_item + name + "?" + urlInfos + "\" >original size with displayator</a>";
-				html += "  or download <a href=\"" + name + "\" >as a file</a>.<br/>";
-				html += "\n\t<ul>\n";
-				html += li + "Weight: " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB." + li_;
-				html += li + "Size: " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px." + li_;
+				String html = "\t <div class=\"item\">\n";
+				html += "\t\t <table>\n";
+				html += "\t\t\t <tr>\n";
+				html += "\t\t\t\t <td class=\"thumb\">\n";
+				html += "\t\t\t\t\t <center><a href=\"" + mini + "\"><img src=\"" + thumb + "\"/><br>(preview)</a></center>\n";
+				html += "\t\t\t\t </td>\n";
+				html += "\t\t\t\t <td>\n";
+				html += "\t\t\t\t\t <div class=\"content\">\n";
+				html += "\t\t\t\t\t\t <b>" + title + "</b><br>\n";
+				html += "\t\t\t\t\t\t Download <a href=\"" + app_handle_item + name + "?" + urlInfos + "\" > in Displayator</a>";
+				html += " or <a href=\"" + name + "\" >as a file</a>.<br/>\n";
+//				html += "\t\t\t\t\t\t - Weight: " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB.<br>\n";
+//				html += "\t\t\t\t\t\t - Size: " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + "px.<br>\n";
+//				float mpx =(rs.getLong(Ref.infos_width) * rs.getLong(Ref.infos_height)) / 100000.0f;
+//				html += "\t\t\t\t\t\t - Megapixels: " +Math.round(mpx)/10.0f+ "MPX.<br>\n";
+//				String dsc = rs.getString(Ref.infos_description);
+//				if (null != dsc && dsc.length() > 0 && !dsc.equalsIgnoreCase("no description")) {
+//					html += "\t\t\t\t\t - Description: " + dsc + "<br>\n";
+//				}
+				html += "\t\t\t\t\t\t " + ((float) Math.round(((double) weight) / 10000)) / 100 + " MB / " + rs.getLong(Ref.infos_width) + " x " + rs.getLong(Ref.infos_height) + " px = ";
+				float mpx =(rs.getLong(Ref.infos_width) * rs.getLong(Ref.infos_height)) / 100000.0f;
+				html +=  Math.round(mpx)/10.0f+ "MPX.<br>\n";
 				String dsc = rs.getString(Ref.infos_description);
 				if (null != dsc && dsc.length() > 0 && !dsc.equalsIgnoreCase("no description")) {
-					html += li + "Description: " + dsc + li_;
+					html += "\t\t\t\t\t - Description: " + dsc + "<br>\n";
 				}
-				html += "</ul>\n";
-				html += "</div></td></tr></table></div>\n";
+
+				html += "\t\t\t\t\t </div>\n";
+				html += "\t\t\t\t </td>\n";
+				html += "\t\t\t </tr>\n";
+				html += "\t\t </table>\n";
+				html += "\t </div>\n";
 				h += html;
 
 			}

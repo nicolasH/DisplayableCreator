@@ -30,23 +30,17 @@ div.feed a{
 	margin-left: -px;
 }
 .content b{
-	margin-left: -4em;
+
+}
+.thumb a{
+	font-size: 0.9em;
+	text-align: center;
 }
 img{
-	padding-top: 2em;
-	padding-bottom: 2em;
-	padding: 1em;
-	clear: left;
-	float: left;
+	margin: 0px;
+	padding: 0.2em;
 }
 b{
 	text-align: left;
 	font-weight: bold;
-}
-ul{
-	padding-left: 0em;
-	margin: 0em;
-}
-li{
-	margin-left: 2em;
 }
