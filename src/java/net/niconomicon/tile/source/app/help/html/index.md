@@ -122,3 +122,56 @@ downloading individual Displayables in the Displayator app.
 <!--- clicking on the diagonal expanding arrows will make the view go full-screen.-->
 
 
+## License and Third Party Components
+
+Clickable links will be available at http://www.displayator.com/DisplayableCreator/
+
+This app is licensed under the GPL v3
+(http://www.gnu.org/licenses/gpl.html). The source code is available
+on github at _https://github.com/nicolasH/DisplayableCreator_.
+
+
+It depends on the following libraries, which have their own licenses:
+
+- Jetty, a web server and servlet container. (http://www.eclipse.org/jetty/)
+- SQLite-JDBC, a pure java driver for SQLite. (https://bitbucket.org/xerial/sqlite-jdbc)
+- JmDNS, a Bonjour/multicast DNS java implementation. (http://jmdns.sourceforge.net/)
+- Maven-Artifact, a library used to compare the version numbers. (http://maven.apache.org/)
+- Google-gson, a Java library to convert JSON to Java objects and vice-versa. (https://code.google.com/p/google-gson/)
+
+
+It also uses icons from multiple icon sets, packaged into a single font file using http://www.icomoon.io. Here is a list of the used icons and their origin.
+
+- IcoMoon: _hourglass_, _edit_, _delete_, _expand_ & _contract_.
+- Entypo: _export_, _dash_ & _help_.
+- WPZOOM: _eye_, _zoom in_ & _zoom out_.
+- Silkcons: _broadcast_ & _list_.
+- Broccolidry: _save_ & _warning_.
+- Iconic: _preferences_.
+
+Here are the icon sets homepages and licenses.
+
+
+Iconic -- http://somerandomdude.com/work/iconic/   
+CC BY-SA 3.0 -- http://creativecommons.org/licenses/by-sa/3.0/us/
+
+
+Entypo -- http://www.entypo.com/   
+CC BY-SA 3.0 -- http://creativecommons.org/licenses/by-sa/3.0/
+
+
+Broccolidry -- http://dribbble.com/shots/587469-Free-16px-Broccolidryiconsaniconsetitisfullof-icons   
+Arbitrary -- http://licence.visualidiot.com/
+
+
+WPZOOM Developer Icon Set -- http://www.wpzoom.com/wpzoom/new-freebie-wpzoom-developer-icon-set-154-free-icons/   
+CC BY-SA 3.0 -- http://creativecommons.org/licenses/by-sa/3.0/
+
+
+Silkcons -- http://dribbble.com/shots/632219-Silkcons-You-can-t-do-with-just-one-icon-set   
+CC0 -- http://creativecommons.org/publicdomain/zero/1.0/
+
+
+IcoMoon - Free -- http://keyamoon.com/icomoon/   
+CC BY 3.0 -- http://creativecommons.org/licenses/by/3.0/
+
