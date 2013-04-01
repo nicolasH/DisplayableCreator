@@ -49,26 +49,27 @@ public class FontLoader {
 		return icomoon;
 	}
 
-	public static String iconAction = "\ue028";
-	public static String iconWait = "\ue007";
+	public static String iconAction = "\ue000";
+	public static String iconWait = "\ue001";
 
-	public static String iconList = "\ue019";
-	public static String iconPrefs = "\ue00a";
-	public static String iconExport = "\ue01e";
+	public static String iconList = "\ue002";
+	public static String iconPrefs = "\ue003";
+	public static String iconHelp = "\ue004";
 
-	public static String iconView = "\ue000";
-	public static String iconEdit = "\ue011";
-	public static String iconSave = "\ue024";
-	public static String iconRemove = "\ue002";
-	public static String iconTrash = "\ue00b";
+	public static String iconView = "\ue005";
+	public static String iconEdit = "\ue006";
+	public static String iconSave = "\ue007";
+	public static String iconRemove = "\ue008";
+	public static String iconError = "\ue009";
+	public static String iconExport = "\ue00a";
+//	public static String iconTrash = "\ue00b";
 
-	public static String iconZoomIn = "\ue014";
-	public static String iconZoomOut = "\ue013";
-	public static String iconExpand = "\ue029";
-	public static String iconContract = "\ue02a";
+	public static String iconZoomOut = "\ue00b";
+	public static String iconZoomIn = "\ue000c";
+	public static String iconExpand = "\ue00d";
+	public static String iconContract = "\ue00e";
 
-	public static String iconError = "\ue025";
-	public static String iconHelp = "\ue001";
+	public static String iconDash = "\ue00f";
 
 	public static final Dimension btnSize = new Dimension(40, 40);
 	public static final Dimension btnMaxSize = new Dimension(50, 50);

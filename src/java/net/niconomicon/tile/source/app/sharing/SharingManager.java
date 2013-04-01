@@ -4,11 +4,7 @@
 package net.niconomicon.tile.source.app.sharing;
 
 import java.util.Collection;
-import java.util.List;
 
-import javax.swing.JComponent;
-
-import net.niconomicon.tile.source.app.sharing.exporter.DirectoryExporter;
 import net.niconomicon.tile.source.app.sharing.server.DisplayableSharingServiceAnnouncer;
 import net.niconomicon.tile.source.app.sharing.server.jetty.JettyImageServerServlet;
 

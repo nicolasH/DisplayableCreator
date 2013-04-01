@@ -22,6 +22,7 @@ public class UpdateChecker {
 	public static String BASE_VERSION = "2.0.0";
 	public static final String latestVersionLocation = "http://www.displayator.com/DisplayableCreator/latest";
 	public static final String url_jnlp = "http://www.displayator.com/DisplayableCreator/DisplayableCreator.jnlp";
+	public static final String url_pom = "META-INF/maven/net.niconomicon/displayable-creator/pom.properties";
 
 	private static String[] getLocalInfos() {
 		Properties props = System.getProperties();
@@ -33,8 +34,7 @@ public class UpdateChecker {
 		sys_infos = sys_infos.substring(0, sys_infos.length() - 1);
 		String current_version = BASE_VERSION;
 		try {
-			URL pom_props_url = DisplayableCreatorApp.class.getClassLoader().getResource(
-					"META-INF/maven/net.niconomicon/displayable-creator/pom.properties");
+			URL pom_props_url = DisplayableCreatorApp.class.getClassLoader().getResource(url_pom);
 			BufferedReader in = new BufferedReader(new InputStreamReader(pom_props_url.openStream()));
 			String inputLine;
 			String v = "version=";

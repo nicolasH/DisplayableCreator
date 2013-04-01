@@ -283,7 +283,6 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		this.setAlignmentY(TOP_ALIGNMENT);
 		this.setMaximumSize(new Dimension(Short.MAX_VALUE, myHeight));
 		this.setMinimumSize(new Dimension(minWidth, myHeight));
-
 		this.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
 
 		this.doLayout();

@@ -1,7 +1,5 @@
 package net.niconomicon.tile.source.app.input;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
@@ -19,7 +17,6 @@ import javax.swing.JPanel;
 
 import net.niconomicon.tile.source.app.DisplayablesSource;
 import net.niconomicon.tile.source.app.fonts.FontLoader;
-import net.niconomicon.tile.source.app.sharing.SharingManager;
 import net.niconomicon.tile.source.app.sharing.exporter.DirectoryExporter;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
@@ -49,17 +46,18 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 	}
 
 	private void init() {
-
 		itemsToTransformQueue = new ConcurrentLinkedQueue<QueueListItem>();
 		allItemsList = new Vector<QueueListItem>();
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		//this.setLayout(new GridBagLayout());
+		
 		displayablesLock = new Object();
 		saveDialog = new SaveDialog();
 		this.setSize(QueueListItem.minWidth, 400);
 		this.setMinimumSize(new Dimension(QueueListItem.minWidth, QueueListItem.minHeight));
-
-		lastItem = FontLoader.getButtonFlatSmall("<html>&mdash; " + FontLoader.iconExport + " &mdash;</html>");
+		
+		lastItem = FontLoader.getButtonFlatSmall(FontLoader.iconDash +" " +  FontLoader.iconExport+" "+FontLoader.iconDash);
 		lastItem.setToolTipText("Export the Displayables as a directory with HTML & JSON indexes");
 		lastItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -69,8 +67,8 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 		lastItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 40));
 		lastItem.setMinimumSize(new Dimension(350, 40));
 		lastItem.setPreferredSize(new Dimension(350, 40));
+		
 		this.add(lastItem, getConstraintForY(0));
-
 	}
 
 	private void makeLastItemLast() {
@@ -199,21 +197,21 @@ public class QueueListView extends JPanel implements DisplayablesSource {
 		}
 	}
 
-	// public static void main(String[] args) {
-	// JFrame frame = new JFrame();
-	// JPanel main = new JPanel(new BorderLayout());
-	// JLabel top = new JLabel("Drop images and displayables here");
-	// top.setMinimumSize(new Dimension(150, 100));
-	// top.setPreferredSize(new Dimension(150, 100));
-	// top.setMaximumSize(new Dimension(150, 100));
-	//
-	// main.add(top, BorderLayout.NORTH);
-	// main.add(new JScrollPane(new QueueListView(null)), BorderLayout.CENTER);
-	// main.add(new JLabel("Fancy sharing stuff here"), BorderLayout.SOUTH);
-	// frame.setContentPane(main);
-	// frame.pack();
-	// frame.setSize(340, 600);
-	// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	// frame.setVisible(true);
-	// }
+//	 public static void main(String[] args) {
+//	 JFrame frame = new JFrame();
+//	 JPanel main = new JPanel(new BorderLayout());
+//	 JLabel top = new JLabel("Drop images and displayables here");
+//	 top.setMinimumSize(new Dimension(150, 100));
+//	 top.setPreferredSize(new Dimension(150, 100));
+//	 top.setMaximumSize(new Dimension(150, 100));
+//	
+//	 main.add(top, BorderLayout.NORTH);
+//	 main.add(new JScrollPane(new QueueListView(null)), BorderLayout.CENTER);
+//	 main.add(new JLabel("Fancy sharing stuff here"), BorderLayout.SOUTH);
+//	 frame.setContentPane(main);
+//	 frame.pack();
+//	 frame.setSize(340, 600);
+//	 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//	 frame.setVisible(true);
+//	 }
 }
