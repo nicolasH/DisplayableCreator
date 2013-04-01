@@ -21,12 +21,21 @@ window to create Displayables, or drop Displayables to view them.</p>
 
 <p>The main window give access to all the functionality of the app. </p>
 
+<p>Dropping images on the central area will queue them to be transformed
+into Displayables. Currently supported format are BMP, PNG, GIF and
+JPEG (except for YCMB jpegs). Size was tested up to 466 Megapixels
+(21600x21600).</p>
+
+<p>Dropping Displayables on the central area will add them to the list of
+visible Displayables, wher e you can click on the eye icon to view
+them.</p>
+
 <ul>
-<li>the checkbox enable or disable sharing of Displayables over the network.</li>
-<li>the list icon gives access to the list of Displayables and images
+<li>the checkbox enable or disable sharing of Displayables over the network (the status is indicated by the icon next to it).</li>
+<li>the button with the list icon gives access to the list of Displayables and images
  (queued for transformation into Displayables).</li>
-<li>the wrench icon gives access to the preferences for the app.</li>
-<li>the &#8216;?&#8217; icon gives access to this very document.</li>
+<li>the button with the sliders icon gives access to the preferences for the app.</li>
+<li>the button with the &#8216;?&#8217; icon gives access to this very document.</li>
 </ul>
 
 <h2 id="preferences">Preferences</h2>
@@ -68,9 +77,9 @@ to view the save dialog (see bellow).</li>
 <li>Clicking on the <em>eye icon</em> will activate the Displayable viewer
  window, loading it with the selected Displayable.</li>
 <li>Clicking on the <em>x icon</em> allows you to remove the Displayable or
- queued image from the list. If the Displayable is unsaved, removing
- it from the list will remove it from its temporary place on your
- hard drive.</li>
+ queued (or processing) image from the list. If the Displayable is
+ unsaved, removing it from the list will remove it from its temporary
+ place on your computer.</li>
 </ul>
 
 <h2 id="theeditsavedialog">The Edit / Save dialog</h2>
@@ -82,7 +91,7 @@ Displayable, its file name, and you can add a description.</p>
 
 <ul>
 <li>The <em>title</em> is the name of the Displayable as it will appear in the
-Displayator app on your iOS device.</li>
+ Displayator app on your iOS device.</li>
 <li>The <em>save as</em> field contains the file name of the Displayable,
  without the file extension.
  your Displayable in.</li>
@@ -96,10 +105,26 @@ Displayator app on your iOS device.</li>
 <p><img src="img/view.png"></p>
 
 <p>When you click on the <em>eye</em> icon in the Displayable list, the viewer
-will appear with the selected Displayable. Clicking on the looking
-glasses with + and - will zoom and de-zoom the Displayable.</p>
+will appear with the selected Displayable. Clicking on the
+looking-glasses with + and - will zoom and de-zoom the Displayable.</p>
 
 <p>You can move the view around by dragging the image.</p>
+
+<h2 id="sharingdisplayablesoverthelocalnetwork">Sharing Displayables over the local network</h2>
+
+<p>If you have any Displayable loaded in the app, and enable the checkbox
+on the main screen of the app, the Displayable will be made available
+over the local network. To download Displayables Connect your iOS
+device to the same network, start the Displayator app and tap on
+&#8220;Download Displayables&#8221;. The app should automatically find this
+Displayable Creator and fetch the list of Displayable ready for
+download. </p>
+
+<p>Should Displayator fail to find the list of shared Displayables, open
+Safari on your iOS device and type in the address that appear at the
+bottom of the Displayable Creator application. The page at that
+address will contain links to either open the list or start
+downloading individual Displayables in the Displayator app.</p>
 
 <!--- clicking on the diagonal expanding arrows will make the view go full-screen.-->
 <div class="copy">

@@ -1,0 +1,20 @@
+Broadcast => Silkcons
+Wait      => IcoMoon
+list      => Silkcons 
+prefs     => iconic
+help      => entypo
+
+view      => wpzoom
+edit      => icomoon
+save      => Broccolidry
+delete    => icomoon
+warn/err  => Broccolidry
+export    => entypo
+
+zoom in   => wpzoom
+zoom out  => wpzoom
+
+expand    => icomoon
+contract  => icomoon
+
+dash      => entypo
