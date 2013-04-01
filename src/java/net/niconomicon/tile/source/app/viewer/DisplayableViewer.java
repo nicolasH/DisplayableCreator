@@ -16,7 +16,6 @@ import java.awt.event.MouseMotionListener;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,12 +24,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
 import net.niconomicon.tile.source.app.fonts.FontLoader;
-import net.niconomicon.tile.source.app.input.QueueListItem;
-import net.niconomicon.tile.source.app.input.SaveDialog;
-import net.niconomicon.tile.source.app.sharing.ResultStruct;
 import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorParallel;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
-import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
@@ -86,8 +81,6 @@ public class DisplayableViewer extends JPanel {
 
 		loadingLabel = new JLabel();
 		progress = new JProgressBar();
-
-		IconsLoader loader = IconsLoader.getIconsLoader();
 
 		zM = FontLoader.getButton(FontLoader.iconZoomOut);
 		zM.setMaximumSize(new Dimension(40, 40));
@@ -161,7 +154,7 @@ public class DisplayableViewer extends JPanel {
 			revalidate();
 			viewerFrame.pack();
 			viewerFrame.setVisible(true);
-
+			tileViewer.revalidate();
 			progress.setIndeterminate(false);
 			progress.setVisible(false);
 			loadingLabel.setVisible(false);

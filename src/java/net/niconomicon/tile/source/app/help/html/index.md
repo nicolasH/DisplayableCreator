@@ -19,14 +19,15 @@ The main window give access to all the functionality of the app.
 
 Dropping images on the central area will queue them to be transformed
 into Displayables. Currently supported format are BMP, PNG, GIF and
-JPEG (except for YCMB jpegs). Size was tested up to 466 Megapixels
+JPEG (except for jpegs with CMYK color profiles). Size was tested up to 466 Megapixels
 (21600x21600).
 
 Dropping Displayables on the central area will add them to the list of
 visible Displayables, wher e you can click on the eye icon to view
 them.
 
-- the checkbox enable or disable sharing of Displayables over the network (the status is indicated by the icon next to it).
+- the checkbox enable or disable sharing of Displayables over the
+  network (the status is indicated by the icon next to it).
 - the button with the list icon gives access to the list of Displayables and images
   (queued for transformation into Displayables).
 - the button with the sliders icon gives access to the preferences for the app.
@@ -107,19 +108,27 @@ You can move the view around by dragging the image.
 
 If you have any Displayable loaded in the app, and enable the checkbox
 on the main screen of the app, the Displayable will be made available
-over the local network. To download Displayables Connect your iOS
-device to the same network, start the Displayator app and tap on
-"Download Displayables". The app should automatically find this
-Displayable Creator and fetch the list of Displayable ready for
-download. 
+over the local network. The icon next to the checkbox indicate the
+status of the sharing:
 
-Should Displayator fail to find the list of shared Displayables, open
-Safari on your iOS device and type in the address that appear at the
-bottom of the Displayable Creator application. The page at that
-address will contain links to either open the list or start
-downloading individual Displayables in the Displayator app.
+- Green broadcast tower for activated.
+- Yellow broadcast tower for deactivated.
+- Gray hourglass while changing status.
 
-<!--- clicking on the diagonal expanding arrows will make the view go full-screen.-->
+
+To download Displayables Connect your iOS device to the same network,
+start the Displayator app and tap on "Download Displayables". The app
+should automatically find this Displayable Creator and fetch the list
+of Displayable ready for download. Newly created Displayables might
+take a few seconds after being created before they appear in the list
+of available shared displayables.
+
+Should the Displayator app fail to find the list of shared
+Displayables, open Safari on your iOS device and type in the address
+that appear at the bottom of the Displayable Creator application. The
+page at that address will contain links to either open the list or
+start downloading individual Displayables in the Displayator app.
+
 
 
 ## License and Third Party Components

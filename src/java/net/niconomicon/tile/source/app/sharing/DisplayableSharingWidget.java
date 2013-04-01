@@ -22,7 +22,6 @@ import javax.swing.JTextArea;
 import net.niconomicon.tile.source.app.AppPreferences;
 import net.niconomicon.tile.source.app.DisplayablesSource;
 import net.niconomicon.tile.source.app.fonts.FontLoader;
-import net.niconomicon.tile.source.app.viewer.icons.IconsLoader;
 
 /**
  * @author Nicolas Hoibian This class is designed to assemble and present the
@@ -60,7 +59,6 @@ public class DisplayableSharingWidget {
 	Timer timer;
 
 	Queue<DA> switchQueues;
-	IconsLoader ic;
 
 	public DisplayableSharingWidget(DisplayablesSource dispList) {
 		this.displayablesSource = dispList;
@@ -71,7 +69,7 @@ public class DisplayableSharingWidget {
 		addressLabel = FontLoader.getBoringTextArea(new JLabel(), 60, "");
 		addressLabel.setFont(addressLabel.getFont().deriveFont(Font.ITALIC));
 		addressLabel.setForeground(Color.DARK_GRAY);
-		this.ic = IconsLoader.getIconsLoader();
+
 		switchQueues = new ConcurrentLinkedQueue<DA>();
 		sharingManager = new SharingManager();
 		timer = new Timer();

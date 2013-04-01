@@ -64,8 +64,8 @@ public class FontLoader {
 	public static String iconExport = "\ue00a";
 //	public static String iconTrash = "\ue00b";
 
-	public static String iconZoomOut = "\ue00b";
-	public static String iconZoomIn = "\ue000c";
+	public static String iconZoomIn = "\ue00b";
+	public static String iconZoomOut = "\ue00c";
 	public static String iconExpand = "\ue00d";
 	public static String iconContract = "\ue00e";
 
