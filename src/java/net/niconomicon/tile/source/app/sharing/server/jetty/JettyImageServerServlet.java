@@ -75,14 +75,12 @@ public class JettyImageServerServlet extends HttpServlet {
 		String key = request;
 		// to work around a bug in the displayator app where the JSON part does
 		// not handle relative uris correctly.
-		System.out.println("key:[" + key + "]");
 		if (key.startsWith("//")) {
 			key = key.substring(1);
 		}
 		if (key.startsWith("/")) {
 			key = key.substring(1);
 		}
-		System.out.println("key:[" + key + "]");
 		// if (imaginaryMap.containsKey(key)){//.substring(1))) {
 		// key = key.substring(1);
 		// }

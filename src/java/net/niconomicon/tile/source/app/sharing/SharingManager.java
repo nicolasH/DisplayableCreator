@@ -51,10 +51,17 @@ public class SharingManager {
 	}
 
 	public void startSharing() throws Exception {
-		System.out.println("supposedly starting to share on port :" + port);
-
-		if (null != server && server.isRunning()) {
-			server.stop();
+		// System.out.println("supposedly starting to share on port :" + port);
+		// System.out.println("server " + server);
+		// if (null != server) {
+		// System.out.println("server state: " + server.getState() +
+		// " server isRunning:" + server.isRunning() + " Server isStarted:"
+		// + server.isRunning() + " Server is Failed: " + server.isFailed());
+		// }
+		if (null != server) {
+			if (!server.isStopping() || !server.isStopped()) {
+				server.stop();
+			}
 		}
 		server = new Server(port);
 		server.setHandler(context);
@@ -75,6 +82,7 @@ public class SharingManager {
 		Thread t = new Thread(new Restarter());
 		t.start();
 	}
+
 	public void restartAnnouncerSync() {
 		new Restarter().run();
 	}

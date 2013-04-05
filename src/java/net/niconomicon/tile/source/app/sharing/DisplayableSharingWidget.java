@@ -157,8 +157,7 @@ public class DisplayableSharingWidget {
 			sharingManager.setPort(port);
 			sharingManager.setSharingList(displayablesSource.getDisplayables());
 			sharingManager.startSharing();
-			// sharingManager.startSharing();
-		} catch (Exception ex) {
+		} catch (Exception ex0) {
 			try {
 				sharingManager.stopSharing();
 			} catch (Exception ex1) {
@@ -167,10 +166,10 @@ public class DisplayableSharingWidget {
 			}
 			if (shouldPopup) {
 				JOptionPane.showConfirmDialog(this.actionCheckBox, "<html><body>Error while starting the sharing component on port [" + port
-						+ "]: <br/><i>" + ex.getMessage() + "</i><br/>You might want to change the port.</body></html>",
+						+ "]: <br/><i>" + ex0.getMessage() + "</i><br/>You might want to change the port.</body></html>",
 						"Error creating starting the sharing component", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
 			}
-			ex.printStackTrace();
+			ex0.printStackTrace();
 			synchronized (currentStatus) {
 				currentStatus = DS.DEACTIVATED;
 			}
