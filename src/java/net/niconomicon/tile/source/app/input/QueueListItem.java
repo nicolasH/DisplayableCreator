@@ -212,7 +212,10 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		finishPanel(60);
 	}
 
-	public void arrangeErrorPanel(Exception ex) {
+	public void arrangeErrorPanel(String shortMessage, String longMessage, Exception ex) {
+		if (shortMessage == null && longMessage == null) {
+			shortMessage = ex.getMessage();
+		}
 		this.status = IS.ERROR;
 		GridBagConstraints c;
 		int y = 0;
@@ -239,8 +242,13 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.anchor = c.LINE_END;
 
 		JButton btn = FontLoader.getButtonFlatSmall(FontLoader.iconError);
-		btn.setToolTipText("Click to view more details about the error");
-		btn.addActionListener(new ErrorAction(ex));
+		if (ex == null) {
+			btn.setToolTipText("Click to view more details about the error");
+			btn.addActionListener(new ErrorAction(shortMessage, longMessage));
+		} else {
+			btn.setToolTipText("Click to view more details about the error");
+			btn.addActionListener(new ExceptionAction(ex));
+		}
 		this.add(btn, c);
 
 		x = 8;
@@ -261,8 +269,12 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		cancel.setToolTipText("Click to remove this item from the list");
 		cancel.addActionListener(container.new RemovePanel(this));
 		this.add(cancel, c);
-
-		JLabel subStatus = new JLabel(ex.getMessage());
+		JLabel subStatus = null;
+		if (ex != null) {
+			subStatus = new JLabel(ex.getMessage());
+		}else{
+			subStatus = new JLabel(shortMessage);
+		}
 		subStatus.setFont(subStatus.getFont().deriveFont(Font.ITALIC));
 		subStatus.setForeground(Color.GRAY);
 		y++;
@@ -273,9 +285,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = c.LINE_START;
 		this.add(subStatus, c);
-
 		finishPanel(60);
-
 	}
 
 	private void finishPanel(int myHeight) {
@@ -372,7 +382,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 		}
 	}
 
-	public class ErrorAction implements ActionListener {
+	public class ExceptionAction implements ActionListener {
 		Exception ex;
 
 		public String cleanStack(Exception ex) {
@@ -384,7 +394,7 @@ public class QueueListItem extends JPanel implements Inhibitor {
 			return clean;
 		}
 
-		public ErrorAction(Exception ex) {
+		public ExceptionAction(Exception ex) {
 			this.ex = ex;
 		}
 
@@ -415,6 +425,36 @@ public class QueueListItem extends JPanel implements Inhibitor {
 						JOptionPane.ERROR_MESSAGE);
 			}
 
+		}
+	}
+
+	public class ErrorAction implements ActionListener {
+		String longMessage;
+		String shortMessage;
+
+		public ErrorAction(String shortMessage, String longMessage) {
+			this.shortMessage = shortMessage;
+			this.longMessage = longMessage;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			JPanel error = new JPanel(new BorderLayout());
+			JLabel message = new JLabel();
+			error.add(message, BorderLayout.NORTH);
+			JTextArea explanation = new JTextArea();
+			explanation.setBorder(null);
+			explanation.setEditable(false);
+			explanation.setBackground(((Component) e.getSource()).getBackground());
+			explanation.setWrapStyleWord(true);
+			explanation.setLineWrap(true);
+			explanation.setColumns(80);
+			error.add(explanation, BorderLayout.CENTER);
+
+			explanation.setText(longMessage);
+			message.setText("<html><body>Could not open the image. <br/>Reason : <i>" + shortMessage + "</i></body></html>");
+			JOptionPane.showConfirmDialog((Component) e.getSource(), error, "Error opening the image", JOptionPane.DEFAULT_OPTION,
+					JOptionPane.ERROR_MESSAGE);
+			return;
 		}
 	}
 

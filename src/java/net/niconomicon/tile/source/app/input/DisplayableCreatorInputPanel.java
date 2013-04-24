@@ -26,6 +26,7 @@ import net.niconomicon.tile.source.app.fonts.FontLoader;
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget;
 import net.niconomicon.tile.source.app.tiling.SQLiteDisplayableCreatorMoreParallel;
 import net.niconomicon.tile.source.app.tiling.TilingStatusReporter;
+import net.niconomicon.tile.source.app.tools.PreliminaryImageInfo;
 import net.niconomicon.tile.source.app.viewer.TilingPreview;
 
 /**
@@ -175,28 +176,34 @@ public class DisplayableCreatorInputPanel extends JPanel implements TilingStatus
 					String currentSourcePath = it.getFullPath();
 					it.arrangeStatusPanel();
 					long start = System.currentTimeMillis();
-
-					creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, AppPreferences.getPreferences().getTileSize(), TILE_TYPE,
-							DisplayableCreatorInputPanel.this, DisplayableCreatorApp.ThreadCount, true, it);
-					long end = System.currentTimeMillis();
-					System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s " + ((end - start) / 1000 / 60)
-							+ "min");
-
-					creator.finalizeFile();
-					if (it.hasRunInhibitionBeenRequested()) {
-						setTilingStatus("Cancelling and leaning up ...", 0.9999);
-						temp.delete();
+					PreliminaryImageInfo info = new PreliminaryImageInfo(currentSourcePath);
+					if (!info.checkOpenable()) {
+						System.out.println("Should not open " + cName + " " + info);
+						it.arrangeErrorPanel(info.getShortMessage(), info.getLongMessage(), info.getException());
 					} else {
-						System.err.println("Should inform someone that there is a new displayable in town.");
-						it.arrangeDisplayablePanel(temp);
-						synchronized (queueListView.getDisplayablesLock()) {
-							queueListView.getDisplayablesLock().notifyAll();
+
+						creator.calculateTiles(temp.getAbsolutePath(), currentSourcePath, AppPreferences.getPreferences().getTileSize(), TILE_TYPE,
+								DisplayableCreatorInputPanel.this, DisplayableCreatorApp.ThreadCount, true, it);
+						long end = System.currentTimeMillis();
+						System.out.println("creation time : " + (end - start) + " ms. == " + ((end - start) / 1000) + "s "
+								+ ((end - start) / 1000 / 60) + "min");
+
+						creator.finalizeFile();
+						if (it.hasRunInhibitionBeenRequested()) {
+							setTilingStatus("Cancelling and cleaning up ...", 0.9999);
+							temp.delete();
+						} else {
+							System.err.println("Should inform someone that there is a new displayable in town.");
+							it.arrangeDisplayablePanel(temp);
+							synchronized (queueListView.getDisplayablesLock()) {
+								queueListView.getDisplayablesLock().notifyAll();
+							}
+							queueFrame.setVisible(true);
+							queueFrame.requestFocus();
 						}
-						queueFrame.setVisible(true);
-						queueFrame.requestFocus();
 					}
 				} catch (Exception ex) {
-					it.arrangeErrorPanel(ex);
+					it.arrangeErrorPanel(null, null, ex);
 					ex.printStackTrace();
 				}
 				tilingDone.notifyAll();

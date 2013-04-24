@@ -16,6 +16,7 @@ import net.niconomicon.tile.source.app.input.QueueListView;
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget;
 import net.niconomicon.tile.source.app.sharing.DisplayableSharingWidget.DA;
 import net.niconomicon.tile.source.app.tiling.SQliteTileCreatorMultithreaded;
+import net.niconomicon.tile.source.app.tools.UpdateChecker;
 import net.niconomicon.tile.source.app.viewer.DisplayableViewer;
 
 /**

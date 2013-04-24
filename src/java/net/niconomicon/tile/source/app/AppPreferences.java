@@ -28,6 +28,8 @@ import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 
 import net.niconomicon.tile.source.app.fonts.FontLoader;
+import net.niconomicon.tile.source.app.tools.SystemInfoProvider;
+import net.niconomicon.tile.source.app.tools.UpdateChecker;
 
 public class AppPreferences extends JPanel {
 
@@ -154,7 +156,7 @@ public class AppPreferences extends JPanel {
 		c.insets = new Insets(inset_port, 0, inset_port, 0);
 
 		check_new = new JButton("Check now");
-		check_new.setToolTipText("You have: " + UpdateChecker.BASE_VERSION);
+		check_new.setToolTipText("You have: " + SystemInfoProvider.BASE_VERSION);
 		check_new.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				UpdateChecker.checkForUpdate((JComponent) e.getSource(), true, true);

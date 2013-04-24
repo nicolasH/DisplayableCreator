@@ -133,6 +133,7 @@ public class SQliteTileCreatorMultithreaded {
 					.executeUpdate("CREATE TABLE layers_infos ("
 							+ "layerName STRING, mapKey LONG, zindex LONG, zoom  LONG, width LONG,height LONG, tiles_x LONG,tiles_y LONG, offset_x LONG, offset_y LONG)");
 			statement.executeUpdate("CREATE TABLE tiles_" + tilesetKey + "_" + layerKey + " (x LONG , y LONG, z LONG, data BLOB)");
+			statement.executeUpdate("CREATE INDEX index_tiles_" + tilesetKey + "_" + layerKey + " ON tiles_" + tilesetKey + "_" + layerKey + "(z,y,x)");		
 			// Prepare most frequently used statement;
 			String insertTiles = "insert into tiles_" + tilesetKey + "_" + layerKey + " values( ?, ?, ?, ?)";
 			insertTile = connection.prepareStatement(insertTiles);
@@ -498,8 +499,6 @@ public class SQliteTileCreatorMultithreaded {
 		System.out.println(" ... setting tile info");
 		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null, flipVertically, bufferedImageTileType);
 		System.out.println(" ... creating index ...");
-		createIndexOnTileTable(connection, tilesetKey, layerKey);
-		System.out.println("tiles created");
 		stop = System.nanoTime();
 		// System.out.println("scaled_image_" + zoom + ": " + ((double) (stop -
 		// start) / 1000000) + " ms");
@@ -507,15 +506,7 @@ public class SQliteTileCreatorMultithreaded {
 		doneCalculating = true;
 	}
 
-	public static void createIndexOnTileTable(Connection conn, long mapID, long layerID) {
-		try {
-			Statement st = conn.createStatement();
-			st.execute("CREATE INDEX index_tiles_" + mapID + "_" + layerID + " ON tiles_" + mapID + "_" + layerID + "(z,y,x)");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
+	
 	public void setTileInfo(long mapID, String tileType, long tileWidth, long tileHeight, InputStream emptyTile, boolean verticallyFlipped,
 			int bufferedImageTileType) {
 		try {

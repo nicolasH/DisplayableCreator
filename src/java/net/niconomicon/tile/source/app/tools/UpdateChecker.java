@@ -1,4 +1,4 @@
-package net.niconomicon.tile.source.app;
+package net.niconomicon.tile.source.app.tools;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
@@ -15,65 +15,20 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+
+import net.niconomicon.tile.source.app.DisplayableCreatorApp;
+import net.niconomicon.tile.source.app.Ref;
+
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 public class UpdateChecker {
 
-	public static String BASE_VERSION = "2.0.0";
-	public static final String latestVersionLocation = "http://www.displayator.com/DisplayableCreator/latest";
-	public static final String url_jnlp = "http://www.displayator.com/DisplayableCreator/DisplayableCreator.jnlp";
-	public static final String url_pom = "META-INF/maven/net.niconomicon/displayable-creator/pom.properties";
-
-	private static String[] getLocalInfos() {
-		Properties props = System.getProperties();
-		String[] needed = new String[] { "java.version", "os.name", "os.version" };
-		String sys_infos = "";
-		for (String key : needed) {
-			sys_infos += props.getProperty(key) + "|";
-		}
-		sys_infos = sys_infos.substring(0, sys_infos.length() - 1);
-		String current_version = BASE_VERSION;
-		try {
-			URL pom_props_url = DisplayableCreatorApp.class.getClassLoader().getResource(url_pom);
-			BufferedReader in = new BufferedReader(new InputStreamReader(pom_props_url.openStream()));
-			String inputLine;
-			String v = "version=";
-			while ((inputLine = in.readLine()) != null) {
-				if (inputLine.startsWith(v)) {
-					current_version = inputLine.substring(v.length());
-					System.out.println("Found current version: " + current_version);
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("Can't find the current version");
-			current_version = BASE_VERSION;
-		}
-		sys_infos += "|" + current_version;
-		return new String[] { sys_infos, current_version };
-	}
-
-	public static String getNewestVersion(String sys_infos) {
-		String new_version = "";
-		try {
-			String link = latestVersionLocation + "?" + sys_infos;
-			URL url = new URL(link);
-			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-			String inputLine = in.readLine();
-			if (inputLine != null) {
-				new_version = inputLine;
-			}
-			// System.out.println("Got hold of the new version infos");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new_version;
-	}
 
 	public static void checkForUpdate(JComponent parent, boolean popupIfNotNecessary, boolean ignoreIgnoredVersion) {
-		String[] tmp = getLocalInfos();
+		String[] tmp = SystemInfoProvider.getLocalInfos();
 		String sys_infos = tmp[0];
 		DefaultArtifactVersion current_version = new DefaultArtifactVersion(tmp[1]);
-		DefaultArtifactVersion new_version = new DefaultArtifactVersion(getNewestVersion(sys_infos));
+		DefaultArtifactVersion new_version = new DefaultArtifactVersion(SystemInfoProvider.getNewestVersion(sys_infos));
 
 		if (new_version.toString().equals("")) {
 			if (popupIfNotNecessary) {
@@ -101,7 +56,7 @@ public class UpdateChecker {
 				if (option == JOptionPane.OK_OPTION) {
 					Ref.setWarnAboutUpdates("");
 					try {
-						Desktop.getDesktop().browse(new URI(url_jnlp));
+						Desktop.getDesktop().browse(new URI(SystemInfoProvider.url_jnlp));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

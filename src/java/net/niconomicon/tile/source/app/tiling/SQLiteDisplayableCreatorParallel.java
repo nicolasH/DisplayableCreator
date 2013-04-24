@@ -203,9 +203,6 @@ public class SQLiteDisplayableCreatorParallel extends SQliteTileCreatorMultithre
 		serialPool.awaitTermination(30, TimeUnit.MINUTES);
 		System.out.println(" ... setting tile info");
 		setTileInfo(tilesetKey, tileType, tileSize, tileSize, null, flipVertically, bufferedImageTileType);
-		System.out.println(" ... creating index ...");
-		createIndexOnTileTable(connection, tilesetKey, layerKey);
-		System.out.println("tiles created");
 		stop = System.nanoTime();
 		// System.out.println("scaled_image_" + zoom + ": " + ((double) (stop -
 		// start) / 1000000) + " ms");
