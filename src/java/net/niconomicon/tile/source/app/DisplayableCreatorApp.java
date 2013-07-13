@@ -44,12 +44,6 @@ public class DisplayableCreatorApp {
 		sharingWidget = new DisplayableSharingWidget(queue);
 		tileCreatorPanel = new DisplayableCreatorInputPanel(queue, sharingWidget);
 
-		// Font font = new Font(null, Font.BOLD, 16);
-		// Border etch = BorderFactory.createEtchedBorder();
-		// tileCreatorPanel.setBorder(BorderFactory.createTitledBorder(etch,
-		// "Create a Displayable", TitledBorder.DEFAULT_JUSTIFICATION,
-		// TitledBorder.DEFAULT_POSITION, font));
-
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(tileCreatorPanel, BorderLayout.CENTER);
 
@@ -59,7 +53,7 @@ public class DisplayableCreatorApp {
 		bottom.add(sharingWidget.getSharingButton());
 		bottom.add(tileCreatorPanel.getListButton());
 		bottom.add(AppPreferences.getPreferences().getPreferencesButton());
-		// bottom.add(sharingWidget.getExportButton());
+
 		bottom.add(HelpWidget.createHelpWidget());
 		JPanel south = new JPanel(new BorderLayout());
 		south.add(bottom, BorderLayout.CENTER);
@@ -72,7 +66,16 @@ public class DisplayableCreatorApp {
 		frame.setMinimumSize(new Dimension(250, 200));
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		
+//		frame.setSize(300, 350);
+//		frame.setPreferredSize(new Dimension(300,350));
+//		
+//		frame.setVisible(true);
+//		
+//		frame.pack();
+//		frame.setContentPane(p);
+//		frame.setSize(300, 350);
+		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				SQliteTileCreatorMultithreaded.loadLib();

@@ -118,6 +118,9 @@ public class DirectoryExporter {
 		FileChannel destination = null;
 		String query = "";
 		String field = "";
+		if (!directory.endsWith(File.separator)) {
+			directory += File.separator;
+		}
 		for (String key : allFiles.keySet()) {
 			String file = allFiles.get(key);
 			// System.out.println(key +"->"+file);
@@ -174,7 +177,6 @@ public class DirectoryExporter {
 				}
 			}
 		}
-
 	}
 
 	public static void main(String[] args) {
