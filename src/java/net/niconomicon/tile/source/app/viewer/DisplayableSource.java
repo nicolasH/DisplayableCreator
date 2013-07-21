@@ -28,15 +28,16 @@ import javax.swing.JLabel;
 
 import net.niconomicon.tile.source.app.DisplayableCreatorApp;
 import net.niconomicon.tile.source.app.Ref;
+import net.niconomicon.tile.source.app.tools.DisplayableSourceBase;
 import net.niconomicon.tile.source.app.viewer.actions.SingleTileLoader;
 import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
 import net.niconomicon.tile.source.app.viewer.structs.ZoomLevel;
 
 /**
- * @author Nicolas Hoibian Provides facilities to read a Displayable file. Allow to get tiles based on their
- *         coordinates.
+ * @author Nicolas Hoibian Provides facilities to read a Displayable file. Allow
+ *         to get tiles based on their coordinates.
  */
-public class DisplayableSource {
+public class DisplayableSource extends DisplayableSourceBase {
 
 	Connection mapDB;
 	String title;
@@ -57,6 +58,7 @@ public class DisplayableSource {
 	Timer loader;
 
 	public DisplayableSource(String tileSourcePath, JLabel loadingLabel, DisplayableView view) {
+		super(tileSourcePath);
 		tileLoader = Executors.newFixedThreadPool(DisplayableCreatorApp.ThreadCount);
 		neededTiles = new ConcurrentLinkedQueue<TileCoord>();
 		this.view = view;
@@ -72,7 +74,13 @@ public class DisplayableSource {
 
 		cache = Collections.synchronizedMap(cacheImpl);
 		queued = Collections.synchronizedSet(new HashSet<String>());
-		loadInfos(tileSourcePath, loadingLabel);
+		loadInfos(tileSourcePath);
+		if (cache != null) {
+			cache.clear();
+		}
+		if (neededTiles != null) {
+			neededTiles.clear();
+		}
 
 		loader = new Timer();
 		loader.schedule(new LiveCacheLoader(), 200, 2);
@@ -124,76 +132,6 @@ public class DisplayableSource {
 				tileLoader.submit(loader);
 			}
 		}
-	}
-
-	public void loadInfos(String tileSourcePath, JLabel loadingLabel) {
-		if (cache != null) {
-			cache.clear();
-		}
-		if (neededTiles != null) {
-			neededTiles.clear();
-		}
-		levels = new ArrayList<ZoomLevel>();
-		try {
-			System.out.println("trying to open the map : " + tileSourcePath);
-			mapDB = DriverManager.getConnection("jdbc:sqlite:" + tileSourcePath);
-			mapDB.setReadOnly(true);
-			type = SingleTileLoader.getPossibleType(mapDB);
-			tileSize = SingleTileLoader.getTileSize(mapDB);
-			
-			Statement statement = mapDB.createStatement();
-			// zoom = 0;
-			ResultSet rs = statement.executeQuery("select * from " + Ref.layers_infos_table_name);
-
-			int totalTiles = 0;
-			while (rs.next()) {
-				ZoomLevel zl = new ZoomLevel();
-				zl.width = rs.getLong("width");
-				zl.height = rs.getLong("height");
-				zl.tiles_x = rs.getLong("tiles_x");
-				zl.tiles_y = rs.getLong("tiles_y");
-				zl.z = rs.getInt("zoom");
-				// System.out.println("Tiles for level " + zl.z + " : " + zl.tiles_x * zl.tiles_y);
-				totalTiles += zl.tiles_x * zl.tiles_y;
-				levels.add(zl.z, zl);
-			}
-			ZoomLevel currentLevel = levels.get(levels.size() - 1);
-			// System.out.println("Setting current level to " + currentLevel.z + " total tiles : " + totalTiles);
-			cache = new ConcurrentHashMap<String, BufferedImage>(totalTiles, 1.0f);
-			if (view != null) {
-				view.resetSizeEtc(currentLevel);
-			}
-			rs = statement.executeQuery("select * from infos");
-			while (rs.next()) {
-				title = rs.getString("title");
-				description = rs.getString("description");
-			}
-
-			// System.out.println("fully cached !");
-		} catch (Exception ex) {
-			System.err.println("ex for map : " + tileSourcePath);
-			ex.printStackTrace();
-		}
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public List<ZoomLevel> getILevelInfos() {
-		return levels;
-	}
-
-	public int getMaxZ() {
-		return levels.size();
-	}
-
-	public ZoomLevel getMaxInfo() {
-		return levels.get(0);
 	}
 
 	public void done() {

@@ -16,6 +16,7 @@ import java.sql.Statement;
 import javax.imageio.ImageIO;
 
 import net.niconomicon.tile.source.app.tiling.FastClipper;
+import net.niconomicon.tile.source.app.tools.DisplayableSourceBase;
 import net.niconomicon.tile.source.app.viewer.DisplayableSource;
 import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
 
@@ -26,11 +27,11 @@ import net.niconomicon.tile.source.app.viewer.structs.TileCoord;
 public class SingleTileLoader implements Runnable {
 
 	TileCoord coord;
-	DisplayableSource displayableSource;
+	DisplayableSourceBase displayableSource;
 	Connection displayable;
 	int tileType;
 
-	public SingleTileLoader(Connection displayable, TileCoord coord, DisplayableSource source, int tileType) {
+	public SingleTileLoader(Connection displayable, TileCoord coord, DisplayableSourceBase source, int tileType) {
 		this.displayableSource = source;
 		this.coord = coord;
 		this.displayable = displayable;
@@ -132,8 +133,7 @@ public class SingleTileLoader implements Runnable {
 				data = rs.getBytes(4);
 			}
 			rs.close();
-		} catch (Exception ex) {
-		}
+		} catch (Exception ex) {}
 		if (data != null) {
 			BufferedImage t = null;
 			try {

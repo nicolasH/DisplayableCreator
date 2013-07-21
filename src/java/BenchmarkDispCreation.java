@@ -31,7 +31,8 @@ public class BenchmarkDispCreation {
 					if (f.exists()) {
 						f.delete();
 					}
-					ImageToDisplayable.main(bench);
+//					ImageToDisplayable toDisp = new ImageToDisplayable();
+//					toDisp.toDisplayable(bench);
 					System.gc();
 				} catch (Exception ex) {
 					ex.printStackTrace();
